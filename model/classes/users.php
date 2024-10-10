@@ -234,8 +234,14 @@ class users
         $stmt->bindParam(':pass', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
         $stmt->bindParam(':picture', $imagename, PDO::PARAM_STR);
         $stmt->execute();
+
+        $sql = "SELECT MAX(id) AS id FROM users;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
             "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 

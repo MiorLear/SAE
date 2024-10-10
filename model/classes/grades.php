@@ -171,8 +171,14 @@ class grades
         $stmt = $conn->prepare(query: $sql);
         $stmt ->bindParam(':name', $name, PDO::PARAM_STR);
         $stmt->execute();
+
+        $sql = "SELECT MAX(id) AS id FROM grades;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
             "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 

@@ -115,7 +115,10 @@ class contentManager {
             "controlLog": {
                 load: async () => {
                     await this.loadPage("modules/analysis/controlLog.html");
+                    // console.log("users is loaded");
                     $("a#controlLog").css("color", "#FFF");
+                    await this.loadMain('controlLog');
+                    await this.initializeContent("../controller/modules/analysis/controlLog.js", "controlLog");
                     $("#overlay").css("display", "none");
                 }
             },
@@ -356,6 +359,9 @@ class contentManager {
                 app.initDatePicker();
                 app.initSelect();
                 app.initMaxLength();
+                break;
+            case 'controlLog':
+                app.initDatePicker();
                 break;
         }
     }

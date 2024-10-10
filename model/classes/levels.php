@@ -189,11 +189,17 @@ class levels
 
         $sql = "INSERT INTO levels(name, grades) VALUES(:name, :grade);";
         $stmt = $conn->prepare(query: $sql);
-        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':name', $this->name, PDO::PARAM_STR);
         $stmt->bindParam(':grade', $grade, PDO::PARAM_STR);
         $stmt->execute();
+        
+        $sql = "SELECT MAX(id) AS id FROM levels;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
-            "result" => "success"
+            "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 

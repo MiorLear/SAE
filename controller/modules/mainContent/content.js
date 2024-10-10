@@ -15,7 +15,7 @@ class content extends dataTables {
                 return 'Tabla';
             },
             "action": () => {
-                return 'Acción';
+                return 'action';
             },
             "edit": () => {
                 return 'ID';
@@ -168,37 +168,37 @@ class content extends dataTables {
                 }
             },
             "logTitle": (table, action) => {
-                var response = "";
+                let response = {};
                 switch (table) {
                     case "students":
-                        response += 'Estudiante ';
+                        response["table"] = 'Estudiante ';
                         break;
                     case "grades":
-                        response += 'Grado ';
+                        response["table"] = 'Grado ';
                         break;
                     case "levels":
-                        response += 'Nivel ';
+                        response["table"] = 'Nivel ';
                         break;
                     case "roles":
-                        response += 'Rol ';
+                        response["table"] = 'Rol ';
                         break;
                     case "users":
-                        response += 'Usuario ';
+                        response["table"] = 'Usuario ';
                         break;
                 }
 
                 switch (action) {
                     case "add":
-                        response += 'Registrado.';
+                        response["action"] = 'Registrado.';
                         break;
                     case "edit":
-                        response += 'Modificado.';
+                        response["action"] = 'Modificado.';
                         break;
                     case "disable":
-                        response += 'Inhabilitado.';
+                        response["action"] = 'Inhabilitado.';
                         break;
                     case "rehabilitate":
-                        response += 'Rehabilitado.';
+                        response["action"] = 'Rehabilitado.';
                         break;
                 }
 
@@ -1099,7 +1099,7 @@ class content extends dataTables {
         swal.fire(
             {
                 title: `Deshabilitar ${this.traductor["rusure"]()}`,
-                html: `¿Estás seguro que deseas deshabilitar este ${this.traductor["rusure"]()} <span class="badge badge-secondary">${name}</span>?`,
+                html: `¿Estás seguro que deseas deshabilitar este ${this.traductor["rusure"]()} <span class="badge badge-secondary" style="font-size: 1rem;">${name}</span>?`,
                 icon: 'warning',
                 showCancelButton: true,
                 customClass: {
@@ -1114,7 +1114,7 @@ class content extends dataTables {
             if (!result.isConfirmed)
                 return;
 
-            this.disable(id);
+            this.disable(id, name);
         });
     }
 
@@ -1126,7 +1126,7 @@ class content extends dataTables {
         swal.fire(
             {
                 title: `Rehabilitar ${this.traductor["rusure"]()}`,
-                html: `¿Estás seguro que deseas rehabilitar este ${this.traductor["rusure"]()} <span class="badge badge-info">${name}</span>?`,
+                html: `¿Estás seguro que deseas rehabilitar este ${this.traductor["rusure"]()} <span class="badge badge-info" style="font-size: 1rem;">${name}</span>?`,
                 icon: 'info',
                 showCancelButton: true,
                 customClass: {
@@ -1141,7 +1141,7 @@ class content extends dataTables {
             if (!result.isConfirmed)
                 return;
 
-            this.rehabilitate(id);
+            this.rehabilitate(id, name);
 
         });
     }
@@ -1164,6 +1164,8 @@ class content extends dataTables {
             console.error(response);
             return;
         }
+
+        formData.append("id", response["id"]);
 
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
@@ -1225,18 +1227,20 @@ class content extends dataTables {
         $(".bd-editModal-lg").modal("hide");
     }
 
-    async disable(id, table = this.table) {
+    async disable(id, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'disable');
         formData.append("id", id);
-
+        
         let response = await this.ajaxRequest(`../model/classes/${table}.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-
+        .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+        
         if (response['result'] !== 'success') {
             console.error(response);
             return;
         }
+        
+        formData.append("name", name);
 
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
@@ -1257,7 +1261,7 @@ class content extends dataTables {
         this.callContent();
     }
 
-    async rehabilitate(id, table = this.table) {
+    async rehabilitate(id, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'rehabilitate');
         formData.append("id", id);
@@ -1269,6 +1273,8 @@ class content extends dataTables {
             console.error(response);
             return;
         }
+
+        formData.append("name", name);
 
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
@@ -1290,30 +1296,26 @@ class content extends dataTables {
     }
 
     async controlLog(content, table = this.table) {
-        let date = new Date();
-        var finalDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`
-
+        var finalDate = (() => `${String(new Date().getDate()).padStart(2, '0')}/${["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"][new Date().getMonth()]}/${String(new Date().getFullYear()).slice(-2)}`)();
+        
         var action = content.get("action");
         let log = {};
-        
-        log["title"] =  this.traductor["logTitle"](table, action);
-        log["author"] =  this.user["name"];
-        log["date"] =  finalDate;
-        log["table"] =  table;
-        
+
+        log["title"] = this.traductor["logTitle"](table, action);
+        log["author"] = this.user["name"];
+        log["date"] = finalDate;
+        log["table"] = table;
+
         var entries = content.entries();
         for (let [key, value] of entries) {
-            log[this.traductor[key]()] = value;
+            if (this.traductor?.[key])
+                log[this.traductor[key]()] = value;
         }
-        
-        
+
         let formData = new FormData();
         formData.append("action", "insertLog");
         formData.append("content", JSON.stringify(log));
 
-        for (let [key, value] of entries) {
-            log[this.traductor[key]()] = value;
-        }
 
         let response = await this.ajaxRequest(`../model/classes/controlLog.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
