@@ -33,16 +33,10 @@ class content extends dataTables {
                 return 'Correo';
             },
             "roles": () => {
-                return 'Roles';
+                return 'Rol';
             },
             "fileupload": () => {
                 return 'Imagen';
-            },
-            "pass": () => {
-                return 'Contraseña';
-            },
-            "retype": () => {
-                return 'Contraseña Repetida';
             },
             "rol_id": () => {
                 return 'Rol';
@@ -122,15 +116,15 @@ class content extends dataTables {
             "congratulation_disable": () => {
                 switch (params["table"]) {
                     case "students":
-                        return 'Estudiante eliminado.';
+                        return 'Estudiante inhabilitado.';
                     case "grades":
-                        return 'Grado eliminado.';
+                        return 'Grado inhabilitado.';
                     case "levels":
-                        return 'Nivel eliminado.';
+                        return 'Nivel inhabilitado.';
                     case "roles":
-                        return 'Rol eliminado.';
+                        return 'Rol inhabilitado.';
                     case "users":
-                        return 'Usuario eliminado.';
+                        return 'Usuario inhabilitado.';
                     default:
                         return '';
                 }
@@ -1165,6 +1159,46 @@ class content extends dataTables {
             return;
         }
 
+        switch (table) {
+            case "students":
+                var grade = await this.callName(formData.get("grade"), "grades");
+                var section = await this.callName(formData.get("section"), "sections");
+                formData.set("grade", grade);
+                formData.set("section", section);
+                break;
+            case "levels": //csv
+
+                var grade = formData.get("grade");
+                var gradesArray = grade.split(',').map(id => id.trim());
+                var finalgrades = "";
+
+                for (let index = 0; index < gradesArray.length; index++) {
+                    const element = gradesArray[index];
+                    finalgrades +=( index !== 0 ? ', ' : '') + await this.callName(element, "grades");
+                }
+                
+                formData.set("grade", finalgrades);
+                break;
+            case "users":
+                var roles = await this.callName(formData.get("roles"), "roles");
+                formData.set("roles", roles);
+                break;
+            case "roles": //csv
+
+                var permissions = formData.get("permissions");
+                var permissionsArray = permissions.split(',').map(id => id.trim());
+                var finalpermissions = "";
+
+                for (let index = 0; index < permissionsArray.length; index++) {
+                    const element = permissionsArray[index];
+                    finalpermissions +=( index !== 0 ? ', ' : '') + await this.callName(element, "permissions");
+                }
+
+                formData.set("permissions", finalpermissions);
+                break;
+            default: ;
+        }
+
         formData.append("id", response["id"]);
 
         var log = await this.controlLog(formData);
@@ -1207,6 +1241,46 @@ class content extends dataTables {
             return;
         }
 
+        switch (table) {
+            case "students":
+                var grade = await this.callName(formData.get("grade"), "grades");
+                var section = await this.callName(formData.get("section"), "sections");
+                formData.set("grade", grade);
+                formData.set("section", section);
+                break;
+            case "levels": //csv
+
+                var grade = formData.get("grade");
+                var gradesArray = grade.split(',').map(id => id.trim());
+                var finalgrades = "";
+
+                for (let index = 0; index < gradesArray.length; index++) {
+                    const element = gradesArray[index];
+                    finalgrades +=( index !== 0 ? ', ' : '') + await this.callName(element, "grades");
+                }
+                
+                formData.set("grade", finalgrades);
+                break;
+            case "users":
+                var roles = await this.callName(formData.get("roles"), "roles");
+                formData.set("roles", roles);
+                break;
+            case "roles": //csv
+
+                var permissions = formData.get("permissions");
+                var permissionsArray = permissions.split(',').map(id => id.trim());
+                var finalpermissions = "";
+
+                for (let index = 0; index < permissionsArray.length; index++) {
+                    const element = permissionsArray[index];
+                    finalpermissions +=( index !== 0 ? ', ' : '') + await this.callName(element, "permissions");
+                }
+
+                formData.set("permissions", finalpermissions);
+                break;
+            default: ;
+        }
+
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
             console.error(log);
@@ -1231,15 +1305,15 @@ class content extends dataTables {
         let formData = new FormData();
         formData.append("action", 'disable');
         formData.append("id", id);
-        
+
         let response = await this.ajaxRequest(`../model/classes/${table}.php`, formData)
-        .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-        
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
         if (response['result'] !== 'success') {
             console.error(response);
             return;
         }
-        
+
         formData.append("name", name);
 
         var log = await this.controlLog(formData);
@@ -1297,7 +1371,7 @@ class content extends dataTables {
 
     async controlLog(content, table = this.table) {
         var finalDate = (() => `${String(new Date().getDate()).padStart(2, '0')}/${["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"][new Date().getMonth()]}/${String(new Date().getFullYear()).slice(-2)}`)();
-        
+
         var action = content.get("action");
         let log = {};
 

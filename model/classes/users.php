@@ -194,7 +194,7 @@ class users
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El usuario ingresado ya existe en el usuario $user.",
+                'error' => "El correo ingresado ya existe en el usuario $user.",
                 'errorType' => "User Error"
             ]));
 
