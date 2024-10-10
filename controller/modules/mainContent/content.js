@@ -1,12 +1,12 @@
 import dataTables from '../../plugins/dataTables.js';
 
 class content extends dataTables {
-    constructor(table, user) {
+    constructor(params) {
         super("#datatable-buttons");
         this.mainDataTable = "#datatable-buttons";
         this.status = "enable";
-        this.table = table;
-        this.user = user;
+        this.table = params["table"];
+        this.user = params["user"];
         this.traductor = {
             "id": () => {
                 return 'ID';
@@ -72,7 +72,7 @@ class content extends dataTables {
                 return 'Permisos';
             },
             "notFilled": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'del Estudiante';
                     case "grades":
@@ -88,7 +88,7 @@ class content extends dataTables {
                 }
             },
             "congratulation_add": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'Estudiante registrado.';
                     case "grades":
@@ -104,7 +104,7 @@ class content extends dataTables {
                 }
             },
             "congratulation_edit": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'Estudiante editado.';
                     case "grades":
@@ -120,7 +120,7 @@ class content extends dataTables {
                 }
             },
             "congratulation_disable": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'Estudiante eliminado.';
                     case "grades":
@@ -136,7 +136,7 @@ class content extends dataTables {
                 }
             },
             "congratulation_rehabilitate": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'Estudiante rehabilitado.';
                     case "grades":
@@ -152,7 +152,7 @@ class content extends dataTables {
                 }
             },
             "rusure": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'estudiante';
                     case "grades":

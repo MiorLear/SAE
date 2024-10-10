@@ -384,15 +384,20 @@ class contentManager {
             })
     }
 
-    async initializeContent(source, table = this.content()) {
+    async initializeContent(source, module = this.content()) {
         var user = await this.validateSession();
+
+        let params = {
+            "table" : module,
+            "user" : user
+        }
 
         if (this.currentContentInstance && typeof this.currentContentInstance.cleanup === 'function') {
             this.currentContentInstance.cleanup();
         }
 
         const { default: content } = await import(source);
-        this.currentContentInstance = new content(table, user);
+        this.currentContentInstance = new content(params);
     }
 
     async redirectionHandler(e) {
