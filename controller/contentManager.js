@@ -11,7 +11,7 @@ class contentManager {
 
         this.currentContentInstance = null;
 
-        this.elements = "main";
+        this.elements = "events";
 
         this.redirection = {
             //Main Modules
@@ -264,10 +264,10 @@ class contentManager {
         return response["content"];
     }
 
-    async loadElements(initialize = false) {
+    async loadElements(initialize = false, elements = this.elements) {
         $(".side-menu").empty();
         $(".topbar").empty();
-        switch (this.elements) {
+        switch (elements) {
             case 'main':
                 await fetch('other/sidebarMain.html')
                     .then(response => response.text())
