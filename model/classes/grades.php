@@ -163,7 +163,8 @@ class grades
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El grado ingresado ya existe (" . $gradesname . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El grado ingresado ya existe ($gradesname).",
                 'errorType' => "User Error"
             ]));  
 
@@ -171,8 +172,14 @@ class grades
         $stmt = $conn->prepare(query: $sql);
         $stmt ->bindParam(':name', $name, PDO::PARAM_STR);
         $stmt->execute();
+
+        $sql = "SELECT MAX(id) AS id FROM grades;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
             "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 
@@ -191,7 +198,8 @@ class grades
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El grado ingresado ya existe (" . $gradesname . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El grado ingresado ya existe ($gradesname).",
                 'errorType' => "User Error"
             ]));  
 

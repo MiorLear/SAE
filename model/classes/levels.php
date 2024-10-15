@@ -29,6 +29,8 @@ class levels
             case "callInfo":
                 $this->callInfo();
                 break;
+            case "callSelect":
+                $this->callSelect();
             case "callName":
                 $this->callName();
                 break;
@@ -103,7 +105,7 @@ class levels
     {
         $conn = $this->conn->getConnection();
 
-        $sql = "SELECT id, name, grades, status FROM levels WHERE status = 'Habilitado' GROUP BY id ORDER BY id DESC";
+        $sql = "SELECT id, name FROM levels WHERE status = 'Habilitado' ORDER BY id DESC";
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();
         $response = $stmt->fetchAll();
@@ -158,8 +160,8 @@ class levels
 
         if ($name = "" || $this->grade == "")
             exit(json_encode(value: array(
-                'error' => "No deje espacios en blanco",
-                'content' => $_POST,
+                'error' => "Espera un momento.",
+                'suggestion' => "No deje espacios en blanco",
                 "errorType" => "User Error"
             )));
 
@@ -171,7 +173,8 @@ class levels
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El nivel ingresado ya existe ($levelname).",
+                'error' => "Espera un momento.",
+                'suggestion' => "El nivel ingresado ya existe ($levelname).",
                 'errorType' => "User Error"
             ]));
 
@@ -189,11 +192,17 @@ class levels
 
         $sql = "INSERT INTO levels(name, grades) VALUES(:name, :grade);";
         $stmt = $conn->prepare(query: $sql);
-        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':name', $this->name, PDO::PARAM_STR);
         $stmt->bindParam(':grade', $grade, PDO::PARAM_STR);
         $stmt->execute();
+        
+        $sql = "SELECT MAX(id) AS id FROM levels;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
-            "result" => "success"
+            "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 
@@ -213,7 +222,8 @@ class levels
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El nivel ingresado ya existe (" . $levelname . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El nivel ingresado ya existe ($levelname).",
                 'errorType' => "User Error"
             ]));
 
@@ -226,7 +236,8 @@ class levels
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El grados ingresado: (" . $levelgrades['grades'] . ") pertenece al nivel: " . $levelgrades['name'] . ".",
+                'error' => "Espera un momento.",
+                'suggestion' => "El grado ingresado: (" . $levelgrades['grades'] . ") pertenece al nivel: " . $levelgrades['name'] . ".",
                 'errorType' => "User Error"
             ]));
 

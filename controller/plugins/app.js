@@ -111,15 +111,26 @@ class MainApp {
             viewDate: true
         });
         jQuery(this.selector).datepicker('setDate', new Date());
+
+        if ($(".datepicker").length > 0) {
+            jQuery(".datepicker").datepicker({
+                startDate: new Date(),
+                viewDate: true,
+                regional: "es",
+                language: 'es',     
+                minDate: 0,
+            });
+        }
+
     }
 
-    initSelect(){
+    initSelect() {
         $('.form-select').selectpicker({
             locale: 'es'
         });
     }
 
-    initMaxLength(){
+    initMaxLength() {
         $('.maxlength').maxlength({
             alwaysShow: true,
             threshold: 10,
@@ -129,10 +140,26 @@ class MainApp {
             preText: 'Tienes ',
             postText: ' carácteres disponibles.',
             validate: true
-          });
+        });
     }
 
-    fileupload(){
+    initTouchSpin() {
+        $('.touchSpin').TouchSpin({
+            prefix: '$',
+            min: 0,
+            max: 100,
+            step: 0.01,
+            decimals: 2,
+            boostat: 5,
+            maxboostedstep: 10
+        });
+    }
+
+    initToolTip() {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+
+    fileupload() {
         $(document).on('change', 'input.custom-file-input', (e) => {
             var inputFile = e.currentTarget;
             inputFile.nextElementSibling.innerHTML = inputFile.files[0].name;
@@ -154,6 +181,8 @@ class MainApp {
         this.initSelect();
         this.initMaxLength();
         this.fileupload();
+        this.initTouchSpin();
+        this.initToolTip();
         Waves.init();
     }
 }

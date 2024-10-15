@@ -61,7 +61,44 @@ class controlLog
     {
         $conn = $this->conn->getConnection();
 
-        $sql = "SELECT * FROM control_log WHERE ORDER BY id DESC";
+        $sql = 
+        "SELECT 
+            cl.id, 
+            cl.content->>'title' AS title, 
+            cl.content->>'author' AS author, 
+            cl.content->>'date' AS date, 
+            COALESCE(
+                CASE 
+                    WHEN array_length(s.name, 1) >= 2 THEN CONCAT(s.name[1], ' ', s.name[2])
+                    ELSE s.name[1] 
+                END,
+                CASE 
+                    WHEN array_length(u.name, 1) >= 2 THEN CONCAT(u.name[1], ' ', u.name[2])
+                    ELSE u.name[1] 
+                END,
+                g.name,
+                l.name,
+                r.name,
+                e.name,
+                'no disponible'
+            ) AS element 
+        FROM 
+            control_log cl 
+        LEFT JOIN 
+            students s ON (cl.content->>'table' = 'students' AND s.id = (cl.content->>'ID')::INT) 
+        LEFT JOIN 
+            users u ON (cl.content->>'table' = 'users' AND u.id = (cl.content->>'ID')::INT) 
+        LEFT JOIN 
+            grades g ON (cl.content->>'table' = 'grades' AND g.id = (cl.content->>'ID')::INT) 
+        LEFT JOIN 
+            levels l ON (cl.content->>'table' = 'levels' AND l.id = (cl.content->>'ID')::INT) 
+        LEFT JOIN 
+            roles r ON (cl.content->>'table' = 'roles' AND r.id = (cl.content->>'ID')::INT) 
+        LEFT JOIN 
+            events e ON (cl.content->>'table' = 'events' AND e.id = (cl.content->>'ID')::INT) 
+        ORDER BY 
+            cl.id DESC;
+        ";
 
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();
@@ -77,13 +114,14 @@ class controlLog
         $conn = $this->conn->getConnection();
         $id = $this->id;
 
-        $sql = "UPDATE control_log SET  WHERE id = :id";
+        $sql = "SELECT content FROM control_log WHERE id = :id";
 
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_STR);
         $stmt->execute();
         exit(json_encode(value: array(
             "result" => "success",
+            "content" => $stmt->fetch()["content"],
         )));
     }
 }

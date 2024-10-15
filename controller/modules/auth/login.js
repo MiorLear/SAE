@@ -12,8 +12,8 @@ class Login {
 
     async validateLogin() {
         try {
-            var user = $("input#mail").val()
-            var password = $("input#password").val()
+            var user = $("input#mail").val().trim()
+            var password = $("input#password").val().trim()
 
             if (!user || !password) {
                 console.error(

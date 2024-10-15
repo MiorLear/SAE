@@ -17,8 +17,14 @@ class contentManager {
             //Main Modules
             "events": {
                 load: async () => {
-                    await this.loadPage("modules/main/events.html").then(() => {
-                        console.log("events is loaded");
+                    await this.loadPage("modules/main/events.html").then(async () => {
+                        await this.initializeContent("../controller/modules/mainContent/content.js", "events");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('events');
+
                         $("a#events").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
@@ -27,32 +33,46 @@ class contentManager {
             "grades": {
                 load: async () => {
                     await this.loadPage("modules/main/grades.html").then(async () => {
-                        // console.log("grades is loaded");
-                        $("a#grades").css("color", "#FFF");
-                        await this.loadMain('main');
                         await this.initializeContent("../controller/modules/mainContent/content.js", "grades");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('grades');
+
+                        $("a#grades").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
             },
             "levels": {
                 load: async () => {
+
                     await this.loadPage("modules/main/levels.html").then(async () => {
-                        // console.log("levels is loaded");
-                        $("a#levels").css("color", "#FFF");
-                        await this.loadMain('main');
                         await this.initializeContent("../controller/modules/mainContent/content.js", "levels");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('levels');
+
+                        $("a#levels").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
             },
             "mainPanel": {
                 load: async () => {
+                    console.log("Pending to load dinamic data");
                     await this.loadPage("modules/main/mainPanel.html").then(async () => {
-                        console.log("main Panel is loaded");
-                        $("a#mainPanel").css("color", "#FFF");
-                        await this.loadMain('main');
                         await this.initializeContent("../controller/plugins/dashBoard.js");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('mainPanel');
+
+                        $("a#mainPanel").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
@@ -60,10 +80,14 @@ class contentManager {
             "roles": {
                 load: async () => {
                     await this.loadPage("modules/main/roles.html").then(async () => {
-                        // console.log("roles is loaded");
-                        $("a#roles").css("color", "#FFF");
-                        await this.loadMain('main');
                         await this.initializeContent("../controller/modules/mainContent/content.js", "roles");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('roles');
+
+                        $("a#roles").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
@@ -71,10 +95,14 @@ class contentManager {
             "students": {
                 load: async () => {
                     await this.loadPage("modules/main/students.html").then(async () => {
-                        // console.log("students is loaded");
-                        $("a#students").css("color", "#FFF");
-                        await this.loadMain('main');
                         await this.initializeContent("../controller/modules/mainContent/content.js", "students");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('students');
+
+                        $("a#students").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
@@ -82,10 +110,14 @@ class contentManager {
             "users": {
                 load: async () => {
                     await this.loadPage("modules/main/users.html").then(async () => {
-                        // console.log("users is loaded");
-                        $("a#users").css("color", "#FFF");
-                        await this.loadMain('main');
                         await this.initializeContent("../controller/modules/mainContent/content.js", "users");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('users');
+
+                        $("a#users").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
@@ -93,19 +125,19 @@ class contentManager {
             //Management Modules
             "checkCard": {
                 load: async () => {
+                    console.log("checkCard isn't finished");
+
                     await this.loadPage("modules/management/checkCard.html").then(async () => {
-                        console.log('checkCard is loaded');
                         $("a#checkCard").css("color", "#FFF");
-                        await this.loadMain('main');
-                        //Initialize Content
                         $("#overlay").css("display", "none");
                     });
                 }
             },
             "checkStudent": {
                 load: async () => {
+                    console.log("checkStudent isn't finished");
+
                     await this.loadPage("modules/management/checkStudent.html").then(async () => {
-                        console.log("checkStudent");
                         $("a#checkStudent").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
@@ -114,79 +146,198 @@ class contentManager {
             //Analysis Modules
             "controlLog": {
                 load: async () => {
-                    await this.loadPage("modules/analysis/controlLog.html");
-                    $("a#controlLog").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    await this.loadPage("modules/analysis/controlLog.html").then(async () => {
+                        await this.initializeContent("../controller/modules/analysis/controlLog.js", "controlLog");
+                        await this.loadPlugins('controlLog');
+                        $("a#controlLog").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
             "statistics": {
                 load: async () => {
-                    await this.loadPage("modules/analysis/statistics.html");
-                    $("a#statistics").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("statistics isn't finished");
+
+                    await this.loadPage("modules/analysis/statistics.html").then(async () => {
+                        $("a#statistics").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
             //Payment Modules
             "payCard": {
                 load: async () => {
-                    await this.loadPage("modules/payment/payCard.html");
-                    $("a#payCard").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("payCard isn't finished");
+
+                    await this.loadPage("modules/payment/payCard.html").then(async () => {
+                        $("a#payCard").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
+                }
+            },
+            "payStudent": {
+                load: async () => {
+                    console.log("payStudent isn't finished");
+
+                    await this.loadPage("modules/payment/payStudent.html").then(async () => {
+                        $("a#payCard").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
             //Event Modules
             "eventPanel": {
-                load: async () => {
-                    await this.loadPage("modules/event/eventPanel.html");
-                    $("a#eventPanel").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                load: async (e) => {
+                    console.log("eventPanel isn't finished");
+
+                    await this.loadPage("modules/event/eventPanel.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#eventPanel").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
             "initialize": {
                 load: async () => {
-                    await this.loadPage("modules/event/initialize.html");
-                    $("a#initialize").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("initialize isn't finished");
+
+                    await this.loadPage("modules/event/initialize.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#initialize").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
-            "extraCards": {
+            "cardsPresale": {
                 load: async () => {
-                    await this.loadPage("modules/event/extraCards.html");
-                    $("a#extraCards").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("cardsPresale isn't finished");
+
+                    await this.loadPage("modules/event/cardsPresale.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#cardsPresale").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
-            "reasignCards": {
+            "salesCase": {
                 load: async () => {
-                    await this.loadPage("modules/event/reasignCards.html");
-                    $("a#reasignCards").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("salesCase isn't finished");
+                    await this.loadPage("modules/event/salesCase.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#salesCase").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
+                }
+            },
+            "cardsDelivery": {
+                load: async () => {
+                    console.log("cardsDelivery isn't finished");
+                    await this.loadPage("modules/event/cardsDelivery.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#cardsDelivery").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
+                }
+            },
+            "cardsReturn": {
+                load: async () => {
+                    console.log("cardsReturn isn't finished");
+                    await this.loadPage("modules/event/cardsReturn.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#cardsReturn").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
             "redeem": {
                 load: async () => {
-                    await this.loadPage("modules/event/redeem.html");
-                    $("a#redeem").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("redeem isn't finished");
+                    await this.loadPage("modules/event/redeem.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#redeem").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
             "closure": {
                 load: async () => {
-                    await this.loadPage("modules/event/closure.html");
-                    $("a#closure").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("closure isn't finished");
+
+                    await this.loadPage("modules/event/closure.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#closure").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
             "eventLog": {
                 load: async () => {
-                    await this.loadPage("modules/event/eventLog.html");
-                    $("a#eventLog").css("color", "#FFF");
-                    $("#overlay").css("display", "none");
+                    console.log("eventLog isn't finished");
+
+                    await this.loadPage("modules/event/eventLog.html").then(async () => {
+                        // await this.initializeContent();
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        // else
+                        // await this.loadPlugins();
+
+                        $("a#eventLog").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
                 }
             },
         }
 
-        this.loadElements(true);
+        this.loadElements(this.elements, true);
 
         $(document).on('click', 'a.content', (event) => this.redirectionHandler(event));
         $(document).on('click', 'a.logout', async (e) => this.logout(e));
@@ -261,10 +412,12 @@ class contentManager {
         return response["content"];
     }
 
-    async loadElements(initialize = false) {
+    async loadElements(elements = this.elements, redirect = false) {
+        this.elements = elements;
+
         $(".side-menu").empty();
         $(".topbar").empty();
-        switch (this.elements) {
+        switch (elements) {
             case 'main':
                 await fetch('other/sidebarMain.html')
                     .then(response => response.text())
@@ -322,7 +475,7 @@ class contentManager {
                 );
             });
 
-        if (initialize)
+        if (redirect)
             if (!this.redirection?.[this.content()]?.load()) console.error(
                 {
                     'error': "Error al cargar el sitio.",
@@ -334,17 +487,17 @@ class contentManager {
                 }
             );
 
-        await this.loadMain('all');
-        await this.fillUserInfo();
+        await this.loadPlugins('all');
     }
 
     async fillUserInfo() {
         var content = await this.validateSession()
 
-        $(".topbarphoto")[0].src = '../assets/images/users/' + content["picture"];
+        if ($(".topbarphoto").length > 0)
+            $(".topbarphoto")[0].src = '../assets/images/users/' + content["picture"];
     }
 
-    async loadMain(func) {
+    async loadPlugins(func) {
         const { default: Mainapp } = await import('./plugins/app.js');
         const app = new Mainapp();
 
@@ -352,12 +505,45 @@ class contentManager {
             case 'all':
                 app.init();
                 break;
-            case 'main':
+            case 'students':
                 app.initDatePicker();
+                app.initMaxLength();
                 app.initSelect();
+                break;
+            case 'levels':
+                app.initDatePicker();
+                app.initMaxLength();
+                app.initSelect();
+                break;
+            case 'roles':
+                app.initDatePicker();
+                app.initMaxLength();
+                app.initSelect();
+                break;
+            case 'events':
+                app.initDatePicker();
+                app.initMaxLength();
+                app.initSelect();
+                app.initTouchSpin()
+                break;
+            case 'users':
+                app.initDatePicker();
+                app.initMaxLength();
+                app.initSelect();
+                break;
+            case 'mainPanel':
+                app.initDatePicker();
+                break;
+            case 'grades':
+                app.initDatePicker();
                 app.initMaxLength();
                 break;
+            case 'controlLog':
+                app.initDatePicker();
+                break;
         }
+
+        this.fillUserInfo();
     }
 
     async loadPage(content) {
@@ -384,15 +570,20 @@ class contentManager {
             })
     }
 
-    async initializeContent(source, table = this.content()) {
+    async initializeContent(source, module = this.content()) {
         var user = await this.validateSession();
+
+        let params = {
+            "table": module,
+            "user": user
+        }
 
         if (this.currentContentInstance && typeof this.currentContentInstance.cleanup === 'function') {
             this.currentContentInstance.cleanup();
         }
 
         const { default: content } = await import(source);
-        this.currentContentInstance = new content(table, user);
+        this.currentContentInstance = new content(params);
     }
 
     async redirectionHandler(e) {
@@ -401,7 +592,14 @@ class contentManager {
         $(`a#${this.content()}`).css("color", "#9CA8B3");
 
         let url = new URL(window.location.href);
+
+        if (e.target.id === "mainPanel")
+            url.searchParams.delete("event");
+
         url.searchParams.set("content", e.target.id);
+        if (e.target.name)
+            url.searchParams.set("event", e.target.name);
+
         window.history.pushState({}, '', url);
 
         // $(`a#${e.target.id}`).css("color", "#FFF");

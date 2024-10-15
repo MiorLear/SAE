@@ -176,13 +176,15 @@ class users
 
         if ($name == '' || $surname == '' || $mail == '' || $rol == '' || $password == '' || $retype == '')
             exit(json_encode(value: array(
-                'error' => "No deje espacios en blanco",
+                'error' => "Espera un momento.",
+                'suggestion' => "No deje espacios en blanco",
                 "errorType" => "User Error"
             )));
 
         if ($password != $retype)
             exit(json_encode(value: array(
                 'error' => "Las contraseñas no coinciden",
+                'suggestion' => "Por favor, ingreselas nuevamente.",
                 "errorType" => "User Error"
             )));
 
@@ -194,7 +196,8 @@ class users
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El usuario ingresado ya existe en el usuario $user.",
+                'error' => "Espera un momento.",
+                'suggestion' => "El correo ingresado ya existe ($user).",
                 'errorType' => "User Error"
             ]));
 
@@ -212,7 +215,8 @@ class users
 
             if (!in_array(needle: $imageFileType, haystack: $validFormats)) {
                 exit(json_encode(value: [
-                    'error' => 'Formato de imagen no válido. Solo se permiten JPG, JPEG, PNG, y GIF.',
+                    'error' => "Espera un momento.",
+                    'suggestion' => 'Formato de imagen no válido. Solo se permiten JPG, JPEG, PNG, y GIF.',
                     'errorType' => "Server Error"
                 ]));
             }
@@ -220,6 +224,7 @@ class users
             if (!move_uploaded_file(from: $picture['tmp_name'], to: $uploadFile)) {
                 exit(json_encode(value: [
                     'error' => "Error al subir la imagen.",
+                    'suggestion' => "Inténtalo nuevamente en otro momento.",
                     'errorType' => "Server Error"
                 ]));
             }
@@ -234,8 +239,14 @@ class users
         $stmt->bindParam(':pass', password_hash($password, PASSWORD_DEFAULT), PDO::PARAM_STR);
         $stmt->bindParam(':picture', $imagename, PDO::PARAM_STR);
         $stmt->execute();
+
+        $sql = "SELECT MAX(id) AS id FROM users;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
             "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 
@@ -256,21 +267,23 @@ class users
 
         if ($name == '' || $surname == '' || $mail == '' || $rol == '')
             exit(json_encode(value: array(
-                'error' => "No deje espacios en blanco",
+                'error' => "Espera un momento.",
+                'suggestion' => "No deje espacios en blanco",
                 'content' => $_POST,
                 "errorType" => "User Error"
             )));
 
         if ($passcheck == "true" && $password == '' || $passcheck == "true" && $retype == '')
             exit(json_encode(value: array(
-                'error' => "No deje espacios en blanco (contraseña)",
-                'content' => array("passCheck" => $passcheck, "password" => $password, "retype" => $retype),
+                'error' => "Espera un momento.",
+                'suggestion' => "No deje espacios en blanco (contraseña)",
                 "errorType" => "User Error"
             )));
 
         if ($password != $retype)
             exit(json_encode(value: array(
                 'error' => "Las contraseñas no coinciden",
+                'suggestion' => "Por favor, ingreselas nuevamente.",
                 "errorType" => "User Error"
             )));
 
@@ -283,7 +296,8 @@ class users
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El usuario ingresado ya existe en el usuario $user.",
+                'error' => "Espera un momento.",
+                'suggestion' => "El usuario ingresado ya existe ($user).",
                 'errorType' => "User Error"
             ]));
 
@@ -300,6 +314,7 @@ class users
             if (!unlink(filename: $uploadDir . $changeImage))
                 exit(json_encode(value: [
                     'error' => 'Error al eliminar la imagen. ' . $uploadDir . $changeImage,
+                    'suggestion' => "Inténtalo nuevamente en otro momento.",
                     'errorType' => "Server Error"
                 ]));
 
@@ -315,7 +330,8 @@ class users
 
             if (!in_array(needle: $imageFileType, haystack: $validFormats)) {
                 exit(json_encode(value: [
-                    'error' => 'Formato de imagen no válido. Solo se permiten JPG, JPEG, PNG, y GIF.',
+                    'error' => "Espera un momento.",
+                    'suggestion' => 'Formato de imagen no válido. Solo se permiten JPG, JPEG, PNG, y GIF.',
                     'errorType' => "Server Error"
                 ]));
             }
@@ -323,12 +339,14 @@ class users
             if (!unlink(filename: $uploadDir . $changeImage))
                 exit(json_encode(value: [
                     'error' => 'Error al eliminar la imagen. ' . $uploadDir . $changeImage,
+                    'suggestion' => "Inténtalo nuevamente en otro momento.",
                     'errorType' => "Server Error"
                 ]));
 
             if (!move_uploaded_file(from: $picture['tmp_name'], to: $uploadFile)) {
                 exit(json_encode(value: [
                     'error' => "Error al subir la imagen.",
+                    'suggestion' => "Inténtalo nuevamente en otro momento.",
                     'errorType' => "Server Error"
                 ]));
             }
@@ -402,7 +420,8 @@ class users
         } else {
             $error_message = error_get_last();
             exit(json_encode(value: array(
-                "error" => "La imagen no fue guardada, intentálo nuevamente",
+                "error" => "La imagen no fue guardada",
+                'suggestion' => "Inténtalo nuevamente en otro momento.",
                 "errorType" => "Server Error",
                 "errorDetails" => $error_message['message']
             )));

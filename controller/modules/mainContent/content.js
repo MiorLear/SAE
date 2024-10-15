@@ -1,12 +1,12 @@
 import dataTables from '../../plugins/dataTables.js';
 
 class content extends dataTables {
-    constructor(table, user) {
+    constructor(params) {
         super("#datatable-buttons");
         this.mainDataTable = "#datatable-buttons";
         this.status = "enable";
-        this.table = table;
-        this.user = user;
+        this.table = params["table"];
+        this.user = params["user"];
         this.traductor = {
             "id": () => {
                 return 'ID';
@@ -15,7 +15,7 @@ class content extends dataTables {
                 return 'Tabla';
             },
             "action": () => {
-                return 'Acción';
+                return 'action';
             },
             "edit": () => {
                 return 'ID';
@@ -32,17 +32,23 @@ class content extends dataTables {
             "mail": () => {
                 return 'Correo';
             },
+            "eventDate": () => {
+                return 'Fecha del Evento';
+            },
+            "price": () => {
+                return 'Precio';
+            },
+            "levels": () => {
+                return 'Niveles';
+            },
+            "complements": () => {
+                return 'Complementos';
+            },
             "roles": () => {
-                return 'Roles';
+                return 'Rol';
             },
             "fileupload": () => {
                 return 'Imagen';
-            },
-            "pass": () => {
-                return 'Contraseña';
-            },
-            "retype": () => {
-                return 'Contraseña Repetida';
             },
             "rol_id": () => {
                 return 'Rol';
@@ -72,7 +78,7 @@ class content extends dataTables {
                 return 'Permisos';
             },
             "notFilled": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'del Estudiante';
                     case "grades":
@@ -83,12 +89,14 @@ class content extends dataTables {
                         return 'para el Rol';
                     case "users":
                         return 'para el Usuario';
+                    case "events":
+                        return 'para el Evento';
                     default:
                         return '';
                 }
             },
             "congratulation_add": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'Estudiante registrado.';
                     case "grades":
@@ -99,12 +107,14 @@ class content extends dataTables {
                         return 'Rol registrado.';
                     case "users":
                         return 'Usuario registrado.';
+                    case "events":
+                        return 'Evento registrado.';
                     default:
                         return '';
                 }
             },
             "congratulation_edit": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'Estudiante editado.';
                     case "grades":
@@ -115,28 +125,32 @@ class content extends dataTables {
                         return 'Rol editado.';
                     case "users":
                         return 'Usuario editado.';
+                    case "events":
+                        return 'Configuración del Evento editada.';
                     default:
                         return '';
                 }
             },
             "congratulation_disable": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
-                        return 'Estudiante eliminado.';
+                        return 'Estudiante inhabilitado.';
                     case "grades":
-                        return 'Grado eliminado.';
+                        return 'Grado inhabilitado.';
                     case "levels":
-                        return 'Nivel eliminado.';
+                        return 'Nivel inhabilitado.';
                     case "roles":
-                        return 'Rol eliminado.';
+                        return 'Rol inhabilitado.';
                     case "users":
-                        return 'Usuario eliminado.';
+                        return 'Usuario inhabilitado.';
+                    case "events":
+                        return 'Evento inhabilitado.';
                     default:
                         return '';
                 }
             },
             "congratulation_rehabilitate": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'Estudiante rehabilitado.';
                     case "grades":
@@ -147,12 +161,14 @@ class content extends dataTables {
                         return 'Rol rehabilitado.';
                     case "users":
                         return 'Usuario rehabilitado.';
+                    case "events":
+                        return 'Evento rehabilitado.';
                     default:
                         return '';
                 }
             },
             "rusure": () => {
-                switch (table) {
+                switch (params["table"]) {
                     case "students":
                         return 'estudiante';
                     case "grades":
@@ -163,42 +179,53 @@ class content extends dataTables {
                         return 'rol';
                     case "users":
                         return 'usuario';
+                    case "events":
+                        return 'Evento';
                     default:
                         return '';
                 }
             },
             "logTitle": (table, action) => {
-                var response = "";
+                let response = {};
                 switch (table) {
                     case "students":
-                        response += 'Estudiante ';
+                        response["table"] = 'Estudiante ';
                         break;
                     case "grades":
-                        response += 'Grado ';
+                        response["table"] = 'Grado ';
                         break;
                     case "levels":
-                        response += 'Nivel ';
+                        response["table"] = 'Nivel ';
                         break;
                     case "roles":
-                        response += 'Rol ';
+                        response["table"] = 'Rol ';
                         break;
                     case "users":
-                        response += 'Usuario ';
+                        response["table"] = 'Usuario ';
+                        break;
+                    case "events":
+                        response["table"] = 'Evento ';
                         break;
                 }
 
                 switch (action) {
                     case "add":
-                        response += 'Registrado.';
+                        response["action"] = 'Registrado.';
                         break;
                     case "edit":
-                        response += 'Modificado.';
+                        response["action"] = 'Modificado.';
+                        break;
+                    case "editSettings":
+                        response["action"] = 'Reconfigurado.';
+                        break;
+                    case "editComplements":
+                        response["action"] = 'Complementos Editados.';
                         break;
                     case "disable":
-                        response += 'Inhabilitado.';
+                        response["action"] = 'Inhabilitado.';
                         break;
                     case "rehabilitate":
-                        response += 'Rehabilitado.';
+                        response["action"] = 'Rehabilitado.';
                         break;
                 }
 
@@ -224,7 +251,7 @@ class content extends dataTables {
 
                 if (!id)
                     console.error({
-                        'error': `Error al el formulario.`,
+                        'error': `Error al mostrar el formulario.`,
                         'errorType': 'Client Error',
                         'errorDetails': 'Not given id in the function.',
                         'suggestion': 'Refrezque la página.',
@@ -250,6 +277,38 @@ class content extends dataTables {
                     $(".edit-passwords").css("display", "block");
                 if (!e.currentTarget.checked)
                     $(".edit-passwords").css("display", "none");
+            });
+        }
+
+        if (table === "events") {
+            $(document).on('click', 'a.showComplementsModal', (e) => {
+                e.preventDefault();
+                var id = e.currentTarget.id;
+
+                if (!id)
+                    console.error({
+                        'error': `Error al mostrar el formulario.`,
+                        'errorType': 'Client Error',
+                        'errorDetails': 'Not given id in the function.',
+                        'suggestion': 'Refrezque la página.',
+                        'logout': false
+                    });
+                this.showComplementsModal(id);
+            });
+
+            $(document).on('click', 'button.addComplement', (e) => {
+                e.preventDefault();
+                this.addComplementValues();
+            });
+
+            $(document).on('click', 'button.editComplement', (e) => {
+                e.preventDefault();
+                this.editComplementValues();
+            });
+
+            $(document).on('submit', 'form.complements', (e) => {
+                e.preventDefault();
+                this.editEventComplements();
             });
         }
 
@@ -308,7 +367,10 @@ class content extends dataTables {
             $("a.status").removeClass("active");
             $(e.currentTarget).addClass("active");
 
-            this.callContent();
+            if (table !== "events")
+                this.callContent();
+            else
+                this.callEvents();
         });
 
         $(document).on('submit', 'form.add', (e) => {
@@ -524,7 +586,11 @@ class content extends dataTables {
 
             if (!notFilledInputs.length && !notMinLengthInputs.length && !minorThanZeroInputs.length && !notSameRetype.length && !invalidPass.length && !invalidMail.length && !invalidMail.length) {
                 if (e?.currentTarget?.["addGenerateImageCheck"]) e.currentTarget["addGenerateImageCheck"].checked = false;
-                this.add(validInputs);
+                if (this.table == "events")
+                    this.addEvent(validInputs);
+                else
+                    this.add(validInputs);
+
             }
         });
 
@@ -745,7 +811,10 @@ class content extends dataTables {
             if (!notFilledInputs.length && !notMinLengthInputs.length && !minorThanZeroInputs.length && !notSameRetype.length && !invalidPass.length && !invalidMail.length && !invalidMail.length) {
                 if (e?.currentTarget?.["passCheck"]) e.currentTarget["passCheck"].checked = false;
                 if (e?.currentTarget?.["editGenerateImageCheck"]) e.currentTarget["editGenerateImageCheck"].checked = false;
-                this.edit(validInputs);
+                if (this.table == "events")
+                    this.editEventSettings(validInputs);
+                else
+                    this.edit(validInputs);
             }
         });
 
@@ -767,10 +836,12 @@ class content extends dataTables {
                 $(`.form-control-${$(formElement).attr('id')}-feedback`).css("display", "none");
             });
         });
-
     }
 
     async callColumns(mainTable = this.mainDataTable, table = this.table) {
+        if (table == "events")
+            return this.callEvents();
+
         let formData = new FormData();
         formData.append("action", 'callColumns');
 
@@ -796,6 +867,114 @@ class content extends dataTables {
         await this.initWithButtons();
         this.callContent();
     }
+
+    async callEvents(status = this.status, table = "events") {
+        try {
+            if (!status) {
+                console.error({
+                    'error': `Error al mostrar la alerta.`,
+                    'errorType': 'Client Error',
+                    'errorDetails': 'Not given status in the function.',
+                    'suggestion': 'Refrezque la página.',
+                    'logout': false
+                });
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("action", 'callContent');
+            formData.append("status", status);
+
+            let response = await this.ajaxRequest(`../model/classes/${table}.php`, formData)
+                .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+            if (response['result'] !== 'success') {
+                console.error(response);
+                return;
+            }
+
+            var content = "";
+
+            for (const event of response['content']) {
+                var levelsArray = JSON.parse(event["levels"]);
+                var finalLevels = await Promise.all(levelsArray.map(async element => await this.callName(element, "levels")));
+                const largeDate = fechaString => {
+                    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+                    const [dia, mes, año] = fechaString.split('/').map(Number);
+                    return `${meses[mes - 1]} ${dia}, ${año}`;
+                };
+                content += `
+                <div class="col-lg-4 col-md-4 col-sm-6 card" style="box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2); margin: 2rem; position: relative;">
+                    <div class="card-header card-primary" style="margin-top: 1rem;">
+                        <a style="position: absolute; top: 0; right: 0; background-color: orange; padding: 1rem; background-color:transparent;" id="event-${event["id"]}-settings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i style="display:flex; text-align:center; justify-content:center; font-size:1.2rem;" class="ti-settings"></i>
+                        </a>`;
+                if (event["status"] !== "Deshabilitado") {
+                    content += `<div class="dropdown-menu" aria-labelledby="event-${event["id"]}-settings">
+                        <a class="dropdown-item showEditModal" id="${event["id"]}">Editar Configuración del Evento</a>
+                        <a class="dropdown-item showComplementsModal" id="${event["id"]}">Editar Complementos del Evento</a>
+                        <a class="dropdown-item showDisableAlert" id="${event["id"]}">Deshabilitar Evento</a>
+                    </div>`;
+                } else {
+                    content += `<div class="dropdown-menu" aria-labelledby="event-${event["id"]}-settings">
+                        <a class="dropdown-item showRehabilitateAlert" id="${event["id"]}">Rehabilitar Evento</a>
+                    </div>`;
+                }
+                content += `
+                    <h5 class="card-title" style="display:flex; text-align:center; justify-content:center;">${event["name"]}</h5>
+                    <span class="badge badge-primary" style="display:flex; text-align:center; justify-content:center; font-size:1rem;">${event["year"]}</span>
+                    </div>
+                    <div class="card-body row">
+                        <div class="col-6"> 
+                            <a class="badge badge-success" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseStatus" role="button" aria-expanded="false" aria-controls="collapseStatus" title="Mostrar Estado del Evento">Estado &nbsp;&nbsp;<i class="ion ion-md-arrow-down"></i></a>
+                            <div class="collapse" id="collapseStatus">
+                                <p>${event["status"]}</p>
+                            </div>
+                        </div>
+                        <div class="col-6"> 
+                            <a class="badge badge-info" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseLevels" role="button" aria-expanded="false" aria-controls="collapseLevels" title="Mostrar Niveles del Evento"><i class="ion ion-md-arrow-down"></i>&nbsp;&nbsp;Niveles</a>
+                            <div class="collapse" id="collapseLevels">
+                                <p>${finalLevels.join(', ')}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 style="display:flex; font-size:1rem; text-align:center; justify-content:center;">Fecha del Evento:</h6>
+                        <p style="display:flex; font-size:1rem; text-align:center; justify-content:center;">
+                            ${largeDate(event["date"])}
+                        </p>
+                    </div>`;
+                if (event["status"] !== "Deshabilitado") {
+                    content += `<a class="btn btn-primary mt-0 mb-3 content" id="eventPanel" name="${event["id"]}" role="button" style="display:flex; font-size:1rem; color:#FFF; text-align:center; justify-content:center; padding:0.1rem;" data-toggle="tooltip" data-placement="top" title="Entrar al evento">Entrar al evento</a>`;
+                }
+                content += `</div>`;
+            }
+
+            if (response['content'].length === 0) {
+                await $(".eventsContent").html(
+                    `<br><br><br><p>No hay eventos disponibles.</p>`
+                );
+            } else {
+                await $(".eventsContent").html(content);
+            }
+
+            if (!$.fn.DataTable.isDataTable('#add-dataTable')) {
+                var dataTable = await this.init($('#add-dataTable'));
+            }
+
+            if (!$.fn.DataTable.isDataTable('#edit-dataTable')) {
+                var dataTable = await this.init($('#edit-dataTable'));
+            }
+
+            formData.set("action", 'callSelect');
+            await this.callLevels(formData);
+
+            $('[data-toggle="tooltip"]').tooltip();
+        } catch (error) {
+            console.error({ 'error': error, 'errorType': 'notAlert' });
+        }
+    }
+
 
     async callContent(status = this.status, mainTable = this.mainDataTable, table = this.table) {
         try {
@@ -853,7 +1032,7 @@ class content extends dataTables {
                         (
                             table == "users" && column['column_name'] == "name"
                                 ?
-                                `<a class="showUserProfile" id="${content['id']}">&nbsp;&nbsp;
+                                `<a class="showUserProfile" id="${content['id']}" data-toggle="tooltip" data-placement="top" title="Ver información del Usuario">&nbsp;&nbsp;
                                     <img src="../assets/images/users/${content['picture']}" class="rounded" alt="Foto del Usuario ${content['name']}" height="20">
                                 &nbsp;&nbsp;
                                     ${content['name']}
@@ -873,17 +1052,17 @@ class content extends dataTables {
                     (
                         content['status'] == 'Habilitado' ?
                             `<center>
-                            <a class="lead text-warning showEditModal" title="Editar ${this.traductor["rusure"]()}" id="${content['id']}">
+                            <a class="lead text-warning showEditModal" data-toggle="tooltip" data-placement="top" title="Editar ${this.traductor["rusure"]()}" id="${content['id']}">
                                 <i class="fas fa-edit"></i>
                             </a>
                             &nbsp;&nbsp;
-                            <a class="lead text-secondary showDisableAlert" title="Deshabilitar ${this.traductor["rusure"]()}" id="${content['id']}">
+                            <a class="lead text-secondary showDisableAlert" data-toggle="tooltip" data-placement="top" title="Deshabilitar ${this.traductor["rusure"]()}" id="${content['id']}">
                                 <i class="fas fa-lock"></i>
                             </a>
                         </center>`
                             :
                             `<center>
-                            <a class="lead text-info showRehabilitateAlert" title="Rehabilitar ${this.traductor["rusure"]()}" id="${content['id']}">
+                            <a class="lead text-info showRehabilitateAlert" data-toggle="tooltip" data-placement="top" title="Rehabilitar ${this.traductor["rusure"]()}" id="${content['id']}">
                                 <i class="fas fa-lock-open"></i>
                             </a>
                         </center>`
@@ -912,9 +1091,28 @@ class content extends dataTables {
                     this.callPermissions(formData);
                     break;
             }
+
+            $('[data-toggle="tooltip"]').tooltip();
         } catch (error) {
             console.error({ 'error': error, 'errorType': 'notAlert' });
         }
+    }
+
+    async callLevels(formData) {
+        let levels = await this.ajaxRequest('../model/classes/levels.php', formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (levels['result'] !== 'success') {
+            console.error(levels);
+            return;
+        }
+
+        var bsLevels;
+        levels["content"].forEach(content => {
+            bsLevels += `<option data-tokens="${content["name"]}" value="${content["id"]}">${content["name"]}</option>`;
+        });
+        $("select#levels").html(bsLevels);
+        $("select#levels").selectpicker('refresh');
     }
 
     async callRoles(formData) {
@@ -1055,6 +1253,9 @@ class content extends dataTables {
                 case "surname":
                     $(formElement).val(response["content"]["surname"]);
                     break;
+                case "price":
+                    $(formElement).val(response["content"]["price"]);
+                    break;
                 case "carnet":
                     $(formElement).val(response["content"]["carnet"]);
                     break;
@@ -1071,6 +1272,18 @@ class content extends dataTables {
                 case "permissions":
                     $(formElement).selectpicker("val", response["content"]["permissions_id"]);
                     $(formElement).selectpicker("refresh");
+                    break;
+                case "levels":
+                    $(formElement).selectpicker("val", JSON.parse(response["content"]["levels"]));
+                    $(formElement).selectpicker("refresh");
+                    break;
+                case "date":
+                    const largeDate = fechaString => {
+                        const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+                        const [dia, mes, año] = fechaString.split('/').map(Number);
+                        return `${meses[mes - 1]} ${dia}, ${año}`;
+                    };
+                    $(formElement).datepicker("setDate", largeDate(response["content"]["date"]));
                     break;
                 case "section":
                     $(formElement).val(response["content"]["section"]);
@@ -1091,15 +1304,156 @@ class content extends dataTables {
         $(".bd-editModal-lg").modal('show');
     }
 
-    async showDisableAlert(id) {
+    async showComplementsModal(id) {
+
+        var table = $("#edit-dataTable").DataTable();
+
+        table.clear().draw();
+
+        let formData = new FormData();
+        formData.append("action", 'callComplements');
+        formData.append("id", id);
+
+        let response = await this.ajaxRequest(`../model/classes/events.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        var complements = JSON.parse(response["content"]["complements"])["complements"];
+
+        var options =
+            `<center>
+            <a class="lead text-warning editEdittedComplements" data-toggle="tooltip" data-placement="top" title="Editar Complemento" data-id="${id}">
+                <i class="fas fa-edit"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a class="lead text-danger deleteEdittedComplements" data-toggle="tooltip" data-placement="top" title="Eliminar Complemento" data-id="${id}">
+                <i class="fas fa-trash"></i>
+            </a>
+            </center>`;
+
+        table.clear();
+
+        for (const key in complements) {
+            if (Object.prototype.hasOwnProperty.call(complements, key)) {
+                const element = complements[key];
+                table.row.add([complements[key]["id"], complements[key]["title"], complements[key]["price"], options]).draw();
+            }
+        }
+
+        $('#edit-dataTable tbody').off('click', '.deleteEdittedComplements');
+        $('#edit-dataTable tbody').on('click', '.deleteEdittedComplements', function () {
+            var row = table.row($(this).parents('tr'));
+            var rowData = row.data();
+
+            Swal.fire(
+                {
+                    title: `¿Eliminar Complemento`,
+                    html: `¿Estás seguro que desea eliminar este complemento? <span class="badge badge-danger" style="font-size: 1rem;">${rowData[1]}</span>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger btn-lg',
+                        cancelButton: 'btn btn-outline-danger btn-lg ml-4'
+                    },
+                    buttonsStyling: false,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar'
+                }
+            ).then(async (result) => {
+                if (!result.isConfirmed)
+                    return;
+
+                var row = table.row($(this).parents('tr'));
+                row.remove().draw();
+            });
+        });
+
+        $('#edit-dataTable tbody').off('click', '.editEdittedComplements');
+        $('#edit-dataTable tbody').on('click', '.editEdittedComplements', function () {
+            var row = table.row($(this).parents('tr'));
+            var rowData = row.data();
+
+            $(".bd-showComplementsModal-lg").modal("toggle");
+            Swal.fire({
+                title: 'Editar Complemento',
+                icon: 'info',
+                html: `
+                    <div class="container" style="padding:0.1rem; z-index: 9999;">
+                        <div class="form-group row"> 
+                            <label class="form-label col-md-4 col-sm-6" for="editName">
+                                Nombre:
+                            </label>  
+                            <div class="col-md-8 col-sm-6">
+                                <input id="editedittedName" class="form-control" placeholder="Nombre del complemento" value="${rowData[1]}" style="z-index: 9999; position: relative;">
+                            </div>
+                        </div> 
+                        <div class="form-group row"> 
+                            <label class="form-label col-md-4 col-sm-6" for="editPrice">
+                                Precio:
+                            </label>
+                            <div class="col-md-8 col-sm-6">
+                                <input id="editedittedPrice" type="number" class="form-control" placeholder="Precio del complemento" value="${rowData[2]}" style="z-index: 9999; position: relative;">
+                            </div>
+                        </div> 
+                    </div> 
+                `,
+
+                focusConfirm: false,
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'btn btn-primary btn-lg',
+                    cancelButton: 'btn btn-outline-primary btn-lg ml-4'
+                },
+                buttonsStyling: false,
+                confirmButtonText: 'Guardar Cambios',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+
+                    var newName = $('#editedittedName').val();
+                    var newPrice = $('#editedittedPrice').val();
+
+                    // Validaciones de los campos
+                    if (!newName || newName.length < 4) {
+                        Swal.showValidationMessage('El nombre debe tener al menos 4 caracteres');
+                        return false;
+                    }
+                    if (newPrice <= 0) {
+                        Swal.showValidationMessage('El precio debe ser un valor positivo');
+                        return false;
+                    }
+
+                    return { name: newName, price: newPrice };
+                }
+            }).then((result) => {
+                $(".bd-showComplementsModal-lg").modal("toggle");
+                if (result.isConfirmed) {
+                    var newName = result.value.name;
+                    var newPrice = result.value.price;
+
+                    rowData[1] = newName;
+                    rowData[2] = newPrice;
+                    row.data(rowData).draw();
+                }
+            });
+        });
+
+        $("#complements").val(response["content"]["id"]);
+        $(".bd-showComplementsModal-lg").modal('show');
+    }
+
+    async showDisableAlert(id, element = this.traductor["rusure"]()) {
         var name = await this.callName(id);
         if (!name)
             return;
 
         swal.fire(
             {
-                title: `Deshabilitar ${this.traductor["rusure"]()}`,
-                html: `¿Estás seguro que deseas deshabilitar este ${this.traductor["rusure"]()} <span class="badge badge-secondary">${name}</span>?`,
+                title: `Deshabilitar ${element}`,
+                html: `¿Estás seguro que deseas deshabilitar este ${element} <span class="badge badge-secondary" style="font-size: 1rem;">${name}</span>?`,
                 icon: 'warning',
                 showCancelButton: true,
                 customClass: {
@@ -1114,19 +1468,19 @@ class content extends dataTables {
             if (!result.isConfirmed)
                 return;
 
-            this.disable(id);
+            this.disable(id, name);
         });
     }
 
-    async showRehabilitateAlert(id) {
+    async showRehabilitateAlert(id, element = this.traductor["rusure"]()) {
         var name = await this.callName(id);
         if (!name)
             return;
 
         swal.fire(
             {
-                title: `Rehabilitar ${this.traductor["rusure"]()}`,
-                html: `¿Estás seguro que deseas rehabilitar este ${this.traductor["rusure"]()} <span class="badge badge-info">${name}</span>?`,
+                title: `Rehabilitar ${element}`,
+                html: `¿Estás seguro que deseas rehabilitar este ${element} <span class="badge badge-info" style="font-size: 1rem;">${name}</span>?`,
                 icon: 'info',
                 showCancelButton: true,
                 customClass: {
@@ -1141,9 +1495,551 @@ class content extends dataTables {
             if (!result.isConfirmed)
                 return;
 
-            this.rehabilitate(id);
+            this.rehabilitate(id, name);
 
         });
+    }
+
+    async addEvent(content, dataTable = $('#add-dataTable')) {
+
+        let formData = new FormData();
+        formData.append("action", "add");
+        formData.append("name", content["name"]);
+        formData.append("eventDate", content["date"]);
+        formData.append("price", content["price"]);
+
+        var table = dataTable.DataTable();
+        var allData = table.rows().data().toArray().map((rowData) => {
+            return rowData.slice(0, -1);
+        });
+
+        delete content["name"];
+
+        let complements =
+        {
+            "complements": {}
+        };
+
+        var logComplements = "";
+
+        allData.forEach(function (rowData) {
+            var id = rowData[0];
+            var title = rowData[1];
+            var price = rowData[2];
+
+            complements["complements"][id] = {
+                id: id,
+                title: title,
+                price: price
+            };
+
+            logComplements += `nombre: ${title}, precio: ${price} <br   >`
+        });
+
+        const convertirFecha = fechaString => fechaString.replace(/(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)/, mes => ("0" + ("EneFebMarAbrMayJunJulAgoSepOctNovDic".indexOf(mes.slice(0, 3)) / 3 + 1)).slice(-2)).replace(',', '').replace(/(\d{2}) (\d{2}) (\d{4})/, '$2/$1/$3');
+
+        content.date = convertirFecha(content["date"]);
+
+        let settings = JSON.stringify({
+            settings: {
+                ...content,
+            },
+            complements: {
+                ...complements,
+            },
+        });
+
+        formData.append("settings", settings);
+
+        let response = await this.ajaxRequest(`../model/classes/events.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        formData.append("id", response["id"]);
+
+
+        var levelsArray = content["levels"];
+        var finalLevels = "";
+
+        for (let index = 0; index < levelsArray.length; index++) {
+            const element = levelsArray[index];
+            finalLevels += (index !== 0 ? ', ' : '') + await this.callName(element, "levels");
+        }
+
+        formData.append("levels", finalLevels);
+        if (logComplements !== "")
+            formData.append("complements", logComplements);
+
+        var log = await this.controlLog(formData);
+        if (log['result'] !== 'success') {
+            console.error(log);
+            return;
+        }
+
+        Swal.fire(
+            {
+                title: "Éxito!",
+                text: this.traductor["congratulation_add"](),
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1000
+            }
+        );
+
+        this.callEvents();
+
+        table.clear().draw();
+
+        $(".bd-addModal-lg").modal("hide");
+
+    }
+
+    async addComplementValues(dataTable = $('#add-dataTable')) {
+        var table = dataTable.DataTable();
+        var id = 0;
+
+        if (table.rows().any()) {
+            var lastRow = table.row(':last').data();
+            if (lastRow && lastRow[0] !== undefined) {
+                id = parseInt(lastRow[0]) + 1;
+            }
+        }
+
+        var name = $(".add-complements-name").val();
+        var price = $(".add-complements-price").val();
+
+        if (name === "") {
+            $(".form-control-add-complements-name-feedback").css("display", "block");
+            $(".form-add-complements-name").addClass("has-warning");
+            $(".form-control-add-complements-name-feedback").text("Por favor, Ingrese el nombre del Complemento.");
+        } else if (name.length < $(".add-complements-name").attr("min-length")) {
+            $(".form-control-add-complements-name-feedback").css("display", "block");
+            $(".form-add-complements-name").addClass("has-warning");
+            $(".form-control-add-complements-name-feedback").text("Por favor, Ingrese mínimo 4 dígitos.");
+        } else {
+            $(".form-control-add-complements-name-feedback").css("display", "none");
+            $(".form-add-complements-name").removeClass("has-warning");
+            $(".form-control-add-complements-name-feedback").text("");
+        }
+
+        if (price === "") {
+            $(".form-control-add-complements-price-feedback").css("display", "block");
+            $(".form-add-complements-price").addClass("has-warning");
+            $(".form-control-add-complements-price-feedback").text("Por favor, Ingrese el precio del Complemento.");
+        } else if (price <= 0) {
+            $(".form-control-add-complements-price-feedback").css("display", "block");
+            $(".form-add-complements-price").addClass("has-warning");
+            $(".form-control-add-complements-price-feedback").text("Por favor, Ingrese un precio válido.");
+        } else {
+            $(".form-control-add-complements-price-feedback").css("display", "none");
+            $(".form-add-complements-price").removeClass("has-warning");
+            $(".form-control-add-complements-price-feedback").text("");
+        }
+
+        if (name === "" || name.length < $(".add-complements-name").attr("min-length") || price === "" || price <= 0)
+            return;
+
+        var options =
+            `<center>
+            <a class="lead text-warning editAddedComplements" data-toggle="tooltip" data-placement="top" title="Editar Complemento" data-id="${id}">
+                <i class="fas fa-edit"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a class="lead text-danger deleteAddedComplements" data-toggle="tooltip" data-placement="top" title="Eliminar Complemento" data-id="${id}">
+                <i class="fas fa-trash"></i>
+            </a>
+            </center>`;
+
+        table.row.add([id, name, price, options]).draw();
+        table.columns.adjust().draw();
+
+        $(".add-complements-name").val("");
+        $(".add-complements-price").val("");
+
+        $('#add-dataTable tbody').off('click', '.deleteAddedComplements');
+        $('#add-dataTable tbody').on('click', '.deleteAddedComplements', function () {
+            var row = table.row($(this).parents('tr'));
+            var rowData = row.data();
+
+            Swal.fire(
+                {
+                    title: `¿Eliminar Complemento`,
+                    html: `¿Estás seguro que desea eliminar este complemento? <span class="badge badge-danger" style="font-size: 1rem;">${rowData[1]}</span>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger btn-lg',
+                        cancelButton: 'btn btn-outline-danger btn-lg ml-4'
+                    },
+                    buttonsStyling: false,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar'
+                }
+            ).then(async (result) => {
+                if (!result.isConfirmed)
+                    return;
+
+                var row = table.row($(this).parents('tr'));
+                row.remove().draw();
+            });
+        });
+
+        $('#add-dataTable tbody').off('click', '.editAddedComplements');
+        $('#add-dataTable tbody').on('click', '.editAddedComplements', function () {
+            var row = table.row($(this).parents('tr'));
+            var rowData = row.data();
+
+            $(".bd-addModal-lg").modal("toggle");
+            Swal.fire({
+                title: 'Editar Complemento',
+                icon: 'info',
+                html: `
+                    <div class="container" style="padding:0.1rem; z-index: 9999;">
+                        <div class="form-group row"> 
+                            <label class="form-label col-md-4 col-sm-6" for="editName">
+                                Nombre:
+                            </label>  
+                            <div class="col-md-8 col-sm-6">
+                                <input id="editaddedName" class="form-control" placeholder="Nombre del complemento" value="${rowData[1]}" style="z-index: 9999; position: relative;">
+                            </div>
+                        </div> 
+                        <div class="form-group row"> 
+                            <label class="form-label col-md-4 col-sm-6" for="editPrice">
+                                Precio:
+                            </label>
+                            <div class="col-md-8 col-sm-6">
+                                <input id="editaddedPrice" type="number" class="form-control" placeholder="Precio del complemento" value="${rowData[2]}" style="z-index: 9999; position: relative;">
+                            </div>
+                        </div> 
+                    </div> 
+                `,
+
+                focusConfirm: false,
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'btn btn-primary btn-lg',
+                    cancelButton: 'btn btn-outline-primary btn-lg ml-4'
+                },
+                buttonsStyling: false,
+                confirmButtonText: 'Guardar Cambios',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+
+                    var newName = $('#editaddedName').val();
+                    var newPrice = $('#editaddedPrice').val();
+
+                    // Validaciones de los campos
+                    if (!newName || newName.length < 4) {
+                        Swal.showValidationMessage('El nombre debe tener al menos 4 caracteres');
+                        return false;
+                    }
+                    if (newPrice <= 0) {
+                        Swal.showValidationMessage('El precio debe ser un valor positivo');
+                        return false;
+                    }
+
+                    return { name: newName, price: newPrice };
+                }
+            }).then((result) => {
+                $(".bd-addModal-lg").modal("toggle");
+                if (result.isConfirmed) {
+                    var newName = result.value.name;
+                    var newPrice = result.value.price;
+
+                    rowData[1] = newName;
+                    rowData[2] = newPrice;
+                    row.data(rowData).draw();
+                }
+            });
+        });
+    }
+
+    async editComplementValues(dataTable = $('#edit-dataTable')) {
+        var table = dataTable.DataTable();
+        var id = 0;
+
+        if (table.rows().any()) {
+            var lastRow = table.row(':last').data();
+            if (lastRow && lastRow[0] !== undefined) {
+                id = parseInt(lastRow[0]) + 1;
+            }
+        }
+
+        var name = $(".edit-complements-name").val();
+        var price = $(".edit-complements-price").val();
+
+        if (name === "") {
+            $(".form-control-edit-complements-name-feedback").css("display", "block");
+            $(".form-edit-complements-name").addClass("has-warning");
+            $(".form-control-edit-complements-name-feedback").text("Por favor, Ingrese el nombre del Complemento.");
+        } else if (name.length < $(".edit-complements-name").attr("min-length")) {
+            $(".form-control-edit-complements-name-feedback").css("display", "block");
+            $(".form-edit-complements-name").addClass("has-warning");
+            $(".form-control-edit-complements-name-feedback").text("Por favor, Ingrese mínimo 4 dígitos.");
+        } else {
+            $(".form-control-edit-complements-name-feedback").css("display", "none");
+            $(".form-edit-complements-name").removeClass("has-warning");
+            $(".form-control-edit-complements-name-feedback").text("");
+        }
+
+        if (price === "") {
+            $(".form-control-edit-complements-price-feedback").css("display", "block");
+            $(".form-edit-complements-price").addClass("has-warning");
+            $(".form-control-edit-complements-price-feedback").text("Por favor, Ingrese el precio del Complemento.");
+        } else if (price <= 0) {
+            $(".form-control-edit-complements-price-feedback").css("display", "block");
+            $(".form-edit-complements-price").addClass("has-warning");
+            $(".form-control-edit-complements-price-feedback").text("Por favor, Ingrese un precio válido.");
+        } else {
+            $(".form-control-edit-complements-price-feedback").css("display", "none");
+            $(".form-edit-complements-price").removeClass("has-warning");
+            $(".form-control-edit-complements-price-feedback").text("");
+        }
+
+        if (name === "" || name.length < $(".edit-complements-name").attr("min-length") || price === "" || price <= 0)
+            return;
+
+        var options =
+            `<center>
+            <a class="lead text-warning editEdittedComplements" data-toggle="tooltip" data-placement="top" title="Editar Complemento" data-id="${id}">
+                <i class="fas fa-edit"></i>
+            </a>
+            &nbsp;&nbsp;
+            <a class="lead text-danger deleteEdittedComplements" data-toggle="tooltip" data-placement="top" title="Eliminar Complemento" data-id="${id}">
+                <i class="fas fa-trash"></i>
+            </a>
+            </center>`;
+
+        table.row.add([id, name, price, options]).draw();
+        table.columns.adjust().draw();
+
+        $(".edit-complements-name").val("");
+        $(".edit-complements-price").val("");
+
+        $('#edit-dataTable tbody').off('click', '.deleteEdittedComplements');
+        $('#edit-dataTable tbody').on('click', '.deleteEdittedComplements', function () {
+            var row = table.row($(this).parents('tr'));
+            var rowData = row.data();
+
+            Swal.fire(
+                {
+                    title: `¿Eliminar Complemento`,
+                    html: `¿Estás seguro que desea eliminar este complemento? <span class="badge badge-danger" style="font-size: 1rem;">${rowData[1]}</span>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger btn-lg',
+                        cancelButton: 'btn btn-outline-danger btn-lg ml-4'
+                    },
+                    buttonsStyling: false,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar'
+                }
+            ).then(async (result) => {
+                if (!result.isConfirmed)
+                    return;
+
+                var row = table.row($(this).parents('tr'));
+                row.remove().draw();
+            });
+        });
+
+        $('#edit-dataTable tbody').off('click', '.editEdittedComplements');
+        $('#edit-dataTable tbody').on('click', '.editEdittedComplements', function () {
+            var row = table.row($(this).parents('tr'));
+            var rowData = row.data();
+
+            $(".bd-showComplementsModal-lg").modal("toggle");
+            Swal.fire({
+                title: 'Editar Complemento',
+                icon: 'info',
+                html: `
+                    <div class="container" style="padding:0.1rem; z-index: 9999;">
+                        <div class="form-group row"> 
+                            <label class="form-label col-md-4 col-sm-6" for="editName">
+                                Nombre:
+                            </label>  
+                            <div class="col-md-8 col-sm-6">
+                                <input id="editedittedName" class="form-control" placeholder="Nombre del complemento" value="${rowData[1]}" style="z-index: 9999; position: relative;">
+                            </div>
+                        </div> 
+                        <div class="form-group row"> 
+                            <label class="form-label col-md-4 col-sm-6" for="editPrice">
+                                Precio:
+                            </label>
+                            <div class="col-md-8 col-sm-6">
+                                <input id="editedittedPrice" type="number" class="form-control" placeholder="Precio del complemento" value="${rowData[2]}" style="z-index: 9999; position: relative;">
+                            </div>
+                        </div> 
+                    </div> 
+                `,
+
+                focusConfirm: false,
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'btn btn-primary btn-lg',
+                    cancelButton: 'btn btn-outline-primary btn-lg ml-4'
+                },
+                buttonsStyling: false,
+                confirmButtonText: 'Guardar Cambios',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+
+                    var newName = $('#editedittedName').val();
+                    var newPrice = $('#editedittedPrice').val();
+
+                    // Validaciones de los campos
+                    if (!newName || newName.length < 4) {
+                        Swal.showValidationMessage('El nombre debe tener al menos 4 caracteres');
+                        return false;
+                    }
+                    if (newPrice <= 0) {
+                        Swal.showValidationMessage('El precio debe ser un valor positivo');
+                        return false;
+                    }
+
+                    return { name: newName, price: newPrice };
+                }
+            }).then((result) => {
+                $(".bd-showComplementsModal-lg").modal("toggle");
+                if (result.isConfirmed) {
+                    var newName = result.value.name;
+                    var newPrice = result.value.price;
+
+                    rowData[1] = newName;
+                    rowData[2] = newPrice;
+                    row.data(rowData).draw();
+                }
+            });
+        });
+    }
+
+    async editEventSettings(content) {
+        let formData = new FormData();
+        formData.append("action", "editSettings");
+
+        for (const key in content) {
+            if (Object.prototype.hasOwnProperty.call(content, key)) {
+                const element = content[key];
+                if(key != "levels")
+                formData.append(key, element);
+            }
+        }
+
+        var levelsArray = content["levels"];
+        var finalLevels = "";
+
+        for (let index = 0; index < levelsArray.length; index++) {
+            const element = levelsArray[index];
+            finalLevels += (index !== 0 ? ', ' : '') + await this.callName(element, "levels");
+        }
+
+        formData.append("levels", finalLevels);
+
+        delete content["name"];
+
+        const convertirFecha = fechaString => fechaString.replace(/(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)/, mes => ("0" + ("EneFebMarAbrMayJunJulAgoSepOctNovDic".indexOf(mes.slice(0, 3)) / 3 + 1)).slice(-2)).replace(',', '').replace(/(\d{2}) (\d{2}) (\d{4})/, '$2/$1/$3');
+
+        content.date = convertirFecha(content["date"]);
+
+        formData.append("settings", JSON.stringify(content));
+
+        let response = await this.ajaxRequest(`../model/classes/events.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+
+        var log = await this.controlLog(formData);
+        if (log['result'] !== 'success') {
+            console.error(log);
+            return;
+        }
+
+        Swal.fire(
+            {
+                title: "Éxito!",
+                text: this.traductor["congratulation_edit"](),
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1000
+            }
+        );
+
+        this.callEvents();
+        $(".bd-editModal-lg").modal("hide");
+    }
+
+    async editEventComplements(dataTable = $('#edit-dataTable')){
+        let formData = new FormData();
+        formData.append("action", "editComplements");
+        formData.append("id", $("#complements").val());
+
+        var table = dataTable.DataTable();
+        var allData = table.rows().data().toArray().map((rowData) => {
+            return rowData.slice(0, -1);
+        });
+
+
+        let complements =
+        {
+            "complements": {}
+        };
+
+        var logComplements = "";
+
+        allData.forEach(function (rowData) {
+            var id = rowData[0];
+            var title = rowData[1];
+            var price = rowData[2];
+
+            complements["complements"][id] = {
+                id: id,
+                title: title,
+                price: price
+            };
+
+            logComplements += `nombre: ${title}, precio: ${price} <br   >`
+        });
+
+        formData.append("settings", JSON.stringify(complements));
+
+
+        let response = await this.ajaxRequest(`../model/classes/events.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        formData.append("complements", logComplements);
+
+        var log = await this.controlLog(formData);
+        if (log['result'] !== 'success') {
+            console.error(log);
+            return;
+        }
+
+        Swal.fire(
+            {
+                title: "Éxito!",
+                text: this.traductor["congratulation_edit"](),
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1000
+            }
+        );
+
+        this.callEvents();
+        $(".bd-showComplementsModal-lg").modal('hide');
     }
 
     async add(content, table = this.table) {
@@ -1165,6 +2061,48 @@ class content extends dataTables {
             return;
         }
 
+        switch (table) {
+            case "students":
+                var grade = await this.callName(formData.get("grade"), "grades");
+                var section = await this.callName(formData.get("section"), "sections");
+                formData.set("grade", grade);
+                formData.set("section", section);
+                break;
+            case "levels": //csv
+
+                var grade = formData.get("grade");
+                var gradesArray = grade.split(',').map(id => id.trim());
+                var finalgrades = "";
+
+                for (let index = 0; index < gradesArray.length; index++) {
+                    const element = gradesArray[index];
+                    finalgrades += (index !== 0 ? ', ' : '') + await this.callName(element, "grades");
+                }
+
+                formData.set("grade", finalgrades);
+                break;
+            case "users":
+                var roles = await this.callName(formData.get("roles"), "roles");
+                formData.set("roles", roles);
+                break;
+            case "roles": //csv
+
+                var permissions = formData.get("permissions");
+                var permissionsArray = permissions.split(',').map(id => id.trim());
+                var finalpermissions = "";
+
+                for (let index = 0; index < permissionsArray.length; index++) {
+                    const element = permissionsArray[index];
+                    finalpermissions += (index !== 0 ? ', ' : '') + await this.callName(element, "permissions");
+                }
+
+                formData.set("permissions", finalpermissions);
+                break;
+            default: ;
+        }
+
+        formData.append("id", response["id"]);
+
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
             console.error(log);
@@ -1181,7 +2119,10 @@ class content extends dataTables {
             }
         );
 
-        this.callContent();
+        if (table !== "events")
+            this.callContent();
+        else
+            this.callEvents();
         $(".bd-addModal-lg").modal("hide");
     }
 
@@ -1205,6 +2146,46 @@ class content extends dataTables {
             return;
         }
 
+        switch (table) {
+            case "students":
+                var grade = await this.callName(formData.get("grade"), "grades");
+                var section = await this.callName(formData.get("section"), "sections");
+                formData.set("grade", grade);
+                formData.set("section", section);
+                break;
+            case "levels": //csv
+
+                var grade = formData.get("grade");
+                var gradesArray = grade.split(',').map(id => id.trim());
+                var finalgrades = "";
+
+                for (let index = 0; index < gradesArray.length; index++) {
+                    const element = gradesArray[index];
+                    finalgrades += (index !== 0 ? ', ' : '') + await this.callName(element, "grades");
+                }
+
+                formData.set("grade", finalgrades);
+                break;
+            case "users":
+                var roles = await this.callName(formData.get("roles"), "roles");
+                formData.set("roles", roles);
+                break;
+            case "roles": //csv
+
+                var permissions = formData.get("permissions");
+                var permissionsArray = permissions.split(',').map(id => id.trim());
+                var finalpermissions = "";
+
+                for (let index = 0; index < permissionsArray.length; index++) {
+                    const element = permissionsArray[index];
+                    finalpermissions += (index !== 0 ? ', ' : '') + await this.callName(element, "permissions");
+                }
+
+                formData.set("permissions", finalpermissions);
+                break;
+            default: ;
+        }
+
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
             console.error(log);
@@ -1225,7 +2206,7 @@ class content extends dataTables {
         $(".bd-editModal-lg").modal("hide");
     }
 
-    async disable(id, table = this.table) {
+    async disable(id, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'disable');
         formData.append("id", id);
@@ -1237,6 +2218,8 @@ class content extends dataTables {
             console.error(response);
             return;
         }
+
+        formData.append("name", name);
 
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
@@ -1254,10 +2237,13 @@ class content extends dataTables {
             }
         );
 
-        this.callContent();
+        if (table !== "events")
+            this.callContent();
+        else
+            this.callEvents();
     }
 
-    async rehabilitate(id, table = this.table) {
+    async rehabilitate(id, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'rehabilitate');
         formData.append("id", id);
@@ -1269,6 +2255,8 @@ class content extends dataTables {
             console.error(response);
             return;
         }
+
+        formData.append("name", name);
 
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
@@ -1286,34 +2274,33 @@ class content extends dataTables {
             }
         );
 
-        this.callContent();
+        if (table !== "events")
+            this.callContent();
+        else
+            this.callEvents();
     }
 
     async controlLog(content, table = this.table) {
-        let date = new Date();
-        var finalDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`
+        var finalDate = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
         var action = content.get("action");
         let log = {};
-        
-        log["title"] =  this.traductor["logTitle"](table, action);
-        log["author"] =  this.user["name"];
-        log["date"] =  finalDate;
-        log["table"] =  table;
-        
+
+        log["title"] = this.traductor["logTitle"](table, action);
+        log["author"] = this.user["name"];
+        log["date"] = finalDate;
+        log["table"] = table;
+
         var entries = content.entries();
         for (let [key, value] of entries) {
-            log[this.traductor[key]()] = value;
+            if (this.traductor?.[key])
+                log[this.traductor[key]()] = value;
         }
-        
-        
+
         let formData = new FormData();
         formData.append("action", "insertLog");
         formData.append("content", JSON.stringify(log));
 
-        for (let [key, value] of entries) {
-            log[this.traductor[key]()] = value;
-        }
 
         let response = await this.ajaxRequest(`../model/classes/controlLog.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -1366,6 +2353,16 @@ class content extends dataTables {
             $(document).off('change', 'input#addGenerateImageCheck');
             $(document).off('change', 'input#editGenerateImageCheck');
             $(document).off('change', 'input#passCheck');
+        }
+
+        if (table === "events") {
+            $('#add-dataTable tbody').off('click', '.deleteAddedComplements');
+            $('#add-dataTable tbody').off('click', '.editAddedComplements');
+            $('#add-dataTable tbody').off('click', '.deleteEdittedComplements');
+            $('#add-dataTable tbody').off('click', '.editEdittedComplements');
+            $(document).off('click', 'a.showComplementsModal');
+            $(document).off('click', 'button.addComplement');
+            $(document).off('click', 'button.editComplement');
         }
 
         $('.bd-addModal-lg').off('hidden.bs.modal');

@@ -167,7 +167,8 @@ class roles
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El rol ingresado ya existe (" . $rolename . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El rol ingresado ya existe ($rolename).",
                 'errorType' => "User Error"
             ]));
 
@@ -176,8 +177,14 @@ class roles
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
         $stmt->bindParam(':permissions_id', $permissions, PDO::PARAM_STR);
         $stmt->execute();
+
+        $sql = "SELECT MAX(id) AS id FROM roles;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
-            "result" => "success"
+            "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 
@@ -197,7 +204,8 @@ class roles
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El rol ingresado ya existe (" . $rolename . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El rol ingresado ya existe ($rolename).",
                 'errorType' => "User Error"
             ]));
 

@@ -814,7 +814,7 @@ body.swal2-no-backdrop .swal2-shown {
     font-size: 1.125em;
     font-weight: 300;
     line-height: normal;
-    z-index: 1;
+    z-index: 1060 !important;
     word-wrap: break-word; }
   .swal2-popup #swal2-content {
     text-align: center; }

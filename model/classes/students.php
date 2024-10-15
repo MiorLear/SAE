@@ -154,7 +154,8 @@ class students
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El carnet ya esta ingresado en el estudiante $student.",
+                'error' => "Espera un momento.",
+                'suggestion' => "El carnet ya esta ingresado en el estudiante $student.",
                 'errorType' => "User Error"
             ]));
 
@@ -166,8 +167,14 @@ class students
         $stmt ->bindParam(':grade', $grade, PDO::PARAM_STR);
         $stmt ->bindParam(':section', $section, PDO::PARAM_STR);
         $stmt->execute();
+
+        $sql = "SELECT MAX(id) AS id FROM students;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->execute();
+
         exit(json_encode(value: array(
             "result" => "success",
+            "id" => $stmt->fetch()["id"]
         )));
     }
 
@@ -190,7 +197,8 @@ class students
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El carnet ya esta ingresado en el estudiante $student.",
+                'error' => "Espera un momento.",
+                'suggestion' => "El carnet ya esta ingresado en el estudiante $student.",
                 'errorType' => "User Error"
             ]));
         

@@ -5,7 +5,7 @@
     <ul class="metismenu" id="side-menu">
       <li class="menu-title">Estadisticas del Evento</li>
       <li>
-        <a class="waves-effect content" id="eventPanel">
+        <a class="waves-effect content" id="eventPanel" data-toggle="tooltip" data-placement="top" title="Ir a Panel del Evento">
           <i class="dripicons-meter" id="eventPanel"></i>
           <span id="eventPanel"> Panel del Evento </span>
         </a>
@@ -13,21 +13,33 @@
 
       <li class="menu-title">Administrar Evento</li>
       <li>
-        <a class="waves-effect content" id="initialize">
+        <a class="waves-effect content" id="initialize" data-toggle="tooltip" data-placement="top" title="Ir a Inicializar Evento">
           <i class="fas fa-flag-checkered" id="initialize"></i>
           <span id="initialize"> Inicializar </span>
         </a>
       </li>
       <li>
-        <a class="waves-effect content" id="extraCards">
-          <i class="far fa-credit-card" id="extraCards"></i>
-          <span id="extraCards"> Tarjetas Adicionales </span>
+        <a class="waves-effect content" id="cardsPresale" data-toggle="tooltip" data-placement="top" title="Ir a Preventa de Tarjetas">
+          <i class="far fa-credit-card" id="cardsPresale"></i>
+          <span id="cardsPresale"> Preventa de Tarjetas </span>
         </a>
       </li>
       <li>
-        <a class="waves-effect content" id="reasignCards">
-          <i class="fas fa-exchange-alt" id="reasignCards"></i>
-          <span id="reasignCards"> Reasignar Tarjetas </span>
+        <a class="waves-effect content" id="salesCase" data-toggle="tooltip" data-placement="top" title="Ir a Caja de Ventas">
+          <i class="ion ion-md-cash" id="salesCase"></i>
+          <span id="salesCase">Caja de Ventas </span>
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect content" id="cardsDelivery" data-toggle="tooltip" data-placement="top" title="Ir a Listado de Entrega de Tarjetas">
+          <i class="ion ion-ios-list-box" id="cardsDelivery"></i>
+          <span id="cardsDelivery">Listado de Entrega de Tarjetas</span>
+        </a>
+      </li>
+      <li>
+        <a class="waves-effect content" id="cardsReturn" data-toggle="tooltip" data-placement="top" title="Ir a Listado de Devolución de Tarjetas">
+          <i class="ti-back-left" id="cardsReturn"></i>
+          <span id="cardsReturn">Listado de Devolución de Tarjetas</span>
         </a>
       </li>
       <li>
@@ -58,10 +70,18 @@
         </ul>
       </li>
       <li>
-        <a class="waves-effect content" id="payCard">
-          <i class="fas fa-file-invoice-dollar" id="payCard"></i>
-          <span id="payCard"> Pago </span>
-        </a>
+        <a href="javascript:void(0);" class="waves-effect"
+          ><i class="fas fa-file-invoice-dollar"></i
+          ><span>
+            Pago
+            <span class="float-right menu-arrow"
+              ><i class="mdi mdi-chevron-right"></i
+            ></span> </span
+        ></a>
+        <ul class="submenu">
+          <li><a class="content" id="payCard">Tarjetas</a></li>
+          <li><a class="content" id="payStudent">Estudiantes</a></li>
+        </ul>
       </li>
 
       <li>
@@ -75,9 +95,9 @@
       </li>
       <li class="menu-title">Volver a la plataforma</li>
       <li>
-        <a class="waves-effect" id="mainPanel">
+        <a class="waves-effect content" id="mainPanel">
           <i class="fas fa-arrow-left" id="mainPanel"></i>
-          <span id="mainPanel"> Regresar </span>
+          <span id="mainPanel"> Salir del Evento </span>
         </a>
       </li>
     </ul>

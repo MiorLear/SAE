@@ -8,6 +8,7 @@ class sections
     public function __construct($formData)
     {
         $this->action = $formData["action"];
+        $this->id = $formData["id"];
         $this->conn = new dbConfig();
         $this->actionManagement();
     }
@@ -16,6 +17,9 @@ class sections
     {
         $action = $this->action;
         switch ($action) {
+            case "callName":
+                $this->callName();
+                break;
             case "callContent":
                 $this->callContent();
                 break;
@@ -34,6 +38,22 @@ class sections
                     )
                 ));
         }
+    }
+
+    private function callName(): void {
+        $conn = $this->conn->getConnection();
+        $id = $this->id;
+        
+        $sql = "SELECT name FROM sections WHERE id = :id";
+
+        $stmt = $conn->prepare(query: $sql);
+        $stmt ->bindParam(':id', $id, PDO::PARAM_STR);
+        $stmt->execute();
+        $response = $stmt->fetch();
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => $response
+        )));
     }
 
     private function callContent(): void
