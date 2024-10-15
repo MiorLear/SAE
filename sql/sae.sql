@@ -113,7 +113,7 @@ CREATE TABLE public.events (
     status character varying(20) DEFAULT 'Pendiente de Iniciar'::character varying NOT NULL,
     settings jsonb NOT NULL,
     data jsonb,
-    CONSTRAINT status_check CHECK (((status)::text = ANY (ARRAY[('Pendiente de Iniciar'::character varying)::text, ('Inicializado'::character varying)::text, ('Deshabilitado'::character varying)::text, (NULL::character varying)::text])))
+    CONSTRAINT status_check CHECK (((status)::text = ANY (ARRAY[('Pendiente de Iniciar'::character varying)::text, ('Inicializado'::character varying)::text, ('En curso'::character varying)::text, ('Finalizado'::character varying)::text, ('Deshabilitado'::character varying)::text, (NULL::character varying)::text])))
 );
 
 
@@ -127,7 +127,6 @@ CREATE TABLE public.grades (
     id integer NOT NULL,
     name character varying(60) NOT NULL,
     status character varying(20) DEFAULT 'Habilitado'::character varying NOT NULL,
-    students_quantity smallint NOT NULL,
     CONSTRAINT status_check CHECK (((status)::text = ANY (ARRAY[('Habilitado'::character varying)::text, ('Deshabilitado'::character varying)::text, (NULL::character varying)::text])))
 );
 
@@ -350,7 +349,7 @@ CREATE TABLE public.users (
     pass character varying(100) NOT NULL,
     mail character varying(100) NOT NULL,
     rol_id integer NOT NULL,
-    picture character varying(50) DEFAULT 'not_image_selected.png'::character varying NOT NULL,
+    picture character varying(50) DEFAULT 'temp_img.png'::character varying NOT NULL,
     status character varying(20) DEFAULT 'Habilitado'::character varying NOT NULL,
     CONSTRAINT status_check CHECK (((status)::text = ANY (ARRAY[('Habilitado'::character varying)::text, ('Deshabilitado'::character varying)::text, (NULL::character varying)::text])))
 );
@@ -436,9 +435,7 @@ COPY public.control_log (id, content, seen) FROM stdin;
 --
 
 COPY public.events (id, name, year, status, settings, data) FROM stdin;
-195	Semana de Juventud	2024	Pendiente de Iniciar	{"date": {"date": ["2024-08-12", "2024-08-28"], "type": "Rango de días"}, "elementary": {"type": "Externo", "price": "15.00", "levels": ["5", "4", "3", "2", "1"], "isPayed": true, "hasComplements": true, "targetAudience": "Publico General", "assistanceMethod": "Tarjetas"}, "complements": [{"Nombre": "Papas Fritas", "Precio": "$2.00"}, {"Nombre": "Soda", "Precio": "$0.75"}, {"Nombre": "Crepas", "Precio": "$3.00"}]}	\N
-196	Festival de la canción	2024	Deshabilitado	{"date": {"date": ["2024-08-27", "2024-08-27"], "type": "Rango de días"}, "elementary": {"type": "Externo", "price": "20.00", "levels": ["5", "4", "3", "2", "1"], "isPayed": true, "hasComplements": true, "targetAudience": "Publico General", "assistanceMethod": "Tarjetas"}, "complements": [{"name": "Soda", "price": "0.75"}]}	\N
-194	Cena de la Familia Chaleca	2024	Deshabilitado	{"date": {"date": ["08/06/2024", "08/07/2024"], "type": "Rango de días"}, "elementary": {"type": "Externo", "price": 4.99, "levels": [1, 2, 3, 4, 5], "isPayed": true, "hasComplements": true, "targetAudience": "Publico General", "assistanceMethod": "Tarjetas"}, "complements": [{"name": "Cena", "price": 3.99}, {"name": "Refresco", "price": 1.99}]}	\N
+218	Cena de la Familia Chaleca	2024	Pendiente de Iniciar	{"settings": {"date": "15/10/2024", "edit": "218", "price": "15.00", "levels": ["5", "4", "2", "1"]}, "complements": {"complements": {"0": {"id": 0, "price": "8.00", "title": "Cena"}, "1": {"id": 1, "price": "0.75", "title": "Soda"}}}}	\N
 \.
 
 
@@ -446,22 +443,22 @@ COPY public.events (id, name, year, status, settings, data) FROM stdin;
 -- Data for Name: grades; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.grades (id, name, status, students_quantity) FROM stdin;
-1	Kinder 4	Habilitado	30
-2	Kinder 5	Habilitado	30
-3	Preparatoria	Habilitado	30
-4	Primer Grado	Habilitado	30
-5	Segundo Grado	Habilitado	30
-6	Tercer Grado	Habilitado	30
-7	Cuarto Grado	Habilitado	30
-8	Quinto Grado	Habilitado	30
-9	Sexto Grado	Habilitado	30
-10	Séptimo Grado	Habilitado	30
-11	Octavo Grado	Habilitado	30
-12	Noveno Grado	Habilitado	30
-13	Primer Año	Habilitado	30
-14	Segundo Año	Habilitado	30
-15	Tercer Año	Habilitado	30
+COPY public.grades (id, name, status) FROM stdin;
+1	Kinder 4	Habilitado
+2	Kinder 5	Habilitado
+3	Preparatoria	Habilitado
+4	Primer Grado	Habilitado
+5	Segundo Grado	Habilitado
+6	Tercer Grado	Habilitado
+7	Cuarto Grado	Habilitado
+8	Quinto Grado	Habilitado
+9	Sexto Grado	Habilitado
+10	Séptimo Grado	Habilitado
+11	Octavo Grado	Habilitado
+12	Noveno Grado	Habilitado
+13	Primer Año	Habilitado
+14	Segundo Año	Habilitado
+15	Tercer Año	Habilitado
 \.
 
 
@@ -470,11 +467,11 @@ COPY public.grades (id, name, status, students_quantity) FROM stdin;
 --
 
 COPY public.levels (id, name, grades, status) FROM stdin;
-1	Parvularia	{13,14,15}	Habilitado
 2	Primer Ciclo	{6,5,4}	Habilitado
 3	Segundo Ciclo	{9,8,7}	Habilitado
 4	Tercer Ciclo	{12,11,10}	Habilitado
-5	Bachillerato	{10,11,12}	Habilitado
+1	Kinder	{3,2,1}	Habilitado
+5	Bachillerato	{15,14,13}	Habilitado
 \.
 
 
@@ -511,8 +508,11 @@ COPY public.permissions (id, name, event_id) FROM stdin;
 --
 
 COPY public.roles (id, name, permissions_id, status) FROM stdin;
+104	Digitador/a	{1}	Habilitado
 47	Super Administrador	{1}	Habilitado
 74	Finanzas	{31,2}	Habilitado
+76	Auditor	{1}	Habilitado
+77	Analista	{2}	Habilitado
 \.
 
 
@@ -524,6 +524,8 @@ COPY public.sections (id, name) FROM stdin;
 1	A
 2	B
 3	C
+4	D
+5	E
 \.
 
 
@@ -532,12 +534,13 @@ COPY public.sections (id, name) FROM stdin;
 --
 
 COPY public.students (id, name, carnet, grades, status) FROM stdin;
-14	{"Gabriel Alejandro","Pérez Martínez"}	20130025	{8,1}	Habilitado
+28	{"Rodrigo Antonio","López López"}	20123131	{15,1}	Habilitado
+27	{"Adrián Arnulfo","Martínez Serrano"}	20154862	{2,3}	Habilitado
+25	{"Pepe José","Aguilar Sánchez"}	24565189	{14,3}	Habilitado
 2	{"Juan Carlos","Gómez Fernández"}	20210065	{7,3}	Habilitado
 3	{"Fernando Alberto","Paredes Salgado"}	20200098	{1,1}	Habilitado
-17	{"Cesar Adrián","Figueroa Ramos"}	101433	{12,2}	Habilitado
 4	{"Luis Miguel","Pérez Martínez"}	20170015	{10,1}	Habilitado
-16	{"Miguel Orlando","Ledezma\tArévalo"}	20110015	{12,2}	Habilitado
+39	{"Mario José","Aguilar Flores"}	20641655	{6,1}	Habilitado
 6	{"Ana Laura","Ruiz López"}	20230014	{3,2}	Habilitado
 10	{"Luis Eduardo","Pérez López"}	20140042	{9,1}	Habilitado
 7	{"Carlos José","Jiménez García"}	20170075	{5,3}	Habilitado
@@ -545,13 +548,27 @@ COPY public.students (id, name, carnet, grades, status) FROM stdin;
 8	{"Juan Manuel","Gómez Rodríguez"}	20190015	{6,1}	Habilitado
 1	{"Carlos José","Pérez Salazar"}	20210024	{4,2}	Habilitado
 9	{"Alejandro José","Sánchez Martínez"}	20200090	{8,1}	Habilitado
-18	{"Gustavo Manuel","Castillo Campos"}	20210120	{11,1}	Habilitado
 11	{"Carlos Alberto","Fernández Ruiz"}	20170023	{11,2}	Habilitado
 12	{"Martín Antonio","Jiménez García"}	20150052	{12,2}	Habilitado
-21	{"Luis Miguel","Hernández Artega"}	20154684	{8,NULL}	Habilitado
-23	{"José José","Boris Arévalo"}	20204536	{9,3}	Deshabilitado
-13	{"Andrés Felipe","Hernández Sánchez"}	20140051	{9,2}	Habilitado
+16	{"Miguel Orlando","Ledezma\tArévalo"}	20110015	{12,2}	Habilitado
 15	{"Nicolás Iván","Ruiz López"}	20160032	{10,2}	Habilitado
+21	{"Luis Miguel","Hernández Artega"}	20154684	{8,NULL}	Habilitado
+31	{"Gustavo Rodrigo","Pacheco Mancía"}	20461561	{14,1}	Habilitado
+30	{"Christian Oswaldo","Castellanos Pérez"}	20516514	{15,3}	Habilitado
+29	{"Luis Pablo","Ramos Hernández"}	20516515	{13,2}	Habilitado
+32	{"Carlos Raúl","Ledezma Arévalo"}	20456151	{13,4}	Habilitado
+14	{"Gabriel Alejandro","Pérez Martínez"}	20130025	{8,1}	Habilitado
+13	{"Andrés Felipe","Hernández Sánchez"}	20140051	{9,2}	Habilitado
+35	{"Alejandro Antonio","Mendez Marenco"}	20465424	{15,2}	Habilitado
+34	{"Andrés Wilfredo","Rodríguez Somoza"}	20516506	{11,3}	Habilitado
+36	{"Alan Geraldo",Rivas}	20515424	{14,4}	Habilitado
+37	{"William Eduardo","Peraza Navas"}	20345492	{14,3}	Habilitado
+17	{"Cesar Adrián","Figueroa Ramos"}	101433	{14,2}	Habilitado
+18	{"Gustavo Manuel","Castillo Campos"}	20210120	{11,1}	Habilitado
+23	{"José José","Boris Arévalo"}	20204536	{9,3}	Habilitado
+26	{"José Carlos","Mendez Osorio"}	21313213	{15,1}	Habilitado
+38	{"Rene Fernando","Serrano Cardona"}	20651651	{15,2}	Habilitado
+33	{"Angel Andres","Figueroa Moreno"}	20215616	{15,2}	Habilitado
 \.
 
 
@@ -561,7 +578,11 @@ COPY public.students (id, name, carnet, grades, status) FROM stdin;
 
 COPY public.users (id, name, pass, mail, rol_id, picture, status) FROM stdin;
 4	{Administrador,CSSC}	$2y$10$wiGB9j7vWDk/kE/YJVK2q.qw6ZgJIkwt/gz7N.9If6Uv3.OZnjYDy	Administrador@santacecilia.edu.sv	47	temp_img.png	Habilitado
-26	{Miguel,Ledezma}	$2y$10$wiGB9j7vWDk/kE/YJVK2q.qw6ZgJIkwt/gz7N.9If6Uv3.OZnjYDy	miguelledezma005@gmail.com	47	Miguel_Ledezma_8408.png	Habilitado
+45	{Eunice,Castres}	$2y$10$nZhWKMYMFMkt2Wg.C4jTP.XXcYtDAHZN.zf1AUg1R.9bJYog.Ail6	eunice.castro@santacecilia.edu.sv	74	Eunice_Castro_3441.png	Deshabilitado
+40	{"Luis Raúl","Torres Hernández"}	$2y$10$apGR32iV2BHnJ0TSVX4Iw.RtpGIlJIIbErddFQv79t8ObRvkHf4S.	luis.torres@santacecilia.edu.sv	76	Luis Raúl_Torres Hernández_5295.png	Habilitado
+43	{"Emmanuel Enrique",Posada}	$2y$10$feQeRkavHJevCvr722cMU.IpjGquGPhNXa873QqzvxkfILMLWmMRC	emmanuel.posada@santacecilia.edu.sv	76	Emmanuel Enrique_Posada_3709.png	Habilitado
+26	{Miguel,Ledezma}	$2y$10$Py3Vmq7YXV0/Bs.QNcldkedscL0wo8yDLUcDmeZMJhorgRL6tc1KW	20110019@santacecilia.edu.sv	104	Miguel_Ledezma_8894.png	Habilitado
+44	{Felix,Masín}	$2y$10$MZhHjvIfHZuhUNEG5yhYduiy14GgmLYL5nIimAN004bTva8htBacG	felix.masin@santacecilia.edu.sv	77	Felix_Masín_6218.png	Habilitado
 \.
 
 
@@ -576,28 +597,28 @@ SELECT pg_catalog.setval('public.cards_id_seq', 1, false);
 -- Name: control_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.control_log_id_seq', 467, true);
+SELECT pg_catalog.setval('public.control_log_id_seq', 688, true);
 
 
 --
 -- Name: events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.events_id_seq', 196, true);
+SELECT pg_catalog.setval('public.events_id_seq', 218, true);
 
 
 --
 -- Name: grades_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.grades_id_seq', 17, true);
+SELECT pg_catalog.setval('public.grades_id_seq', 21, true);
 
 
 --
 -- Name: levels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.levels_id_seq', 20, true);
+SELECT pg_catalog.setval('public.levels_id_seq', 54, true);
 
 
 --
@@ -618,28 +639,28 @@ SELECT pg_catalog.setval('public.permisions_id_seq', 36, true);
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.roles_id_seq', 74, true);
+SELECT pg_catalog.setval('public.roles_id_seq', 105, true);
 
 
 --
 -- Name: sections_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sections_id_seq', 3, true);
+SELECT pg_catalog.setval('public.sections_id_seq', 5, true);
 
 
 --
 -- Name: students_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.students_id_seq', 24, true);
+SELECT pg_catalog.setval('public.students_id_seq', 39, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 26, true);
+SELECT pg_catalog.setval('public.users_id_seq', 47, true);
 
 
 --

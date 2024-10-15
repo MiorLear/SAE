@@ -26,6 +26,9 @@ class content extends dataTables {
             "surname": () => {
                 return 'Apellido';
             },
+            "reason": () => {
+                return 'Razón';
+            },
             "carnet": () => {
                 return 'Carnet';
             },
@@ -1455,6 +1458,11 @@ class content extends dataTables {
                 title: `Deshabilitar ${element}`,
                 html: `¿Estás seguro que deseas deshabilitar este ${element} <span class="badge badge-secondary" style="font-size: 1rem;">${name}</span>?`,
                 icon: 'warning',
+                inputLabel: 'Ingrese el mótivo',
+                input: "text",
+                inputAttributes: {
+                    autocapitalize: "off"
+                },
                 showCancelButton: true,
                 customClass: {
                     confirmButton: 'btn btn-secondary btn-lg',
@@ -1462,13 +1470,24 @@ class content extends dataTables {
                 },
                 buttonsStyling: false,
                 confirmButtonText: 'Deshabilitar',
-                cancelButtonText: 'Cancelar'
+                cancelButtonText: 'Cancelar',
+                preConfirm: async (reason) => {
+                    if (!reason || reason.length < 4) {
+                        Swal.showValidationMessage('Porfavor, ingrese un mótivo válido.');
+                        return false;
+                    }
+
+                    return { reason: reason };
+                }
             }
         ).then(async (result) => {
+
             if (!result.isConfirmed)
                 return;
 
-            this.disable(id, name);
+
+
+            this.disable(id, result.value["reason"], name);
         });
     }
 
@@ -1482,6 +1501,11 @@ class content extends dataTables {
                 title: `Rehabilitar ${element}`,
                 html: `¿Estás seguro que deseas rehabilitar este ${element} <span class="badge badge-info" style="font-size: 1rem;">${name}</span>?`,
                 icon: 'info',
+                inputLabel: 'Ingrese el mótivo',
+                input: "text",
+                inputAttributes: {
+                    autocapitalize: "off"
+                },
                 showCancelButton: true,
                 customClass: {
                     confirmButton: 'btn btn-info btn-lg',
@@ -1489,7 +1513,15 @@ class content extends dataTables {
                 },
                 buttonsStyling: false,
                 confirmButtonText: 'Rehabilitar',
-                cancelButtonText: 'Cancelar'
+                cancelButtonText: 'Cancelar',
+                preConfirm: async (reason) => {
+                    if (!reason || reason.length < 4) {
+                        Swal.showValidationMessage('Porfavor, ingrese un mótivo válido.');
+                        return false;
+                    }
+
+                    return { reason: reason };
+                }
             }
         ).then(async (result) => {
             if (!result.isConfirmed)
@@ -1925,8 +1957,8 @@ class content extends dataTables {
         for (const key in content) {
             if (Object.prototype.hasOwnProperty.call(content, key)) {
                 const element = content[key];
-                if(key != "levels")
-                formData.append(key, element);
+                if (key != "levels")
+                    formData.append(key, element);
             }
         }
 
@@ -1977,7 +2009,7 @@ class content extends dataTables {
         $(".bd-editModal-lg").modal("hide");
     }
 
-    async editEventComplements(dataTable = $('#edit-dataTable')){
+    async editEventComplements(dataTable = $('#edit-dataTable')) {
         let formData = new FormData();
         formData.append("action", "editComplements");
         formData.append("id", $("#complements").val());
@@ -2206,9 +2238,10 @@ class content extends dataTables {
         $(".bd-editModal-lg").modal("hide");
     }
 
-    async disable(id, name, table = this.table) {
+    async disable(id, reason, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'disable');
+        formData.append("reason", reason);
         formData.append("id", id);
 
         let response = await this.ajaxRequest(`../model/classes/${table}.php`, formData)
@@ -2243,9 +2276,10 @@ class content extends dataTables {
             this.callEvents();
     }
 
-    async rehabilitate(id, name, table = this.table) {
+    async rehabilitate(id, reason, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'rehabilitate');
+        formData.append("reason", reason);
         formData.append("id", id);
 
         let response = await this.ajaxRequest(`../model/classes/${table}.php`, formData)
