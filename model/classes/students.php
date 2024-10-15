@@ -154,7 +154,8 @@ class students
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El carnet ya esta ingresado en el estudiante $student.",
+                'error' => "Espera un momento.",
+                'suggestion' => "El carnet ya esta ingresado en el estudiante $student.",
                 'errorType' => "User Error"
             ]));
 
@@ -196,7 +197,8 @@ class students
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El carnet ya esta ingresado en el estudiante $student.",
+                'error' => "Espera un momento.",
+                'suggestion' => "El carnet ya esta ingresado en el estudiante $student.",
                 'errorType' => "User Error"
             ]));
         

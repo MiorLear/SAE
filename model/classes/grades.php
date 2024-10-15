@@ -163,7 +163,8 @@ class grades
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El grado ingresado ya existe (" . $gradesname . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El grado ingresado ya existe ($gradesname).",
                 'errorType' => "User Error"
             ]));  
 
@@ -197,7 +198,8 @@ class grades
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El grado ingresado ya existe (" . $gradesname . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El grado ingresado ya existe ($gradesname).",
                 'errorType' => "User Error"
             ]));  
 

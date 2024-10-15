@@ -167,7 +167,8 @@ class roles
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El rol ingresado ya existe (" . $rolename . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El rol ingresado ya existe ($rolename).",
                 'errorType' => "User Error"
             ]));
 
@@ -203,7 +204,8 @@ class roles
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
-                'error' => "El rol ingresado ya existe (" . $rolename . ").",
+                'error' => "Espera un momento.",
+                'suggestion' => "El rol ingresado ya existe ($rolename).",
                 'errorType' => "User Error"
             ]));
 

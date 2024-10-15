@@ -58,16 +58,23 @@ class content extends dataTables {
             dataTable.clear().draw();
 
             response['content'].forEach(content => {
+
+                const largeDate = fechaString => {
+                    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+                    const [dia, mes, año] = fechaString.split('/').map(Number);
+                    return `${meses[mes - 1]} ${dia}, ${año}`;
+                };
+
                 let dataTableRow = [];
                 dataTableRow.push(content["id"]);
                 dataTableRow.push(
                     `${JSON.parse(content["title"])["table"]} 
-                    <a class="text-info showContentModal" style="cursor:pointer" title="Ver contenido" id="${content['id']}">
+                    <a class="text-info showContentModal" style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Ver contenido" id="${content['id']}">
                         ${content["element"]}
                     </a> 
                         ${JSON.parse(content["title"])["action"]}`);
                 dataTableRow.push(content["author"]);
-                dataTableRow.push(content["date"]);
+                dataTableRow.push(largeDate(content["date"]));
                 // dataTableRow.push(
                 // `<a class="lead text-info showContentModal" title="Ver contenido" id="${content['id']}">
                 //     <i class="fas fa-eye"></i>
@@ -79,6 +86,8 @@ class content extends dataTables {
             });
 
             dataTable.draw();
+
+            $('[data-toggle="tooltip"]').tooltip();
         } catch (error) {
             console.error({ 'error': error, 'errorType': 'notAlert' });
         }

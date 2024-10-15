@@ -1,4 +1,513 @@
-<br>
-<br>
-<br>
-<h4>Eventos</h4>
+<div class="content">
+  <div class="container-fluid">
+    <div class="page-title-box">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="page-title-box">
+            <h4 class="page-title">Administrar Eventos</h4>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">SAE</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">Administrar</a>
+              </li>
+              <li class="breadcrumb-item active">Eventos</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="float-right d-none d-md-block app-datepicker">
+            <input
+              type="text"
+              class="form-control"
+              data-date-format="MM dd, yyyy"
+              readonly="readonly"
+              id="datepicker"
+            />
+            <i class="mdi mdi-chevron-down mdi-drop"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end page-title -->
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title">Administrar Eventos</h4>
+            <p class="sub-title">
+              Lista y centraliza los eventos de la plataforma, registra eventos
+              y administra su configuración.
+            </p>
+            <button
+              type="button"
+              class="btn btn-primary btn-lg btn-block waves-effect waves-light"
+              data-toggle="modal"
+              data-target=".bd-addModal-lg"
+            >
+              Registrar Evento
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <a
+                  class="nav-link active status"
+                  id="enable"
+                  aria-current="page"
+                  style="cursor: pointer"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="Listar Eventos Habilitados"
+                  >Eventos Habilitados</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link status"
+                  id="unable"
+                  aria-current="page"
+                  style="cursor: pointer"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="Listar Eventos Inhabilitados"
+                  >Eventos Inhabilitados</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div
+            class="card-body eventsContent row"
+            style="background-color: #00000008; margin: 0"
+          ></div>
+        </div>
+      </div>
+      <!-- end col -->
+    </div>
+    <!-- end row -->
+
+    <!--start addModal -->
+    <div class="modal fade bd-addModal-lg" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Registrar Evento</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span>&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="add">
+                <div class="form-group row">
+                  <label for="name" class="col-sm-2 col-form-label"
+                    >Nombre</label
+                  >
+                  <div class="col-sm-10 form-name">
+                    <input
+                      class="form-control maxlength"
+                      type="text"
+                      id="name"
+                      name="name"
+                      min-length="4"
+                      maxlength="40"
+                      placeholder="Escriba el nombre"
+                    />
+                    <div
+                      class="form-control-name-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="price" class="col-sm-2 col-form-label"
+                    >Precio</label
+                  >
+                  <div class="col-sm-10 form-price">
+                    <input
+                      class="form-control touchSpin"
+                      id="price"
+                      name="price"
+                      placeholder="Escriba el precio"
+                    />
+                    <div
+                      class="form-control-price-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="date" class="col-sm-2 col-form-label"
+                    >Fecha</label
+                  >
+                  <div class="col-sm-10 form-date">
+                    <input
+                      class="form-control maxlength datepicker"
+                      type="text"
+                      id="date"
+                      name="date"
+                      min-length="4"
+                      maxlength="40"
+                      data-date-format="MM dd, yyyy"
+                      placeholder="Ingrese la fecha"
+                    />
+                    <div
+                      class="form-control-date-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="levels" class="col-sm-2 col-form-label"
+                    >Nivel</label
+                  >
+                  <div class="col-sm-10 form-levels">
+                    <select
+                      class="form-select form-control"
+                      name="levels"
+                      id="levels"
+                      aria-label="Select the event levels"
+                      data-live-search="true"
+                      placeholder="Seleccione un nivel"
+                      title="Seleccione un nivel"
+                      multiple
+                    ></select>
+                    <div
+                      class="form-control-levels-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-sm-2 col-form-label"
+                    >Complementos</label
+                  >
+                  <div class="col-sm-5 form-add-complements-name">
+                    <input
+                      class="form-control maxlength add-complements-name"
+                      type="text"
+                      min-length="4"
+                      maxlength="40"
+                      placeholder="Escriba el nombre del Complemento."
+                    />
+                    <div
+                      class="form-control-add-complements-name-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                  <div class="col-sm-5 form-add-complements-price">
+                    <input
+                      class="form-control touchSpin add-complements-price"
+                      type="text"
+                      placeholder="Escriba el precio del Complemento."
+                    />
+                    <div
+                    class="form-control-add-complements-price-feedback"
+                    style="display: none"
+                  >
+                    Success! You've done it.
+                  </div>
+                  </div>
+                </div>
+                <div class="form-group row justify-content-center">
+                  <div class="col-sm-4" style="display: flex; justify-content: center; text-align: center;">
+                    <button
+                      type="button"
+                      class="btn btn-primary waves-effect waves-light addComplement"
+                    >
+                      Añadir Complemento
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group row justify-content-center">
+                  <div class="col-sm-12">
+                    <table
+                      id="add-dataTable"
+                      class="table table-striped table-bordered dt-responsive nowrap"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;       
+                        width: 100%;             "
+                    >
+                      <thead>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Opciones</th>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" id="add" class="btn btn-primary">
+                    Registrar Evento
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-dismiss="modal"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end addModal -->
+
+    <!--start editModal -->
+    <div class="modal fade bd-editModal-lg" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Configuración del Evento</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span>&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="edit">
+                <div class="form-group row">
+                  <label for="name" class="col-sm-2 col-form-label"
+                    >Nombre</label
+                  >
+                  <div class="col-sm-10 form-name">
+                    <input
+                      class="form-control maxlength"
+                      type="text"
+                      id="name"
+                      name="name"
+                      min-length="4"
+                      maxlength="40"
+                      placeholder="Escriba el nombre"
+                    />
+                    <div
+                      class="form-control-name-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="price" class="col-sm-2 col-form-label"
+                    >Precio</label
+                  >
+                  <div class="col-sm-10 form-price">
+                    <input
+                      class="form-control touchSpin"
+                      id="price"
+                      name="price"
+                      placeholder="Escriba el precio"
+                    />
+                    <div
+                      class="form-control-price-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="date" class="col-sm-2 col-form-label"
+                    >Fecha</label
+                  >
+                  <div class="col-sm-10 form-date">
+                    <input
+                      class="form-control maxlength datepicker"
+                      type="text"
+                      id="date"
+                      name="date"
+                      min-length="4"
+                      maxlength="40"
+                      data-date-format="MM dd, yyyy"
+                      placeholder="Ingrese la fecha"
+                    />
+                    <div
+                      class="form-control-date-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="levels" class="col-sm-2 col-form-label"
+                    >Nivel</label
+                  >
+                  <div class="col-sm-10 form-levels">
+                    <select
+                      class="form-select form-control"
+                      name="levels"
+                      id="levels"
+                      aria-label="Select the event levels"
+                      data-live-search="true"
+                      placeholder="Seleccione un nivel"
+                      title="Seleccione un nivel"
+                      multiple
+                    ></select>
+                    <div
+                      class="form-control-levels-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" id="edit" class="btn btn-primary">
+                    Guardar Cambios
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-dismiss="modal"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end editModal -->
+
+    <!--start complementsModal -->
+    <div
+      class="modal fade bd-showComplementsModal-lg"
+      tabindex="-1"
+      role="dialog"
+    >
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Complementos del Evento</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span>&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="complements">
+                <div class="form-group row">
+                  <label class="col-sm-2 col-form-label"
+                    >Complementos</label
+                  >
+                  <div class="col-sm-5 form-edit-complements-name">
+                    <input
+                      class="form-control maxlength edit-complements-name"
+                      type="text"
+                      min-length="4"
+                      maxlength="40"
+                      placeholder="Escriba el nombre del Complemento."
+                    />
+                    <div
+                      class="form-control-edit-complements-name-feedback"
+                      style="display: none"
+                    >
+                      Success! You've done it.
+                    </div>
+                  </div>
+                  <div class="col-sm-5 form-edit-complements-price">
+                    <input
+                      class="form-control touchSpin edit-complements-price"
+                      type="text"
+                      placeholder="Escriba el precio del Complemento."
+                    />
+                    <div
+                    class="form-control-edit-complements-price-feedback"
+                    style="display: none"
+                  >
+                    Success! You've done it.
+                  </div>
+                  </div>
+                </div>
+                <div class="form-group row justify-content-center">
+                  <div class="col-sm-4" style="display: flex; justify-content: center; text-align: center;">
+                    <button
+                      type="button"
+                      class="btn btn-primary waves-effect waves-light editComplement"
+                    >
+                      Añadir Complemento
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group row justify-content-center">
+                  <div class="col-sm-12">
+                    <table
+                      id="edit-dataTable"
+                      class="table table-striped table-bordered dt-responsive nowrap"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;       
+                        width: 100%;             "
+                    >
+                      <thead>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Opciones</th>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" id="complements" class="btn btn-primary">
+                    Guardar Cambios
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    data-dismiss="modal"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end complementsModal -->
+  </div>
+  <!-- container-fluid -->
+</div>

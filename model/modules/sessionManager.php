@@ -47,13 +47,13 @@ class sessionManager
         $mail = $this->mail;
         $password = $this->pass;
 
-        $sql = "SELECT pass, id FROM users WHERE mail = :mail";
+        $sql = "SELECT status, pass, id FROM users WHERE mail = :mail";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(param: ":mail", var: $mail, type: PDO::PARAM_STR);
         $stmt->execute();
         $user = $stmt->fetch();
 
-        if (!$user) {
+        if (!$user) 
             exit(json_encode(
                 value:
                 array(
@@ -63,7 +63,18 @@ class sessionManager
                     "suggestion" => "Revise su correo e ingreselo nuevamente",
                 )
             ));
-        }
+        
+
+        if ($user["status"] == "Deshabilitado")
+            exit(json_encode(
+                value:
+                array(
+                    "result" => "error",
+                    "error" => "Usuario Deshabilitado.",
+                    "errorType" => 'User Error',
+                    "suggestion" => "El usuario ingresado esta deshabilitado, consulte a un administrador esta información.",
+                )
+            ));
 
         if (!password_verify(password: $password, hash: $user['pass']))
             exit(json_encode(

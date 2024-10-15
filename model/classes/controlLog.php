@@ -79,6 +79,7 @@ class controlLog
                 g.name,
                 l.name,
                 r.name,
+                e.name,
                 'no disponible'
             ) AS element 
         FROM 
@@ -93,6 +94,8 @@ class controlLog
             levels l ON (cl.content->>'table' = 'levels' AND l.id = (cl.content->>'ID')::INT) 
         LEFT JOIN 
             roles r ON (cl.content->>'table' = 'roles' AND r.id = (cl.content->>'ID')::INT) 
+        LEFT JOIN 
+            events e ON (cl.content->>'table' = 'events' AND e.id = (cl.content->>'ID')::INT) 
         ORDER BY 
             cl.id DESC;
         ";
