@@ -108,19 +108,20 @@ class MainApp {
     initDatePicker() {
         jQuery(this.selector).datepicker({
             todayHighlight: true,
-            viewDate: true
+            viewDate: true,
+            language: 'es'
         });
         jQuery(this.selector).datepicker('setDate', new Date());
 
-        if ($(".datepicker").length > 0) {
-            jQuery(".datepicker").datepicker({
-                startDate: new Date(),
-                viewDate: true,
-                regional: "es",
-                language: 'es',     
-                minDate: 0,
-            });
-        }
+        // if ($(".datepicker").length > 0) {
+        //     jQuery(".datepicker").datepicker({
+        //         startDate: new Date(),
+        //         viewDate: true,
+        //         regional: "es",
+        //         language: 'es',
+        //         minDate: 0,
+        //     });
+        // }
 
     }
 

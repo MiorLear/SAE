@@ -90,7 +90,7 @@ class levels
                 break;
         }
 
-        $sql = "SELECT l.id AS id, l.name, string_agg(DISTINCT g.name, ', ') AS grades, COUNT(s.id) AS students_quantity, l.status FROM levels l JOIN grades g ON g.id = ANY(l.grades) LEFT JOIN students s ON s.grades[1] = g.id AND l.status = :status WHERE l.status = :status GROUP BY l.id ORDER BY l.id DESC;";
+        $sql = "SELECT l.id AS id, l.name, STRING_AGG(DISTINCT g.name, ', ') AS grades, COUNT(s.id) AS students_quantity, l.status FROM levels l JOIN grades g ON g.id = ANY(l.grades) LEFT JOIN students s ON s.grades[1] = g.id AND l.status = :status WHERE l.status = :status GROUP BY l.id ORDER BY l.id DESC;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(":status", $status, PDO::PARAM_STR);
         $stmt->execute();

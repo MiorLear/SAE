@@ -158,7 +158,7 @@ class sessionManager
 
 try {
     session_start();
-    $sm = new SessionManager(formData: $_POST);
+    $sm = new sessionManager(formData: $_POST);
 } catch (\PDOException $th) {
     exit(json_encode(value: array(
         'error' => 'Error Inesperado',

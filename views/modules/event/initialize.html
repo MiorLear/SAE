@@ -1,4 +1,145 @@
-<br>
-<br>
-<br>
-<h4>Inicializar</h4>
+<div class="content">
+  <div class="container-fluid">
+    <div class="page-title-box">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="page-title-box">
+            <h4 class="page-title">Inicializar Evento</h4>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">SAE</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">Eventos</a>
+              </li>
+              <li class="breadcrumb-item active">Inicializar Evento</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="float-right d-none d-md-block app-datepicker">
+            <input
+              type="text"
+              class="form-control"
+              data-date-format="MM dd, yyyy"
+              readonly="readonly"
+              id="datepicker"
+            />
+            <i class="mdi mdi-chevron-down mdi-drop"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end page-title -->
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title pb-0">Inicializar Evento</h4>
+            <div class="mb-2">
+              Crea el modelo de tarjeta, distribuye y asigna las tarjetas para cada estudiante.
+            </div>
+            <div class="progress">
+              <div
+                class="progress-bar progress-bar-striped initialize-progress"
+                role="progressbar"
+                style="width: 0%"
+                aria-valuenow="10"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                0%
+              </div>
+            </div>
+            <div class="text-center initializeStatus"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row cardFeedBack" style="display: none;">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title pb-0">¿Qué es el modelo de Tarjeta?</h4>
+            <div class="mb-2 eventname">
+              Es el modelo de tarjeta que será entregado a cada estudiante del CSSC, durante el evento.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <ul class="nav nav-tabs grades-tabs">
+              <li class="nav-item">
+                <a
+                  class="nav-link toggleAction"
+                  id="createModel"
+                  aria-current="page"
+                  style="cursor: pointer"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  >Crear Modelo de Tarjeta</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link toggleAction"
+                  id="asignCards"
+                  aria-current="page"
+                  style="cursor: pointer"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  >Asignar Tarjetas</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="card-body initContent"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row align-items-center justify-content-center cardExample" style="display: none;">
+      <div class="col-8">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title pb-0 cardTitle text-center"></h4>
+
+            <h4 class="pt-1 header-title pb-0 text-center">Entrada</h4>
+            <span
+              class="badge badge-primary cardPrice"
+              style="
+                display: flex;
+                text-align: center;
+                justify-content: center;
+                font-size: 1rem;
+              "
+              ></span
+            >
+            <h4 class="pt-1 header-title pb-0 text-center">Complementos</h4>
+            <div class="cardContent text-center">
+            </div>
+            <h4 class="pt-1 header-title pb-0 text-center">Precio Total de la Tarjeta</h4>
+            <span
+              class="badge badge-primary cardTotal"
+              style="
+                display: flex;
+                text-align: center;
+                justify-content: center;
+                font-size: 1rem;
+              "
+              ></span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- container-fluid -->
+</div>

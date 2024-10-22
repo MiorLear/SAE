@@ -188,15 +188,14 @@ class contentManager {
             //Event Modules
             "eventPanel": {
                 load: async (e) => {
-                    console.log("eventPanel isn't finished");
 
                     await this.loadPage("modules/event/eventPanel.html").then(async () => {
-                        // await this.initializeContent();
+                        await this.initializeContent("../controller/modules/events/startEvent.js");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins('events');
 
                         $("a#eventPanel").css("color", "#FFF");
                         $("#overlay").css("display", "none");
@@ -208,12 +207,12 @@ class contentManager {
                     console.log("initialize isn't finished");
 
                     await this.loadPage("modules/event/initialize.html").then(async () => {
-                        // await this.initializeContent();
+                        await this.initializeContent("../controller/modules/events/initialize.js");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins('initialize');
 
                         $("a#initialize").css("color", "#FFF");
                         $("#overlay").css("display", "none");
@@ -504,6 +503,15 @@ class contentManager {
         switch (func) {
             case 'all':
                 app.init();
+                break;
+            case 'initialize':
+                app.initTouchSpin();
+                app.initDatePicker();
+                app.initMaxLength();
+                break;
+            case 'events':
+                app.initTouchSpin();
+                app.initDatePicker();
                 break;
             case 'students':
                 app.initDatePicker();
