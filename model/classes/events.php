@@ -113,7 +113,7 @@ class roles
                 break;
         }
 
-        $sql = "SELECT id, name, settings->'settings'->>'date' AS date, settings->'settings'->>'levels' AS levels, year, status FROM events WHERE status $opt 'Deshabilitado' ORDER BY id DESC;";
+        $sql = "SELECT id, name, settings->'settings'->>'date' AS date, settings->'settings'->>'levels' AS levels, EXTRACT(year FROM TO_DATE(settings->'settings'->>'date', 'DD/MM/YYYY')) AS year, status FROM events WHERE status $opt 'Deshabilitado' ORDER BY id DESC;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();
         $response = $stmt->fetchAll();
@@ -185,16 +185,19 @@ class roles
         $name = $this->name;
         $settings = $this->settings;
 
-        $sql = "SELECT name FROM events WHERE name = :name AND year = EXTRACT(year FROM now());";
+        $date = json_decode(json: $settings)->settings->date;
+
+        $sql = "SELECT name, EXTRACT(year FROM TO_DATE(settings->'settings'->>'date', 'DD/MM/YYYY')) as year FROM events WHERE name = :name AND EXTRACT(year FROM TO_DATE(settings->'settings'->>'date', 'DD/MM/YYYY')) = EXTRACT(year FROM TO_DATE(:date, 'DD/MM/YYYY'));";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':date', $date, PDO::PARAM_STR);
         $stmt->execute();
-        $eventname = $stmt->fetch()['name'];
+        $eventInfo = $stmt->fetch();
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
                 'error' => "Espera un momento.",
-                'suggestion' => "El evento ingresado ya existe ($eventname).",
+                'suggestion' => "El evento ingresado ya existe (".$eventInfo['name']." ".$eventInfo['year']."). ",
                 'errorType' => "User Error"
             ]));
 
@@ -234,17 +237,17 @@ class roles
                 'errorType' => "User Error"
             ]));
 
-        $sql = "SELECT name FROM events WHERE name = :name AND year = EXTRACT(year FROM now()) AND id != :id;";
+        $sql = "SELECT name, EXTRACT(year FROM TO_DATE(settings->'settings'->>'date', 'DD/MM/YYYY')) as year FROM events WHERE name = :name AND EXTRACT(year FROM TO_DATE(settings->'settings'->>'date', 'DD/MM/YYYY')) = EXTRACT(year FROM now()) AND id != :id;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
         $stmt->bindParam(':id', $id, PDO::PARAM_STR);
         $stmt->execute();
-        $eventname = $stmt->fetch()['name'];
+        $eventInfo = $stmt->fetch();
 
         if ($stmt->rowCount() > 0)
             exit(json_encode(value: [
                 'error' => "Espera un momento.",
-                'suggestion' => "El evento ingresado ya existe ($eventname).",
+                'suggestion' => "El evento ingresado ya existe (".$eventInfo['name']." ".$eventInfo['year'].").",
                 'errorType' => "User Error"
             ]));
 
@@ -276,7 +279,7 @@ class roles
         if ($eventstatus != "Pendiente de Iniciar")
             exit(json_encode(value: [
                 'error' => "Espera un momento.",
-                'suggestion' => "El evento $name ya ha sido inicializado ($id), status: $eventstatus no se puede editar.",
+                'suggestion' => "El evento $name ya ha sido inicializado ($id). Estado: $eventstatus,  no se puede editar.",
                 'errorType' => "User Error"
             ]));
 

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist with Progress Bar</title>
+    <style>
+        .checklist {
+            list-style-type: none;
+            padding: 0;
+        }
+        .checklist li {
+            margin-bottom: 10px;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 5px;
+        }
+        .progress-text {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Mi Checklist</h2>
+
+<ul class="checklist">
+    <li>
+        <input type="checkbox" id="item1" onclick="updateProgress()">
+        <label for="item1">Elemento 1</label>
+    </li>
+    <li>
+        <input type="checkbox" id="item2" onclick="updateProgress()">
+        <label for="item2">Elemento 2</label>
+    </li>
+    <li>
+        <input type="checkbox" id="item3" onclick="updateProgress()">
+        <label for="item3">Elemento 3</label>
+    </li>
+    <li>
+        <input type="checkbox" id="item4" onclick="updateProgress()">
+        <label for="item4">Elemento 4</label>
+    </li>
+    <li>
+        <input type="checkbox" id="item5" onclick="updateProgress()">
+        <label for="item5">Elemento 5</label>
+    </li>
+</ul>
+
+<!-- Progress Bar -->
+<div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+<div class="progress-text" id="progressText">0% completado</div>
+
+<script>
+    function updateProgress() {
+        const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+        const totalCheckboxes = checkboxes.length;
+        let checkedCheckboxes = 0;
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkedCheckboxes++;
+            }
+        });
+
+        const progress = (checkedCheckboxes / totalCheckboxes) * 100;
+        
+        // Update progress bar
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = progress + '%';
+        
+        // Update progress text
+        const progressText = document.getElementById('progressText');
+        progressText.textContent = Math.round(progress) + '% completado';
+    }
+</script>
+
+</body>
+</html>

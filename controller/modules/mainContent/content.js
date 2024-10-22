@@ -929,14 +929,14 @@ class content extends dataTables {
                     </div>
                     <div class="card-body row">
                         <div class="col-6"> 
-                            <a class="badge badge-success" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseStatus" role="button" aria-expanded="false" aria-controls="collapseStatus" title="Mostrar Estado del Evento">Estado &nbsp;&nbsp;<i class="ion ion-md-arrow-down"></i></a>
-                            <div class="collapse" id="collapseStatus">
+                            <a class="badge badge-success" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseStatus-${event["id"]}" role="button" aria-expanded="false" aria-controls="collapseStatus-${event["id"]}" title="Mostrar Estado del Evento">Estado &nbsp;&nbsp;<i class="ion ion-md-arrow-down"></i></a>
+                            <div class="collapse" id="collapseStatus-${event["id"]}">
                                 <p>${event["status"]}</p>
                             </div>
                         </div>
                         <div class="col-6"> 
-                            <a class="badge badge-info" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseLevels" role="button" aria-expanded="false" aria-controls="collapseLevels" title="Mostrar Niveles del Evento"><i class="ion ion-md-arrow-down"></i>&nbsp;&nbsp;Niveles</a>
-                            <div class="collapse" id="collapseLevels">
+                            <a class="badge badge-info" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseLevels-${event["id"]}" role="button" aria-expanded="false" aria-controls="collapseLevels-${event["id"]}" title="Mostrar Niveles del Evento"><i class="ion ion-md-arrow-down"></i>&nbsp;&nbsp;Niveles</a>
+                            <div class="collapse" id="collapseLevels-${event["id"]}">
                                 <p>${finalLevels.join(', ')}</p>
                             </div>
                         </div>
@@ -960,6 +960,11 @@ class content extends dataTables {
             } else {
                 await $(".eventsContent").html(content);
             }
+
+            $(".datepicker").datepicker({
+                language: 'es',
+                startDate: new Date(),
+            })
 
             if (!$.fn.DataTable.isDataTable('#add-dataTable')) {
                 var dataTable = await this.init($('#add-dataTable'));
@@ -1286,7 +1291,12 @@ class content extends dataTables {
                         const [dia, mes, año] = fechaString.split('/').map(Number);
                         return `${meses[mes - 1]} ${dia}, ${año}`;
                     };
-                    $(formElement).datepicker("setDate", largeDate(response["content"]["date"]));
+                    var date = largeDate(response["content"]["date"]);
+
+                    $(formElement).datepicker({
+                        language: 'es',
+                        startDate: new Date(),
+                    }).datepicker("setDate", date);
                     break;
                 case "section":
                     $(formElement).val(response["content"]["section"]);
@@ -1325,7 +1335,7 @@ class content extends dataTables {
             return;
         }
 
-        var complements = JSON.parse(response["content"]["complements"])["complements"];
+        var complements = JSON.parse(response["content"]["complements"]);
 
         var options =
             `<center>
@@ -1527,7 +1537,7 @@ class content extends dataTables {
             if (!result.isConfirmed)
                 return;
 
-            this.rehabilitate(id, name);
+            this.rehabilitate(id, result.value["reason"], name);
 
         });
     }
@@ -1547,10 +1557,7 @@ class content extends dataTables {
 
         delete content["name"];
 
-        let complements =
-        {
-            "complements": {}
-        };
+        let complements = {};
 
         var logComplements = "";
 
@@ -1559,7 +1566,7 @@ class content extends dataTables {
             var title = rowData[1];
             var price = rowData[2];
 
-            complements["complements"][id] = {
+            complements[id] = {
                 id: id,
                 title: title,
                 price: price
@@ -1618,7 +1625,7 @@ class content extends dataTables {
                 text: this.traductor["congratulation_add"](),
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1000
+                timer: 3000
             }
         );
 
@@ -1974,12 +1981,14 @@ class content extends dataTables {
 
         delete content["name"];
 
-        const convertirFecha = fechaString => fechaString.replace(/(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)/, mes => ("0" + ("EneFebMarAbrMayJunJulAgoSepOctNovDic".indexOf(mes.slice(0, 3)) / 3 + 1)).slice(-2)).replace(',', '').replace(/(\d{2}) (\d{2}) (\d{4})/, '$2/$1/$3');
+        const formatDate = fechaString => fechaString.replace(/(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)/, mes => ("0" + ("EneFebMarAbrMayJunJulAgoSepOctNovDic".indexOf(mes.slice(0, 3)) / 3 + 1)).slice(-2)).replace(',', '').replace(/(\d{2}) (\d{2}) (\d{4})/, '$2/$1/$3');
 
-        content.date = convertirFecha(content["date"]);
+        formData.append("eventDate", content["date"]);
 
+        content.date = formatDate(content["date"]);
+        
         formData.append("settings", JSON.stringify(content));
-
+        
         let response = await this.ajaxRequest(`../model/classes/events.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
@@ -1987,7 +1996,7 @@ class content extends dataTables {
             console.error(response);
             return;
         }
-
+         
 
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
@@ -2001,7 +2010,7 @@ class content extends dataTables {
                 text: this.traductor["congratulation_edit"](),
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1000
+                timer: 3000
             }
         );
 
@@ -2020,10 +2029,7 @@ class content extends dataTables {
         });
 
 
-        let complements =
-        {
-            "complements": {}
-        };
+        let complements = {};
 
         var logComplements = "";
 
@@ -2032,7 +2038,7 @@ class content extends dataTables {
             var title = rowData[1];
             var price = rowData[2];
 
-            complements["complements"][id] = {
+            complements[id] = {
                 id: id,
                 title: title,
                 price: price
@@ -2066,7 +2072,7 @@ class content extends dataTables {
                 text: this.traductor["congratulation_edit"](),
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1000
+                timer: 3000
             }
         );
 
@@ -2147,7 +2153,7 @@ class content extends dataTables {
                 text: this.traductor["congratulation_add"](),
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1000
+                timer: 3000
             }
         );
 
@@ -2230,7 +2236,7 @@ class content extends dataTables {
                 text: this.traductor["congratulation_edit"](),
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1000
+                timer: 3000
             }
         );
 
@@ -2266,7 +2272,7 @@ class content extends dataTables {
                 text: this.traductor["congratulation_disable"](),
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1000
+                timer: 3000
             }
         );
 
@@ -2304,7 +2310,7 @@ class content extends dataTables {
                 text: this.traductor["congratulation_rehabilitate"](),
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1000
+                timer: 3000
             }
         );
 
