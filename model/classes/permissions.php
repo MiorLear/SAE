@@ -41,7 +41,7 @@ class permissions
     {
         $conn = $this->conn->getConnection();
 
-        $sql = "SELECT id, name, event_id FROM permissions ORDER BY id DESC";
+        $sql = "SELECT id, name, event_id FROM permissions WHERE name != 'Administrar Plataforma' AND name != 'Administrar Modulos de Eventos' ORDER BY id DESC";
 
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();

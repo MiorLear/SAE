@@ -4,13 +4,11 @@ class content {
         this.id = this.getID();
         this.checkEventExist();
     }
-
     getID() {
         var url = window.location.search;
         const param = new URLSearchParams(url);
         return param.get('event');
     }
-    
     async checkEventExist(id = this.id) {
         let formData = new FormData();
         formData.append("action", "checkEventExist");
@@ -26,12 +24,86 @@ class content {
 
         const event = response['content'];
 
-        if (event < 1)
+        var eventExist = parseFloat(event["check"]);
+
+        if (eventExist < 1 || Number.isNaN(eventExist))
             return window.history.back();
+
+        switch (event["status"]) {
+            case "Pendiente de Iniciar":
+                $("li#eventPanel").css("display", "block");
+                $("li#initialize").css("display", "block");
+                $("li#cardsPresale").css("display", "none");
+                $("li#cardsDelivery").css("display", "none");
+                $("li#start").css("display", "none");
+                $("li#redeem").css("display", "none");
+                $("li#salesCase").css("display", "none");
+                $("li#cardsReturn").css("display", "none");
+                $("li#closure").css("display", "none");
+                $("li#analysis").css("display", "none");
+                $("li#eventAnalysis").css("display", "none");
+                $("li#checkEventCard").css("display", "none");
+                break;
+            case "Inicializado":
+                $("li#eventPanel").css("display", "block");
+                $("li#initialize").css("display", "block");
+                $("li#cardsPresale").css("display", "none");
+                $("li#cardsDelivery").css("display", "none");
+                $("li#start").css("display", "none");
+                $("li#redeem").css("display", "none");
+                $("li#salesCase").css("display", "none");
+                $("li#cardsReturn").css("display", "none");
+                $("li#closure").css("display", "none");
+                $("li#analysis").css("display", "none");
+                $("li#eventAnalysis").css("display", "none");
+                $("li#checkEventCard").css("display", "none");
+                break;
+            case "Listo":
+                $("li#eventPanel").css("display", "block");
+                $("li#initialize").css("display", "none");
+                $("li#cardsPresale").css("display", "block");
+                $("li#cardsDelivery").css("display", "block");
+                $("li#start").css("display", "block");
+                $("li#redeem").css("display", "none");
+                $("li#salesCase").css("display", "none");
+                $("li#cardsReturn").css("display", "none");
+                $("li#closure").css("display", "none");
+                $("li#analysis").css("display", "none");
+                $("li#eventAnalysis").css("display", "none");
+                $("li#checkEventCard").css("display", "none");
+                break;
+            case "En Curso":
+                $("li#eventPanel").css("display", "block");
+                $("li#initialize").css("display", "none");
+                $("li#cardsPresale").css("display", "none");
+                $("li#cardsDelivery").css("display", "none");
+                $("li#start").css("display", "none");
+                $("li#redeem").css("display", "block");
+                $("li#salesCase").css("display", "block");
+                $("li#cardsReturn").css("display", "none");
+                $("li#closure").css("display", "block");
+                $("li#checkEventCard").css("display", "block");
+                $("li#analysis").css("display", "none");
+                $("li#eventAnalysis").css("display", "none");
+                break;
+            case "Finalizado":
+                $("li#eventPanel").css("display", "block");
+                $("li#initialize").css("display", "none");
+                $("li#cardsPresale").css("display", "none");
+                $("li#cardsDelivery").css("display", "none");
+                $("li#start").css("display", "none");
+                $("li#redeem").css("display", "none");
+                $("li#salesCase").css("display", "none");
+                $("li#cardsReturn").css("display", "block");
+                $("li#closure").css("display", "none");
+                $("li#checkEventCard").css("display", "block");
+                $("li#analysis").css("display", "block");
+                $("li#eventAnalysis").css("display", "block");
+                break;
+        }
 
         this.checkUpElements();
     }
-
     async checkUpElements(id = this.id) {
         let formData = new FormData();
         formData.append("action", "getGeneralInfo");
@@ -61,9 +133,9 @@ class content {
         $(".eventDifference").text(event['difference'] > 0 ? `El evento ya ha finalizado, hace ${event['difference']} días.` : `Faltan ${Math.abs(event['difference'])} días para el evento.`);
 
         var eventComplements = "";
-        
+
         for (let index = 0; index < Object.keys(JSON.parse(event['complements'])).length; index++) {
-            const id =  Object.keys(JSON.parse(event['complements']))[index];
+            const id = Object.keys(JSON.parse(event['complements']))[index];
             const element = JSON.parse(event['complements'])[id];
             eventComplements += `
              <div class="row">
@@ -92,11 +164,8 @@ class content {
         JSON.parse(event['levels']).forEach(element => {
             eventLevels += `
             <span
-              class="badge badge-secondary mb-1"
+              class="badge badge-secondary mb-1 d-flex justify-content-center"
               style="
-                display: flex;
-                text-align: center;
-                justify-content: center;
                 font-size: 1rem;
               ">${element}
             </span>`
@@ -143,7 +212,6 @@ class content {
 
         return event;
     }
-
     async ajaxRequest(url, formData) {
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -171,9 +239,7 @@ class content {
             });
         });
     }
-
     async cleanup() {
-       
     }
 }
 

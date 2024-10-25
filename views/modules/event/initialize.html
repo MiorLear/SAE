@@ -63,10 +63,8 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <h4 class="mt-0 header-title pb-0">¿Qué es el modelo de Tarjeta?</h4>
-            <div class="mb-2 eventname">
-              Es el modelo de tarjeta que será entregado a cada estudiante del CSSC, durante el evento.
-            </div>
+            <h4 class="mt-0 header-title pb-0 cardFeedBackTitle"></h4>
+            <div class="mb-2 cardFeedBackTip"></div>
           </div>
         </div>
       </div>
@@ -76,26 +74,40 @@
       <div class="col-12">
         <div class="card">
           <div class="card-header">
-            <ul class="nav nav-tabs grades-tabs">
+            <ul class="nav nav-pills flex-column flex-sm-row grades-tabs">
               <li class="nav-item">
                 <a
-                  class="nav-link toggleAction"
+                  class="flex-sm-fill nav-link text-center py-1 toggleAction"
                   id="createModel"
                   aria-current="page"
                   style="cursor: pointer"
                   data-toggle="tooltip"
                   data-placement="top"
+                  title="Ir al modulo: Creación de modelo de tarjeta."
                   >Crear Modelo de Tarjeta</a
                 >
               </li>
               <li class="nav-item">
                 <a
-                  class="nav-link toggleAction"
+                  class="flex-sm-fill nav-link text-center py-1 toggleAction"
+                  id="extraConfig"
+                  aria-current="page"
+                  style="cursor: pointer"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="Ir a modulo: Configuración adicional."
+                  >Configuración Adicional</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="flex-sm-fill nav-link text-center py-1 toggleAction"
                   id="asignCards"
                   aria-current="page"
                   style="cursor: pointer"
                   data-toggle="tooltip"
                   data-placement="top"
+                  title="Ir a modulo: Asignación de tarjetas."
                   >Asignar Tarjetas</a
                 >
               </li>
@@ -106,7 +118,7 @@
       </div>
     </div>
     <div class="row align-items-center justify-content-center cardExample" style="display: none;">
-      <div class="col-8">
+      <div class="col-sm-12 col-md-8 col-lg-8">
         <div class="card">
           <div class="card-body">
             <h4 class="mt-0 header-title pb-0 cardTitle text-center"></h4>
@@ -122,7 +134,7 @@
               "
               ></span
             >
-            <h4 class="pt-1 header-title pb-0 text-center">Complementos</h4>
+            <h4 class="pt-1 header-title pb-0 text-center complementsTitle">Complementos</h4>
             <div class="cardContent text-center">
             </div>
             <h4 class="pt-1 header-title pb-0 text-center">Precio Total de la Tarjeta</h4>

@@ -4,7 +4,6 @@ class content {
         this.id = this.getID();
         this.checkEventExist();
         this.settupEventListeners();
-        // this.loadEventInfo();
     }
     getID() {
         var url = window.location.search;
@@ -25,9 +24,47 @@ class content {
         }
 
         const event = response['content'];
+        var eventExist = parseFloat(event["check"]);
 
-        if (event < 1)
+        if (eventExist < 1 || Number.isNaN(eventExist))
             return window.history.back();
+
+        switch (event["status"]) {
+            case "Pendiente de Iniciar":
+                $("li#eventPanel").css("display", "block");
+                $("li#initialize").css("display", "block");
+                $("li#cardsPresale").css("display", "none");
+                $("li#cardsDelivery").css("display", "none");
+                $("li#start").css("display", "none");
+                $("li#redeem").css("display", "none");
+                $("li#salesCase").css("display", "none");
+                $("li#cardsReturn").css("display", "none");
+                $("li#closure").css("display", "none");
+                $("li#analysis").css("display", "none");
+                $("li#eventAnalysis").css("display", "none");
+                $("li#checkEventCard").css("display", "none");
+                break;
+            case "Inicializado":
+                $("li#eventPanel").css("display", "block");
+                $("li#initialize").css("display", "block");
+                $("li#cardsPresale").css("display", "none");
+                $("li#cardsDelivery").css("display", "none");
+                $("li#start").css("display", "none");
+                $("li#redeem").css("display", "none");
+                $("li#salesCase").css("display", "none");
+                $("li#cardsReturn").css("display", "none");
+                $("li#closure").css("display", "none");
+                $("li#analysis").css("display", "none");
+                $("li#eventAnalysis").css("display", "none");
+                $("li#checkEventCard").css("display", "none");
+                break;
+            case "Listo":
+                return window.history.back();
+            case "En Curso":
+                return window.history.back();
+            case "Finalizado":
+                return window.history.back();
+        }
 
         this.checkStatus();
     }
@@ -48,15 +85,45 @@ class content {
                 return;
             }
 
-            if (response['content'] == "3") {
+            if (response['content'] == "4") {
                 this.doneCard();
             }
             else
                 switch (id) {
                     case 'asignCards':
-                        this.showCardsAlert();
+                        if (parseFloat(response['content']) < 3)
+                            return Swal.fire(
+                                {
+                                    title: "Espera un momento",
+                                    text: 'Configuración Adicional Pendiente.',
+                                    icon: "warning",
+                                    showConfirmButton: true,
+                                }
+                            );
+                        $("#extraConfig").removeClass("active");
+                        $("#createModel").removeClass("active");
+                        $("#asignCards").addClass("active");
+                        this.loadCards();
+                        break;
+                    case 'extraConfig':
+                        if (parseFloat(response['content']) < 2)
+                            return Swal.fire(
+                                {
+                                    title: "Espera un momento",
+                                    text: 'Complemento del modelo pendiente.',
+                                    icon: "warning",
+                                    showConfirmButton: true,
+                                }
+                            );
+                        $("#createModel").removeClass("active");
+                        $("#asignCards").removeClass("active");
+                        $("#extraConfig").addClass("active");
+                        this.extraConfig();
                         break;
                     case 'createModel':
+                        $("#asignCards").removeClass("active");
+                        $("#extraConfig").removeClass("active");
+                        $("#createModel").addClass("active");
                         this.loadComplements();
                         break;
                 }
@@ -159,6 +226,64 @@ class content {
                 $("#" + nextId).focus();
             }, 0);
         });
+        $(document).on('submit', 'form.extraConfig', async (e) => {
+            e.preventDefault();
+
+            let notFilledInputs = [];
+            let notMinLengthInputs = [];
+            let validInputs = {};
+
+            $(e.currentTarget).find('input').each(function () {
+                var formElement = this;
+
+                $(`.form-${$(formElement).attr('id')}`).removeClass('has-warning');
+                $(`.form-control-${$(formElement).attr('id')}-feedback`).css("display", "none");
+
+                if (!$(formElement).attr("id")) return;
+
+                if ($(formElement).val() == "")
+                    notFilledInputs.push(formElement);
+                else if (
+                    $(formElement).attr("min-length") &&
+                    $(formElement).val().length < $(formElement).attr("min-length")
+                )
+                    notMinLengthInputs.push(formElement);
+                else
+                    validInputs[$(formElement).attr('id')] = $(formElement).val();
+
+            });
+
+            notFilledInputs.forEach(input => {
+                $(`.form-control-${$(input)
+                    .attr('id')}-feedback`)
+                    .css("display", "block");
+                $(`.form-${$(input)
+                    .attr('id')}`)
+                    .addClass('has-warning');
+                $(`.form-control-${$(input).attr('id')}-feedback`)
+                    .text(`Por favor, 
+                        ${input["placeholder"] === undefined
+                            ? $(input).attr("title")
+                            : input["placeholder"]
+                        }.`);
+            });
+
+            notMinLengthInputs.forEach(input => {
+                $(`.form-control-${$(input)
+                    .attr('id')}-feedback`)
+                    .css("display", "block");
+                $(`.form-${$(input).attr('id')}`)
+                    .addClass('has-warning');
+                $(`.form-control-${$(input)
+                    .attr('id')}-feedback`)
+                    .text(`Por favor, escriba por lo menos ${$(input).attr("min-length")} carácteres.`);
+                $(input).focus();
+            });
+
+
+            if (!notFilledInputs.length && !notMinLengthInputs.length)
+                this.addExtraConfig(validInputs);
+        });
         $(document).on('submit', 'form.initializeCards', async (e) => {
 
             e.preventDefault();
@@ -201,7 +326,7 @@ class content {
                 }
                 else {
 
-                    var card  = Object.assign({}, model);
+                    var card = Object.assign({}, model);
 
                     card.student_id = $(formElement).attr("id").substring(0, $(formElement).attr("id").indexOf('-'));
                     card.card_id = $(formElement).val();
@@ -252,8 +377,34 @@ class content {
             }
         });
     }
+    async addExtraConfig(validInputs, id = this.id) {
+        let formData = new FormData();
+        formData.append("id", this.id);
+        formData.append("cardsQty", validInputs["cardsQty"]);
+        formData.append("forgottenCard", validInputs["forgottenCard"]);
+        formData.append("action", "addExtraSettings");
 
-    async addCardstoEvent(json, id = this.id){
+        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        Swal.fire(
+            {
+                title: "Éxito!",
+                text: 'Configuración Adicional Guardada.',
+                icon: "success",
+                showConfirmButton: false,
+                timer: 3000
+            }
+        );
+
+        this.checkStatus(false);
+    }
+    async addCardstoEvent(json, id = this.id) {
         let formData = new FormData();
         formData.append("action", "addCardstoEvent");
         formData.append("id", this.id);
@@ -279,7 +430,6 @@ class content {
 
         this.checkStatus();
     }
-
     async doneCard() {
         $(".cardExample").css("display", "none");
         $(".cardFeedBack").css("display", "none");
@@ -309,22 +459,27 @@ class content {
                 this.initializeAlert();
                 break;
             case "1":
-                $(".initializeStatus").text("Evento Inicializado, pendiente crear modelo de tarjeta y asignar tarjetas a los estudiantes");
-                $(".initialize-progress").text("33%");
-                $(".initialize-progress").css("width", "33%");
-                $("#asignCards").removeClass("active");
-                $("#createModel").addClass("active");
+                $(".initializeStatus").text("Evento Inicializado, pendiente crear modelo de tarjeta, establecer configuraciones adicionales y asignar tarjetas a las familias.");
+                $(".initialize-progress").text("25%");
+                $(".initialize-progress").css("width", "25%");
                 if (changePanel)
                     this.loadComplements();
                 break;
             case "2":
-                $(".initializeStatus").text("Modelo de Tarjeta creado, pendiente de asignar tarjetas a los estudiantes");
-                $(".initialize-progress").text("66%");
-                $(".initialize-progress").css("width", "66%");
+                $(".initializeStatus").text("Modelo de Tarjeta creado, pendiente de establecer configuraciones adicionales y asignar tarjetas a las familias.");
+                $(".initialize-progress").text("50%");
+                $(".initialize-progress").css("width", "50%");
                 if (changePanel)
-                    this.showCardsAlert();
+                    this.extraConfig();
                 break;
             case "3":
+                $(".initializeStatus").text("Configuraciones adicionales listas, pendiente de asignar tarjetas a las familias.");
+                $(".initialize-progress").text("75%");
+                $(".initialize-progress").css("width", "75%");
+                if (changePanel)
+                    this.loadCards();
+                break;
+            case "4":
                 if (changePanel)
                     this.doneCard();
                 break;
@@ -382,52 +537,107 @@ class content {
 
         this.checkStatus();
     }
-    async showCardsAlert(id = this.id) {
+    async extraConfig(id = this.id) {
+        let formData = new FormData();
+        formData.append("id", this.id);
+        formData.append("action", "getExtraSettings");
+
+        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        const extraConfig = response["content"];
 
         $(".cardExample").css("display", "none");
-        $(".cardFeedBack").css("display", "none");
+        $(".cardFeedBack").css("display", "block");
+        $(".cardFeedBackTitle").text("Configuración Adicional");
+        $(".cardFeedBackTip").text("Indica el número de tarjetas a repartir para las familias de cada estudiante del CSSC. También indica el precio por extravío de tarjetas.");
+
+
+        $("#createModel").removeClass("active");
+        $("#asignCards").removeClass("active");
+        $("#extraConfig").addClass("active");
+
+        var content =
+            `<form class="mx-2 px-2 extraConfig">
+                <div class="form-group row d-flex justify-content-center">
+                    <label for="cardsQty" class="text-left col-sm-2 col-form-label">Número de tarjetas por familia</label>
+                    <div class="col-sm-10 form-cardsQty">
+                        <input class="form-control maxlength touchSpinQuantity" id="cardsQty"
+                        name="cardsQty" min-length="1" value="${extraConfig["cardsqtyperstudent"]}" maxlength="3"
+                        placeholder="Ingrese el número de Tarjetas por familia"
+                        />
+                        <div class="form-control-cardsQty-feedback" style="display: none">
+                            Success! You've done it.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row d-flex justify-content-center">
+                        <label for="forgottenCard" class="text-left col-sm-2 col-form-label">Precio por extravío de tarjeta</label>
+                    <div class="col-sm-10 form-forgottenCard">
+                        <input class="form-control maxlength touchSpin" id="forgottenCard"
+                        name="forgottenCard" min-length="1" value="${extraConfig["forgottencardprice"]}" maxlength="3" placeholder="Ingrese el precio por extravió de tarjetas"
+                        />
+                        <div class="form-control-forgottenCard-feedback" style="display: none">
+                        Success! You've done it.
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row d-flex justify-content-center mb-0 pb-0">   
+                    <button type="submit" class="btn btn-primary" title="Guardar Configuración Adicional" data-toggle="tooltip" data-placement="top">Guardar Cambios</button>
+                </div>
+            </form>
+        `;
+
+        await $(".initContent").html(content);
+
+        $(".touchSpin").TouchSpin({
+            prefix: '$',
+            min: 0,
+            max: 100,
+            step: 0.01,
+            decimals: 2,
+            boostat: 5,
+            maxboostedstep: 10
+        });
+        $(".touchSpinQuantity").TouchSpin({
+            prefix: '',
+            min: 0,
+            max: 10,
+            step: 1,
+        });
+    }
+    async loadCards(id = this.id) {
+
+        let formData = new FormData();
+        formData.append("id", this.id);
+        formData.append("action", "getExtraSettings");
+
+        let extraSettings = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (extraSettings['result'] !== 'success') {
+            console.error(extraSettings);
+            return;
+        }
+
+        const cardsqty = extraSettings["content"]["cardsqtyperstudent"];
+
+        $(".cardExample").css("display", "none");
+        $(".cardFeedBack").css("display", "block");
+        $(".cardFeedBackTitle").text("Asignar Tarjetas");
+        $(".cardFeedBackTip").text("Se asignan las tarjetas a las familias, en el caso de los hermanos se entrega la tarjeta al hermano menor.");
+
+
+        $("#extraConfig").removeClass("active");
         $("#createModel").removeClass("active");
         $("#asignCards").addClass("active");
 
-
-        swal.fire(
-            {
-                title: 'Espera un momento',
-                icon: 'info',
-                showCancelButton: true,
-                inputLabel: 'Ingresa el número de Tarjetas por estudiante',
-                input: "number",
-                inputAttributes: {
-                    autocapitalize: "off"
-                },
-                customClass: {
-                    confirmButton: 'btn btn-primary btn-lg',
-                    cancelButton: 'btn btn-outline-primary btn-lg ml-4'
-                },
-                buttonsStyling: false,
-                confirmButtonText: 'Inicializar Evento',
-                cancelButtonText: 'Cancelar',
-                preConfirm: async (cardsqty) => {
-                    if (!cardsqty || cardsqty <= 0) {
-                        Swal.showValidationMessage('Porfavor, ingrese un número válido.');
-                        return false;
-                    }
-
-                    return { cardsqty: cardsqty };
-                }
-            }
-        ).then(async (result) => {
-
-            if (!result.isConfirmed)
-                return this.loadComplements;
-
-            this.loadCards(result.value["cardsqty"],);
-        });
-    }
-    async loadCards(cardsqty, id = this.id) {
-        let formData = new FormData();
-        formData.append("action", "getStudentsPopulation");
-        formData.append("id", id);
+        formData.set("action", "getStudentsPopulation");
 
         let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -442,8 +652,8 @@ class content {
         var initContent =
             `<form class="row justify-content-center initializeCards">`;
 
-        for (let levelindex = 0; levelindex < Object.entries(population["levels"]).length; levelindex++) {
-            const levelEl = Object.entries(population["levels"])[levelindex][1];
+        for (let levelindex = 0; levelindex < Object.entries(population).length; levelindex++) {
+            const levelEl = JSON.parse(Object.entries(population)[levelindex][1]["resultado"])["levels"][0];
             initContent += `<div class ="col-12 mb-2"><h4 style="text-transform: uppercase;" class="mt-0 pb-0 text-center">${levelEl["name"]}</h4>`;
             for (let gradeindex = 0; gradeindex < Object.entries(levelEl["grades"]).length; gradeindex++) {
                 const gradesEl = Object.entries(levelEl["grades"])[gradeindex][1];
@@ -452,14 +662,14 @@ class content {
                     initContent += `<h4 style="text-transform: uppercase;" class="mt-0 pb-0 text-center header-title">${gradesEl["name"] + " " + sectionsEl["name"]}</h4>`;
                     for (let studentindex = 0; studentindex < Object.entries(sectionsEl["students"]).length; studentindex++) {
                         const studentsEl = Object.entries(sectionsEl["students"])[studentindex][1];
-                        initContent += `<p style="text-transform: uppercase;" class="text-center">${studentsEl["name"]}</p>`;
+                        initContent += `<p style="text-transform: uppercase;" class="text-center">Familia ${studentsEl["lastname"]}</p>`;
                         for (let index = 1; index < parseFloat(cardsqty) + 1; index++) {
                             initContent += `
-                            <div class="form-group row">
+                            <div class="form-group row align-content-center mx-auto">
                                 <label for="${studentsEl["id"]}-${index}" class="col-sm-6 col-form-label text-right"
-                                >Tarjeta #${index} de ${studentsEl["name"]}</label
+                                >Tarjeta #${index} de la Familia ${studentsEl["lastname"]}</label
                                 >
-                                <div class="col-sm-6 form-${studentsEl["id"]}-${index}">
+                                <div class="col-sm-5 form-${studentsEl["id"]}-${index}">
                                 <input
                                     class="form-control maxlength cardInput"
                                     type="text"
@@ -491,13 +701,12 @@ class content {
                                                     ["students"]
                                                 )[0][1]["id"] + "-1"
                                                 :
-                                                Object.entries(population["levels"])[levelindex + 1] != undefined
+                                                Object.entries(population)[levelindex + 1] != undefined
                                                     ?
                                                     Object.entries(
                                                         Object.entries(
                                                             Object.entries(
-                                                                Object.entries(population["levels"])
-                                                                [levelindex + 1][1]["grades"]
+                                                                JSON.parse(Object.entries(population)[levelindex + 1][1]["resultado"])["levels"][0]["grades"]
                                                             )
                                                             [0][1]["sections"]
                                                         )
@@ -525,9 +734,11 @@ class content {
             initContent += '</div>';
         }
 
-        initContent += ` <button type="submit" class="btn btn-primary">Guardar Cambios</button></form>`;
+        initContent += ` <button type="submit" class="btn btn-primary" title="Asignar Tarjetas" data-toggle="tooltip" data-placement="top">Asignar Tarjetas</button></form>`;
 
         $(".initContent").html(initContent);
+
+        $('[data-toggle="tooltip"]').tooltip();
     }
     async getComplement(complementId, id = this.id) {
         let formData = new FormData();
@@ -546,7 +757,13 @@ class content {
     }
     async loadComplements(id = this.id) {
 
+        $("#asignCards").removeClass("active");
+        $("#extraConfig").removeClass("active");
+        $("#createModel").addClass("active");
+
         $(".cardFeedBack").css("display", "block");
+        $(".cardFeedBackTitle").text("¿Qué es el modelo de Tarjeta?");
+        $(".cardFeedBackTip").text("Es el modelo de tarjeta que será asignada a las familias del CSSC para el evento.");
 
         let formData = new FormData();
         formData.append("action", "getEventComplements");
@@ -574,28 +791,23 @@ class content {
                 eventComplementsContent += `
                 <a class="addComplementToModel" id="${element["id"]}">
                     <div class="row">
-                    <div class="col-5">
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                             <span
-                                class="badge badge-primary mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
+                                class="badge badge-primary mb-2 text-left d-flex justify-content-center"
+                                style="font-size: 1rem;"
                                 >$${element["price"]}
                             </span>
                         </div>
-                        <div class="col-5 text-center">
+                        <div class="col-lg-5 col-md-5 col-sm-4 col-4 text-center">
                             ${element["title"]}
                         </div>
-                        <div class="col-2 text-center">
-                        <span
-                                class="badge badge-success mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
+                        <div class="col-lg-2 col-md-2 col-sm-3 col-3 text-center">
+                            <span
+                                class="badge badge-success mb-2 text-left d-flex justify-content-center"
+                                style="cursor: pointer; font-size: 1rem;"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Añadir Complemento"
                                 ><i class="mdi mdi-plus"> </i>
                             </span>
                         </div>
@@ -616,9 +828,6 @@ class content {
             return;
         }
 
-        $("#asignCards").removeClass("active");
-        $("#createModel").addClass("active");
-
         const modelComplements = responseModelComplements['content'];
 
         var cardModelContent = "";
@@ -628,7 +837,7 @@ class content {
         if (
             JSON.parse(modelComplements['model']) == undefined //Modelo No existe
         ) {
-            cardModelContent = `<p class="text-center">El Modelo de Tarjeta no ha sido creado.</p> <a style="display:flex;justify-content:center"class="btn btn-primary text-white text-center createModelWithoutComplements">Crear Modelo</a>`;
+            cardModelContent = `<p class="text-center">El Modelo de Tarjeta no ha sido creado.</p> <a class="btn btn-primary d-flex justify-content-center text-white text-center createModelWithoutComplements" style="cursor: pointer" data-toggle="tooltip" data-placement="top" title="Crear Modelo de Tarjeta">Crear Modelo</a>`;
         }
         else if (
             JSON?.parse?.(modelComplements?.['model'])?.["complements"] == "{}"
@@ -661,12 +870,8 @@ class content {
                         </div>
                         <div class="col-6">
                             <span
-                                class="badge badge-success mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
+                                class="badge badge-success mb-2 text-left d-flex justify-content-center"
+                                style="font-size: 1rem;"
                                 >$${element["price"]}
                             </span>
                         </div>
@@ -675,28 +880,23 @@ class content {
                 cardModelContent += `
                 <a class="removeComplementToModel" id="${element["id"]}">
                     <div class="row">
-                        <div class="col-2 text-center">
+                        <div class="col-lg-2 col-md-2 col-sm-3 col-3 text-center">
                          <span
-                                class="badge badge-danger mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
+                                class="badge badge-danger mb-2 text-left d-flex justify-content-center"
+                                style="font-size: 1rem; cursor: pointer"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Remover complemento del modelo."
                                 ><i class="mdi mdi-minus"> </i>
                             </span>
                         </div>
-                        <div class="col-5 text-center">
+                        <div class="col-lg-5 col-md-5 col-sm-4 col-4 text-center">
                             ${element["title"]}
                         </div>
-                        <div class="col-5">
+                        <div class="col-lg-5 col-md-5 col-sm-5">
                             <span
-                                class="badge badge-primary mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
+                                class="badge badge-primary mb-2 text-left d-flex justify-content-center"
+                                style="font-size: 1rem;"
                                 >$${element["price"]}
                             </span>
                         </div>
@@ -708,12 +908,12 @@ class content {
 
         var content = `
         <div class="row">
-            <div class="col-6">
+            <div class="col-md-6 col-lg-6 col-sm-12 mb-2">
                 <h4 class="mt-0 header-title pb-2 text-center">Complementos disponibles</h4>
                 ${eventComplementsContent}
                 </div>
-            <div class="col-6">
-            <h4 class="mt-0 header-title pb-0 text-center">Complementos en la tarjeta del estudiante</h4>
+            <div class="col-md-6 col-lg-6 col-sm-12 mb-2">
+            <h4 class="mt-0 header-title pb-0 text-center">Complementos en la tarjeta </h4>
                 ${cardModelContent}
             </div>
         </div>
@@ -738,9 +938,13 @@ class content {
         $(".cardTitle").text(card["name"]);
         $(".cardPrice").text("$" + card["price"]);
         $(".cardTotal").text("$" + cardPrice.toFixed(2));
+        if (!cardComplements)
+            $(".complementsTitle").css("display", "none");
 
 
         $(".cardContent").html(cardComplements);
+
+        $('[data-toggle="tooltip"]').tooltip();
 
     }
     async ajaxRequest(url, formData) {
@@ -775,8 +979,9 @@ class content {
         $(document).off('click', 'a.addComplementToModel');
         $(document).off('click', 'a.removeComplementToModel');
         $(document).off('click', 'a.createModelWithoutComplements');
+        $(document).off('paste', '.cardInput');
+        $(document).off('submit', 'form.extraConfig');
         $(document).off('submit', 'form.initializeCards');
-        $(document).off('paste', '.cardInput')
     }
 }
 

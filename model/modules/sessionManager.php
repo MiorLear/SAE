@@ -97,14 +97,14 @@ class sessionManager
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(param: ":id", var: $user['id'], type: PDO::PARAM_STR);
         $stmt->execute();
-        $userPermissions = $stmt->fetch();
+        $userPermissions = $stmt->fetchAll();
 
         $_SESSION['user'] = array(
             'id' => $user['id'],
             'mail' => $user['mail'],
             'name' => $user['name'],
             'picture' => $user['picture'],
-            'permissions' => $userPermissions['name']
+            'permissions' => $userPermissions
         );
 
 

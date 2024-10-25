@@ -33,61 +33,56 @@
     </div>
     <!-- end page-title -->
 
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="mt-0 header-title">Administrar Eventos</h4>
-            <p class="sub-title">
-              Lista y centraliza los eventos de la plataforma, registra eventos
-              y administra su configuración.
-            </p>
-            <button
-              type="button"
-              class="btn btn-primary btn-lg btn-block waves-effect waves-light"
-              data-toggle="modal"
-              data-target=".bd-addModal-lg"
-            >
-              Registrar Evento
-            </button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <ul class="nav nav-tabs">
-              <li class="nav-item">
-                <a
-                  class="nav-link active status"
-                  id="enable"
-                  aria-current="page"
-                  style="cursor: pointer"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  title="Listar Eventos Habilitados"
-                  >Eventos Habilitados</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link status"
-                  id="unable"
-                  aria-current="page"
-                  style="cursor: pointer"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  title="Listar Eventos Inhabilitados"
-                  >Eventos Inhabilitados</a
-                >
-              </li>
-            </ul>
-          </div>
-          <div
-            class="card-body eventsContent row"
-            style="background-color: #00000008; margin: 0"
-          ></div>
-        </div>
+    <div class="card">
+      <div class="card-body">
+        <h4 class="mt-0 header-title">Administrar Eventos</h4>
+        <p class="sub-title">
+          Lista y centraliza los eventos de la plataforma, registra eventos
+          y administra su configuración.
+        </p>
+        <button
+          type="button"
+          class="btn btn-primary btn-lg btn-block waves-effect waves-light"
+          data-toggle="modal"
+          data-target=".bd-addModal-lg"
+        >
+          Registrar Evento
+        </button>
       </div>
-      <!-- end col -->
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <ul class="nav nav-pills flex-column flex-sm-row">
+          <li class="nav-item">
+            <a
+              class="flex-sm-fill nav-link text-center py-1 active status "
+              id="enable"
+              aria-current="page"
+              style="cursor: pointer"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Listar Eventos Habilitados"
+              >Eventos Habilitados</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="flex-sm-fill nav-link text-center py-1 status"
+              id="unable"
+              aria-current="page"
+              style="cursor: pointer"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Listar Eventos Inhabilitados"
+              >Eventos Inhabilitados</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div
+        class="card-body row eventsContent"
+        style="background-color: #00000008; margin: 0"
+      ></div>
     </div>
     <!-- end row -->
 

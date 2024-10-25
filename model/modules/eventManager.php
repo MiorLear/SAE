@@ -3,13 +3,15 @@ require('../config/config.php');
 
 class eventManager
 {
-    private $action, $id, $json, $complementId;
+    private $action, $id, $json, $complementId, $forgottenCard, $cardsQty;
 
     public function __construct($formData)
     {
         $this->action = $formData['action'];
         $this->id = $formData['id'];
         $this->complementId = $formData['complementId'];
+        $this->cardsQty = $formData['cardsQty'];
+        $this->forgottenCard = $formData['forgottenCard'];
         $this->json = $formData['json'];
         $this->conn = new dbConfig();
         $this->actionManagement();
@@ -28,11 +30,20 @@ class eventManager
             case "getComplement":
                 $this->getComplement();
                 break;
+            case "startEvent":
+                $this->startEvent();
+                break;
+            case "endEvent":
+                $this->endEvent();
+                break;
             case "addCardstoEvent":
                 $this->addCardstoEvent();
                 break;
             case "getStudentsPopulation":
                 $this->getStudentsPopulation();
+                break;
+            case "getFamilies":
+                $this->getFamilies();
                 break;
             case "getStudentsNumber":
                 $this->getStudentsNumber();
@@ -45,6 +56,12 @@ class eventManager
                 break;
             case "addComplementToModel":
                 $this->addComplementToModel();
+                break;
+            case "addExtraSettings":
+                $this->addExtraSettings();
+                break;
+            case "getExtraSettings":
+                $this->getExtraSettings();
                 break;
             case "removeComplementToModel":
                 $this->removeComplementToModel();
@@ -120,20 +137,33 @@ class eventManager
     private function getStudentsPopulation(): void
     {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT jsonb_pretty(jsonb_build_object('levels', jsonb_agg(jsonb_build_object('id', l.id, 'name', l.name, 'grades', (SELECT jsonb_agg( jsonb_build_object('id', g.id, 'name', g.name, 'sections', (SELECT jsonb_agg(jsonb_build_object('id', sec.id, 'name', sec.name, 'students', (SELECT jsonb_agg(jsonb_build_object('id', s.id, 'name', CONCAT(s.name[1], ' ', s.name[2]))) FROM students s WHERE s.grades[1] = g.id AND s.grades[2] = sec.id))) FROM sections sec WHERE sec.id IN (SELECT DISTINCT s.grades[2] FROM students s WHERE s.grades[1] = g.id)))) FROM grades g WHERE g.id = ANY(l.grades)))))) AS resultado FROM events e JOIN levels l ON l.id::TEXT = ANY(SELECT jsonb_array_elements_text(e.settings->'settings'->'levels')) WHERE e.id = :id;";
+        $sql = "SELECT jsonb_pretty(jsonb_build_object('levels', jsonb_agg(jsonb_build_object('id', l.id, 'name', l.name, 'grades', (SELECT jsonb_agg( jsonb_build_object('id', g.id, 'name', g.name, 'sections', (SELECT jsonb_agg(jsonb_build_object('id', sec.id, 'name', sec.name, 'students', (SELECT jsonb_agg(jsonb_build_object('id', s.id, 'name', CONCAT(s.name[1], ' ', s.name[2]), 'lastname', s.name[2])) FROM (SELECT DISTINCT ON (s.name[2]) * FROM students s ORDER BY s.name[2], s.grades[1]) AS s WHERE s.id IS NOT NULL AND s.grades[1] = g.id AND s.grades[2] = sec.id))) FROM sections sec WHERE sec.id IN (SELECT DISTINCT s.grades[2] FROM (SELECT DISTINCT ON (s.name[2]) * FROM students s ORDER BY s.name[2], s.grades[1]) AS s WHERE s.grades[1] = g.id)))) FROM grades g WHERE g.id = ANY(l.grades)))))) AS resultado FROM events e JOIN levels l ON l.id::TEXT = ANY(SELECT jsonb_array_elements_text(e.settings->'settings'->'levels')) WHERE e.id = :id GROUP BY l.id;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->execute();
-        $eventLevels = $stmt->fetch()["resultado"];
+        $eventLevels = $stmt->fetchAll();
         exit(json_encode(value: array(
             "result" => "success",
-            "content" => json_decode(json: $eventLevels),
+            "content" => $eventLevels,
+        )));
+    }
+    private function getFamilies(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "SELECT jsonb_pretty(jsonb_build_object('levels', jsonb_agg(jsonb_build_object('id', l.id, 'name', l.name, 'grades', (SELECT jsonb_agg( jsonb_build_object('id', g.id, 'name', g.name, 'sections', (SELECT jsonb_agg(jsonb_build_object('id', sec.id, 'name', sec.name, 'family', (SELECT jsonb_agg(jsonb_build_object('name', s.name[2], 'students', (SELECT jsonb_agg(jsonb_build_object('id', stud.id, 'name', CONCAT(stud.name[1], ' ', stud.name[2])))FROM students stud WHERE stud.name[2] = s.name[2]))) FROM (SELECT DISTINCT ON (s.name[2]) * FROM students s ORDER BY s.name[2], s.grades[1]) AS s WHERE s.id IS NOT NULL AND s.grades[1] = g.id AND s.grades[2] = sec.id))) FROM sections sec WHERE sec.id IN (SELECT DISTINCT s.grades[2] FROM (SELECT DISTINCT ON (s.name[2]) * FROM students s ORDER BY s.name[2], s.grades[1]) AS s WHERE s.grades[1] = g.id)))) FROM grades g WHERE g.id = ANY(l.grades)))))) AS resultado FROM events e JOIN levels l ON l.id::TEXT = ANY(SELECT jsonb_array_elements_text(e.settings->'settings'->'levels')) WHERE e.id = :id GROUP BY l.id;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+        $eventLevels = $stmt->fetchAll();
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => $eventLevels,
         )));
     }
     private function getStudentsNumber(): void
     {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT SUM((SELECT COUNT(*) FROM students s WHERE s.grades[1] = g.id AND s.grades[2] = sec.id)) AS total_students FROM events e JOIN levels l ON l.id::TEXT = ANY(SELECT jsonb_array_elements_text(e.settings->'settings'->'levels')) JOIN grades g ON g.id = ANY(l.grades) JOIN sections sec ON sec.id IN (SELECT DISTINCT s.grades[2] FROM students s WHERE s.grades[1] = g.id) WHERE e.id = :id;";
+        $sql = "SELECT SUM((SELECT COUNT(*) FROM (SELECT DISTINCT ON (s.name[2]) * FROM students s ORDER BY s.name[2], s.grades[1]) AS s WHERE s.grades[1] = g.id AND s.grades[2] = sec.id)) AS total_students FROM events e JOIN levels l ON l.id::TEXT = ANY(SELECT jsonb_array_elements_text(e.settings->'settings'->'levels')) JOIN grades g ON g.id = ANY(l.grades) JOIN sections sec ON sec.id IN (SELECT DISTINCT s.grades[2] FROM (SELECT DISTINCT ON (s.name[2]) * FROM students s ORDER BY s.name[2], s.grades[1]) AS s WHERE s.grades[1] = g.id) WHERE e.id = :id;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->execute();
@@ -165,10 +195,13 @@ class eventManager
             "student_id" => "",
             "complements" => "{}",
             "exchanged" => false,
-            "payed" => false,
             "exchangedDate" => "",
+            "payed" => false,
             "payedDate" => "",
-            "returned" => false
+            "delivered" => false,
+            "deliveredDate" => "",
+            "returned" => false,
+            "returnedDate" => "false"
         ));
 
         $sql = "UPDATE events SET settings = jsonb_set(settings, '{model}', :model::jsonb) WHERE id = :id;";
@@ -185,7 +218,7 @@ class eventManager
         $conn = $this->conn->getConnection();
 
 
-        $sql = "UPDATE events SET data = jsonb_set(settings, '{cards}', :json::jsonb) WHERE id = :id;";
+        $sql = "UPDATE events SET data = jsonb_set(settings, '{cards}', :json::jsonb), status ='Listo' WHERE id = :id;";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->bindParam(':json', $this->json, PDO::PARAM_STR);
@@ -194,11 +227,46 @@ class eventManager
             "result" => "success"
         )));
     }
+    private function addExtraSettings(): void
+    {
+        $conn = $this->conn->getConnection();
+
+        $cardsQty = $this->cardsQty;
+        $forgottenCard = $this->forgottenCard;
+
+        $sql = "UPDATE events SET settings = jsonb_set(jsonb_set(settings, '{settings, cardsQtyPerStudent}', '\"$cardsQty\"'),'{settings, forgottenCardPrice}', '\"$forgottenCard\"') WHERE id = :id;";
+
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        exit(json_encode(value: array(
+            "result" => "success"
+        )));
+    }
+    private function getExtraSettings(): void
+    {
+        $conn = $this->conn->getConnection();
+
+
+        $sql = "SELECT settings->'settings'->>'cardsQtyPerStudent' AS cardsQtyPerStudent, settings->'settings'->>'forgottenCardPrice' AS forgottenCardPrice FROM events WHERE id = :id;";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => $stmt->fetch()
+        )));
+    }
     private function addComplementToModel(): void
     {
         $complementId = $this->complementId;
         $conn = $this->conn->getConnection();
-        $sql = "SELECT COUNT(e.settings->'model'->'complements') AS model FROM events e WHERE e.id = :id AND e.settings->'model'->'complements' != '".'"'. "{}".'"'. "';";
+        $sql = "SELECT COUNT(e.settings->'model'->'complements') AS model FROM events e WHERE e.id = :id AND e.settings->'model'->'complements' != '\"{}\"';";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->execute();
@@ -220,10 +288,13 @@ class eventManager
                     ]
                 ],
                 "exchanged" => false,
-                "payed" => false,
                 "exchangedDate" => "",
+                "payed" => false,
                 "payedDate" => "",
-                "returned" => false
+                "delivered" => false,
+                "deliveredDate" => "",
+                "returned" => false,
+                "returnedDate" => "false"
             ], flags: JSON_FORCE_OBJECT);
 
             $sql = "UPDATE events SET settings = jsonb_set(settings, '{model}', :model) WHERE id = :id;";
@@ -273,7 +344,7 @@ class eventManager
     private function checkInitStatus(): void
     {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT CASE WHEN status != 'Inicializado' THEN '0' WHEN  settings-> 'model' IS NULL THEN '1' WHEN data->'cards' IS NULL THEN '2' ELSE '3' END AS result FROM events WHERE id = :id;";
+        $sql = "SELECT CASE WHEN status = 'Pendiente de Iniciar' THEN '0' WHEN  settings-> 'model' IS NULL THEN '1' WHEN settings->'settings'->>'cardsQtyPerStudent' IS NULL OR settings->'settings'->>'forgottenCardPrice' IS NULL THEN '2'  WHEN data->'cards' IS NULL THEN '3' ELSE '4' END AS result FROM events WHERE id = :id;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->execute();
@@ -303,10 +374,13 @@ class eventManager
                 "student_id" => "",
                 "complements" => "{}",
                 "exchanged" => false,
-                "payed" => false,
                 "exchangedDate" => "",
+                "payed" => false,
                 "payedDate" => "",
-                "returned" => false
+                "delivered" => false,
+                "deliveredDate" => "",
+                "returned" => false,
+                "returnedDate" => "false"
             ));
 
             $sql = "UPDATE events SET settings = jsonb_set(settings, '{model}', :model::jsonb) WHERE id = :id;";
@@ -315,6 +389,30 @@ class eventManager
             $stmt->bindParam(':model', $model, PDO::PARAM_STR);
             $stmt->execute();
         }
+
+        exit(json_encode(value: array(
+            "result" => "success"
+        )));
+    }
+    private function startEvent(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "UPDATE events SET status = 'En Curso' WHERE id = :id;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+
+        exit(json_encode(value: array(
+            "result" => "success"
+        )));
+    }
+    private function endEvent(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "UPDATE events SET status = 'Finalizado' WHERE id = :id;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
 
         exit(json_encode(value: array(
             "result" => "success"
@@ -349,11 +447,11 @@ class eventManager
     private function checkEventExist(): void
     {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT COUNT(e.id) FROM events e WHERE e.id = :id;";
+        $sql = "SELECT COUNT(e.id) as check, e.status FROM events e WHERE e.id = :id GROUP BY e.status;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->execute();
-        $response = $stmt->fetch()["count"];
+        $response = $stmt->fetch();
         exit(json_encode(value: array(
             "result" => "success",
             "content" => $response,
@@ -368,6 +466,7 @@ try {
     exit(json_encode(value: array(
         'error' => 'Error Inesperado',
         "errorType" => "Server Error",
+        "actionDone" => $_POST["action"],
         'errorDetails' => $th->getMessage(),
         "suggestion" => "Reporta el error a un administrador."
     )));
@@ -375,6 +474,7 @@ try {
     exit(json_encode(value: array(
         'error' => 'Error Inesperado',
         "errorType" => "Server Error",
+        "actionDone" => $_POST["action"],
         'errorDetails' => $th->getMessage(),
         "suggestion" => "Reporta el error a un administrador."
     )));

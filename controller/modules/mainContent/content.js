@@ -907,7 +907,7 @@ class content extends dataTables {
                     return `${meses[mes - 1]} ${dia}, ${año}`;
                 };
                 content += `
-                <div class="col-lg-4 col-md-4 col-sm-6 card" style="box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2); margin: 2rem; position: relative;">
+                <div class="col-sm-12 col-md-4 col-lg-4 col-4 card">
                     <div class="card-header card-primary" style="margin-top: 1rem;">
                         <a style="position: absolute; top: 0; right: 0; background-color: orange; padding: 1rem; background-color:transparent;" id="event-${event["id"]}-settings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i style="display:flex; text-align:center; justify-content:center; font-size:1.2rem;" class="ti-settings"></i>
@@ -924,31 +924,31 @@ class content extends dataTables {
                     </div>`;
                 }
                 content += `
-                    <h5 class="card-title" style="display:flex; text-align:center; justify-content:center;">${event["name"]}</h5>
-                    <span class="badge badge-primary" style="display:flex; text-align:center; justify-content:center; font-size:1rem;">${event["year"]}</span>
+                    <h5 class="card-title text-center">${event["name"]}</h5>
+                    <span class="badge badge-primary d-flex justify-content-center" style="font-size:1rem;">${event["year"]}</span>
                     </div>
                     <div class="card-body row">
-                        <div class="col-6"> 
-                            <a class="badge badge-success" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseStatus-${event["id"]}" role="button" aria-expanded="false" aria-controls="collapseStatus-${event["id"]}" title="Mostrar Estado del Evento">Estado &nbsp;&nbsp;<i class="ion ion-md-arrow-down"></i></a>
+                        <div class="col-lg-6 col-md-6 col-sm-12 py-1"> 
+                            <a class="badge badge-success text-white d-flex justify-content-center" style="font-size:1rem;" data-toggle="collapse" data-target="#collapseStatus-${event["id"]}" role="button" aria-expanded="false" aria-controls="collapseStatus-${event["id"]}" title="Mostrar Estado del Evento">Estado &nbsp;&nbsp;<i class="ion ion-md-arrow-down"></i></a>
                             <div class="collapse" id="collapseStatus-${event["id"]}">
-                                <p>${event["status"]}</p>
+                                <p class="text-center">${event["status"]}</p>
                             </div>
                         </div>
-                        <div class="col-6"> 
-                            <a class="badge badge-info" style="display:flex; font-size:1rem; text-align:center; justify-content:center; color:#FFF;" data-toggle="collapse" data-target="#collapseLevels-${event["id"]}" role="button" aria-expanded="false" aria-controls="collapseLevels-${event["id"]}" title="Mostrar Niveles del Evento"><i class="ion ion-md-arrow-down"></i>&nbsp;&nbsp;Niveles</a>
+                        <div class="col-lg-6 col-md-6 col-sm-12 py-1"> 
+                            <a class="badge badge-info text-white d-flex justify-content-center" style="font-size:1rem;" data-toggle="collapse" data-target="#collapseLevels-${event["id"]}" role="button" aria-expanded="false" aria-controls="collapseLevels-${event["id"]}" title="Mostrar Niveles del Evento"><i class="ion ion-md-arrow-down"></i>&nbsp;&nbsp;Niveles</a>
                             <div class="collapse" id="collapseLevels-${event["id"]}">
-                                <p>${finalLevels.join(', ')}</p>
+                                <p class="text-center">${finalLevels.join(', ')}</p>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <h6 style="display:flex; font-size:1rem; text-align:center; justify-content:center;">Fecha del Evento:</h6>
-                        <p style="display:flex; font-size:1rem; text-align:center; justify-content:center;">
+                        <h6 class="d-flex justify-content-center">Fecha del Evento:</h6>
+                        <p class="d-flex justify-content-center">
                             ${largeDate(event["date"])}
                         </p>
                     </div>`;
                 if (event["status"] !== "Deshabilitado") {
-                    content += `<a class="btn btn-primary mt-0 mb-3 content" id="eventPanel" name="${event["id"]}" role="button" style="display:flex; font-size:1rem; color:#FFF; text-align:center; justify-content:center; padding:0.1rem;" data-toggle="tooltip" data-placement="top" title="Entrar al evento">Entrar al evento</a>`;
+                    content += `<a class="btn btn-primary mt-0 mb-3 p-0 content d-flex justify-content-center text-white" id="eventPanel" name="${event["id"]}" role="button" style="font-size:1rem;" data-toggle="tooltip" data-placement="top" title="Entrar al evento">Entrar al evento</a>`;
                 }
                 content += `</div>`;
             }
@@ -1058,16 +1058,21 @@ class content extends dataTables {
 
                 dataTableRow.push
                     (
-                        content['status'] == 'Habilitado' ?
-                            `<center>
-                            <a class="lead text-warning showEditModal" data-toggle="tooltip" data-placement="top" title="Editar ${this.traductor["rusure"]()}" id="${content['id']}">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            &nbsp;&nbsp;
-                            <a class="lead text-secondary showDisableAlert" data-toggle="tooltip" data-placement="top" title="Deshabilitar ${this.traductor["rusure"]()}" id="${content['id']}">
-                                <i class="fas fa-lock"></i>
-                            </a>
-                        </center>`
+                        content['status'] == 'Habilitado' 
+                            ?
+                                table == "roles" && content["name"] == "root" || table == "users" && content["rol_id"] == "root"
+                                ?
+                                ``
+                                :
+                                `<center>
+                                <a class="lead text-warning showEditModal" data-toggle="tooltip" data-placement="top" title="Editar ${this.traductor["rusure"]()}" id="${content['id']}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                &nbsp;&nbsp;
+                                <a class="lead text-secondary showDisableAlert" data-toggle="tooltip" data-placement="top" title="Deshabilitar ${this.traductor["rusure"]()}" id="${content['id']}">
+                                    <i class="fas fa-lock"></i>
+                                </a>
+                            </center>`
                             :
                             `<center>
                             <a class="lead text-info showRehabilitateAlert" data-toggle="tooltip" data-placement="top" title="Rehabilitar ${this.traductor["rusure"]()}" id="${content['id']}">

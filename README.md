@@ -1,2 +1,2 @@
 # SAE
-Event Managemente System for the CSSC
+Event Management System for the CSSC

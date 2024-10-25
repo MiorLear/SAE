@@ -65,7 +65,7 @@ class contentManager {
                 load: async () => {
                     console.log("Pending to load dinamic data");
                     await this.loadPage("modules/main/mainPanel.html").then(async () => {
-                        await this.initializeContent("../controller/plugins/dashBoard.js");
+                        await this.initializeContent("../controller/plugins/dashBoard.js", "mainPanel");
 
                         if (this.elements !== "main")
                             await this.loadElements('main');
@@ -122,12 +122,17 @@ class contentManager {
                     });
                 }
             },
-            //Management Modules
+            //Analysis Modules
             "checkCard": {
                 load: async () => {
-                    console.log("checkCard isn't finished");
-
                     await this.loadPage("modules/management/checkCard.html").then(async () => {
+                        await this.initializeContent("../controller/modules/analysis/checkCard.js", "checkCard");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('checkCard');
+
                         $("a#checkCard").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
@@ -135,31 +140,44 @@ class contentManager {
             },
             "checkStudent": {
                 load: async () => {
-                    console.log("checkStudent isn't finished");
-
                     await this.loadPage("modules/management/checkStudent.html").then(async () => {
+                        await this.initializeContent("../controller/modules/analysis/checkStudent.js", "checkStudent");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('checkStudent');
+
                         $("a#checkStudent").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
             },
-            //Analysis Modules
             "controlLog": {
                 load: async () => {
                     await this.loadPage("modules/analysis/controlLog.html").then(async () => {
                         await this.initializeContent("../controller/modules/analysis/controlLog.js", "controlLog");
-                        await this.loadPlugins('controlLog');
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('controlLog');
+                        
                         $("a#controlLog").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
             },
-            "statistics": {
+            "analysis": {
                 load: async () => {
-                    console.log("statistics isn't finished");
+                    await this.loadPage("modules/analysis/analysis.html").then(async () => {
+                        await this.initializeContent("../controller/modules/analysis/analysis.js", "analysis");
 
-                    await this.loadPage("modules/analysis/statistics.html").then(async () => {
-                        $("a#statistics").css("color", "#FFF");
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('analysis');
+
+                        $("a#analysis").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
@@ -167,9 +185,14 @@ class contentManager {
             //Payment Modules
             "payCard": {
                 load: async () => {
-                    console.log("payCard isn't finished");
-
                     await this.loadPage("modules/payment/payCard.html").then(async () => {
+                        await this.initializeContent("../controller/modules/payment/payCard.js", "payCard");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('payCard');
+
                         $("a#payCard").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
@@ -177,10 +200,15 @@ class contentManager {
             },
             "payStudent": {
                 load: async () => {
-                    console.log("payStudent isn't finished");
-
                     await this.loadPage("modules/payment/payStudent.html").then(async () => {
-                        $("a#payCard").css("color", "#FFF");
+                        await this.initializeContent("../controller/modules/payment/payStudent.js", "payStudent");
+
+                        if (this.elements !== "main")
+                            await this.loadElements('main');
+                        else
+                            await this.loadPlugins('payStudent');
+
+                        $("a#payStudent").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
@@ -188,26 +216,39 @@ class contentManager {
             //Event Modules
             "eventPanel": {
                 load: async (e) => {
-
                     await this.loadPage("modules/event/eventPanel.html").then(async () => {
-                        await this.initializeContent("../controller/modules/events/startEvent.js");
+                        await this.initializeContent("../controller/modules/events/eventPanel.js", "eventPanel");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
                         else
-                            await this.loadPlugins('events');
+                            await this.loadPlugins('eventPanel');
 
                         $("a#eventPanel").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
             },
+            "checkEventCard": {
+                load: async () => {
+                    await this.loadPage("modules/event/checkEventCard.html").then(async () => {
+                        await this.initializeContent("../controller/modules/events/checkEventCard.js", "checkEventCard");
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        else
+                            await this.loadPlugins('checkEventCard');
+
+
+                        $("a#checkEventCard").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
+                }
+            },
             "initialize": {
                 load: async () => {
-                    console.log("initialize isn't finished");
-
                     await this.loadPage("modules/event/initialize.html").then(async () => {
-                        await this.initializeContent("../controller/modules/events/initialize.js");
+                        await this.initializeContent("../controller/modules/events/initialize.js", "initialize");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
@@ -221,15 +262,13 @@ class contentManager {
             },
             "cardsPresale": {
                 load: async () => {
-                    console.log("cardsPresale isn't finished");
-
                     await this.loadPage("modules/event/cardsPresale.html").then(async () => {
-                        // await this.initializeContent();
+                        await this.initializeContent("../controller/modules/events/presale.js", "cardsPresale");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins("presale");
 
                         $("a#cardsPresale").css("color", "#FFF");
                         $("#overlay").css("display", "none");
@@ -238,14 +277,13 @@ class contentManager {
             },
             "salesCase": {
                 load: async () => {
-                    console.log("salesCase isn't finished");
                     await this.loadPage("modules/event/salesCase.html").then(async () => {
-                        // await this.initializeContent();
+                        await this.initializeContent("../controller/modules/events/salesCase.js", "salesCase");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins("salesCase");
 
                         $("a#salesCase").css("color", "#FFF");
                         $("#overlay").css("display", "none");
@@ -254,14 +292,13 @@ class contentManager {
             },
             "cardsDelivery": {
                 load: async () => {
-                    console.log("cardsDelivery isn't finished");
                     await this.loadPage("modules/event/cardsDelivery.html").then(async () => {
-                        // await this.initializeContent();
+                        await this.initializeContent("../controller/modules/events/cardsDelivery.js", "cardsDelivery");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins("cardsDelivery");
 
                         $("a#cardsDelivery").css("color", "#FFF");
                         $("#overlay").css("display", "none");
@@ -270,14 +307,13 @@ class contentManager {
             },
             "cardsReturn": {
                 load: async () => {
-                    console.log("cardsReturn isn't finished");
                     await this.loadPage("modules/event/cardsReturn.html").then(async () => {
-                        // await this.initializeContent();
+                        await this.initializeContent("../controller/modules/events/cardsReturn.js", "cardsReturn");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins("cardsReturn");
 
                         $("a#cardsReturn").css("color", "#FFF");
                         $("#overlay").css("display", "none");
@@ -286,50 +322,60 @@ class contentManager {
             },
             "redeem": {
                 load: async () => {
-                    console.log("redeem isn't finished");
                     await this.loadPage("modules/event/redeem.html").then(async () => {
-                        // await this.initializeContent();
+                        await this.initializeContent("../controller/modules/events/redeem.js", "redeem");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins("redeem");
 
                         $("a#redeem").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
             },
-            "closure": {
+            "start": {
                 load: async () => {
-                    console.log("closure isn't finished");
-
-                    await this.loadPage("modules/event/closure.html").then(async () => {
-                        // await this.initializeContent();
+                    await this.loadPage("modules/event/start.html").then(async () => {
+                        await this.initializeContent("../controller/modules/events/start.js", "start");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins('start');
+
+                        $("a#start").css("color", "#FFF");
+                        $("#overlay").css("display", "none");
+                    });
+                }
+            },
+            "closure": {
+                load: async () => {
+                    await this.loadPage("modules/event/closure.html").then(async () => {
+                        await this.initializeContent("../controller/modules/events/closure.js", "closure");
+
+                        if (this.elements !== "events")
+                            await this.loadElements('events');
+                        else
+                            await this.loadPlugins('closure');
 
                         $("a#closure").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
             },
-            "eventLog": {
+            "eventAnalysis": {
                 load: async () => {
-                    console.log("eventLog isn't finished");
-
-                    await this.loadPage("modules/event/eventLog.html").then(async () => {
-                        // await this.initializeContent();
+                    await this.loadPage("modules/event/eventAnalysis.html").then(async () => {
+                        await this.initializeContent("../controller/modules/events/eventAnalysis.js", "eventAnalysis");
 
                         if (this.elements !== "events")
                             await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
+                        else
+                            await this.loadPlugins('eventAnalysis');
 
-                        $("a#eventLog").css("color", "#FFF");
+                        $("a#eventAnalysis").css("color", "#FFF");
                         $("#overlay").css("display", "none");
                     });
                 }
@@ -509,7 +555,53 @@ class contentManager {
                 app.initDatePicker();
                 app.initMaxLength();
                 break;
+            case 'checkStudent':
+                app.initDatePicker();
+                break;
+            case 'checkCard':
+                app.initDatePicker();
+                break;
+            case 'checkEventCard':
+                app.initDatePicker();
+                break;
+            case 'presale':
+                app.initDatePicker();
+                break;
+            case "salesCase":
+                app.initDatePicker();
+                break;
+            case 'start':
+                app.initDatePicker();
+                break;
+            case 'payCard':
+                app.initDatePicker();
+                break;
+            case 'payStudent':
+                app.initDatePicker();
+                break;
+            case 'closure':
+                app.initDatePicker();
+                break;
+            case "cardsDelivery":
+                app.initDatePicker();
+                break;
+            case "redeem":
+                app.initDatePicker();
+                break;
+            case "cardsReturn":
+                app.initDatePicker();
+                break;
+            case "analysis":
+                app.initDatePicker();
+                break;
+            case "eventAnalysis":
+                app.initDatePicker();
+                break;
             case 'events':
+                app.initTouchSpin();
+                app.initDatePicker();
+                break;
+            case 'eventPanel':
                 app.initTouchSpin();
                 app.initDatePicker();
                 break;
@@ -566,7 +658,7 @@ class contentManager {
                             'error': `No se encuentra el contenido.`,
                             'errorType': 'Client Error',
                             'errorCode': response['status'],
-                            'errorDetails': `HTML content not found. \nERROR THROWN BY JS: \n${error}`,
+                            'errorDetails': `HTML content not found.`,
                             'suggestion': 'Vuelva a ingresar a la plataforma.',
                             'logout': true
                         }
@@ -580,7 +672,7 @@ class contentManager {
 
     async initializeContent(source, module = this.content()) {
         var user = await this.validateSession();
-
+        
         let params = {
             "table": module,
             "user": user
