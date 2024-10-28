@@ -29,10 +29,17 @@ class content {
         if (eventExist < 1 || Number.isNaN(eventExist))
             return window.history.back();
 
+        const permissions = this.user["permissions"];
+
         switch (event["status"]) {
             case "Pendiente de Iniciar":
                 $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length > 0) {
+
+                    $("li#adminEvent").css("display", "block");
+                    $("li#initialize").css("display", "block");
+                }
                 $("li#cardsPresale").css("display", "none");
                 $("li#cardsDelivery").css("display", "none");
                 $("li#start").css("display", "none");
@@ -46,7 +53,9 @@ class content {
                 break;
             case "Inicializado":
                 $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#initialize").css("display", "block");
+
                 $("li#cardsPresale").css("display", "none");
                 $("li#cardsDelivery").css("display", "none");
                 $("li#start").css("display", "none");

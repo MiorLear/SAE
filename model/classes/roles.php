@@ -80,7 +80,13 @@ class roles
     {
         $conn = $this->conn->getConnection();
 
-        $sql = "SELECT id, name FROM roles WHERE status = 'Habilitado' ORDER BY id DESC;";
+        if (array_filter($_SESSION["user"]["permissions"], function($permission) {
+            return $permission['name'] === 'Administrar Plataforma' ? true : false;
+        }))
+            $sql = "SELECT id, name FROM roles WHERE status = 'Habilitado' ORDER BY id DESC;";
+            else
+            $sql = "SELECT id, name FROM roles WHERE status = 'Habilitado' AND name != 'root' ORDER BY id DESC;";
+
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();
         $response = $stmt->fetchAll();

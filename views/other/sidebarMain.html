@@ -1,96 +1,148 @@
-
-    <div class="slimscroll-menu" id="remove-scroll">
-
-        <!--- Sidemenu -->
-        <div id="sidebar-menu">
-            <!-- Left Menu Start -->
-            <ul class="metismenu" id="side-menu">
-                <li class="menu-title">Estádisticas del Evento</li>
-                <li>
-                    <a class="waves-effect content" id="mainPanel" data-toggle="tooltip" data-placement="top" title="Ir a Panel de Control">
-                        <i class="dripicons-meter" id="mainPanel"></i>
-                        <span id="mainPanel"> Panel de Control </span>
-                    </a>
-                </li>
-
-                <li class="menu-title">Administrar</li>
-                <li>
-                    <a class="waves-effect content" id="events" data-toggle="tooltip" data-placement="top" title="Ir a Eventos">
-                        <i class="fas fa-calendar" id="events"></i>
-                        <span id="events"> Eventos </span>
-                    </a>
-                </li>
-                <li>
-                    <a class="waves-effect content" id="students" data-toggle="tooltip" data-placement="top" title="Ir a Estudiantes">
-                        <i class="fas fa-user-graduate" id="students"></i>
-                        <span id="students"> Estudiantes </span>
-                    </a>
-                </li>
-                <li>
-                    <a class="waves-effect content" id="grades" data-toggle="tooltip" data-placement="top" title="Ir a Grados">
-                        <i class="fas fa-graduation-cap" id="grades"></i>
-                        <span id="grades"> Grados </span>
-                    </a>
-                </li>
-                <li>
-                    <a class="waves-effect content" id="levels" data-toggle="tooltip" data-placement="top" title="Ir a Niveles">
-                        <i id="levels" class="fas fa-school"></i>
-                        <span id="levels"> Niveles </span>
-                    </a>
-                </li>
-                <li>
-                    <a class="waves-effect content" id="users" data-toggle="tooltip" data-placement="top" title="Ir a Usuarios">
-                        <i class="fas fa-user" id="users"></i>
-                        <span id="users"> Usuarios </span>
-                    </a>
-                </li>
-                <li>
-                    <a class="waves-effect content" id="roles" data-toggle="tooltip" data-placement="top" title="Ir a Roles">
-                        <i class="fas fa-users" id="roles"></i>
-                        <span id="roles"> Roles </span>
-                    </a>
-                </li>
-                <li class="menu-title">Gestión y Análisis</li>
-                <li>
-                    <a href="javascript:void(0);" class="waves-effect"><i class="fas fa-eye"></i><span> Revisión <span
-                                class="float-right menu-arrow"><i class="mdi mdi-chevron-right"></i></span> </span></a>
-                    <ul class="submenu">
-                        <li><a class="content" id="checkCard" data-toggle="tooltip" data-placement="top" title="Ir a Revisar Tarjetas">Tarjetas</a></li>
-                        <li><a class="content" id="checkStudent" data-toggle="tooltip" data-placement="top" title="Ir a Revisar Estudiantes">Estudiantes</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="javascript:void(0);" class="waves-effect"
-                      ><i class="fas fa-file-invoice-dollar"></i
-                      ><span>
-                        Pago
-                        <span class="float-right menu-arrow"
-                          ><i class="mdi mdi-chevron-right"></i
-                        ></span> </span
-                    ></a>
-                    <ul class="submenu">
-                      <li><a class="content" id="payCard" data-toggle="tooltip" data-placement="top" title="Ir a Pago de Tarjetas">Tarjetas</a></li>
-                      <li><a class="content" id="payStudent" data-toggle="tooltip" data-placement="top" title="Ir a Pago por estudiantes">Estudiantes</a></li>
-                    </ul>
-                  </li>
-
-                <li>
-                    <a class="waves-effect content" id="analysis" data-toggle="tooltip" data-placement="top" title="Ir a Análisis">
-                        <i class="fas fa-digital-tachograph" id="analysis"></i>
-                        <span id="analysis"> Análisis </span>
-                    </a>
-                </li>
-                <li>
-                    <a class="waves-effect content" id="controlLog" data-toggle="tooltip" data-placement="top" title="Ir a Bitácora de Control">
-                        <i class="fas fa-book" id="controlLog"></i>
-                        <span id="controlLog"> Bitácora de Control </span>
-                    </a>
-                </li>
-            </ul>
-
-        </div>
-        <!-- Sidebar -->
-        <div class="clearfix"></div>
-
-    </div>
-    <!-- Sidebar -left -->
+<div class="slimscroll-menu" id="remove-scroll">
+  <!--- Sidemenu -->
+  <div id="sidebar-menu">
+    <!-- Left Menu Start -->
+    <ul class="metismenu" id="side-menu">
+      <li class="menu-title">Inicio</li>
+      <li id="mainPanel">
+        <a
+          class="waves-effect content"
+          id="mainPanel"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Panel de Control"
+        >
+          <i class="dripicons-meter" id="mainPanel"></i>
+          <span id="mainPanel"> Panel de Control </span>
+        </a>
+      </li>
+      <li id="admin-title" class="menu-title manage-platform" style="display: none">Administrar</li>
+      <li id="events" class="manage-platform" style="display: none">
+        <a
+          class="waves-effect content"
+          id="events"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Eventos"
+        >
+          <i class="fas fa-calendar" id="events"></i>
+          <span id="events"> Eventos </span>
+        </a>
+      </li>
+      <li id="students" class="manage-platform" style="display: none">
+        <a
+          class="waves-effect content"
+          id="students"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Estudiantes"
+        >
+          <i class="fas fa-user-graduate" id="students"></i>
+          <span id="students"> Estudiantes </span>
+        </a>
+      </li>
+      <li id="grades" class="manage-platform" style="display: none">
+        <a
+          class="waves-effect content"
+          id="grades"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Grados"
+        >
+          <i class="fas fa-graduation-cap" id="grades"></i>
+          <span id="grades"> Grados </span>
+        </a>
+      </li>
+      <li id="levels" class="manage-platform" style="display: none">
+        <a
+          class="waves-effect content"
+          id="levels"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Niveles"
+        >
+          <i id="levels" class="fas fa-school"></i>
+          <span id="levels"> Niveles </span>
+        </a>
+      </li>
+      <li id="users" class="manage-platform" style="display: none">
+        <a
+          class="waves-effect content"
+          id="users"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Usuarios"
+        >
+          <i class="fas fa-user" id="users"></i>
+          <span id="users"> Usuarios </span>
+        </a>
+      </li>
+      <li id="roles" class="manage-platform" style="display: none">
+        <a
+          class="waves-effect content"
+          id="roles"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Roles"
+        >
+          <i class="fas fa-users" id="roles"></i>
+          <span id="roles"> Roles </span>
+        </a>
+      </li>
+      <li id="management-analysis-title" class="menu-title management-analysis" style="display: none">
+        Gestión y Análisis
+      </li>
+      <li id="checkCard" class="management-analysis" style="display: none">
+        <a
+          class="waves-effect content"
+          id="checkCard"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Revisión"
+        >
+          <i class="fas fa-eye" id="checkCard"></i>
+          <span id="checkCard"> Revisión </span>
+        </a>
+      </li>
+      <li id="payCard" class="management-analysis" style="display: none">
+        <a
+          class="waves-effect content"
+          id="payCard"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Pago de Tarjetas"
+        >
+          <i class="fas fa-file-invoice-dollar" id="payCard"></i>
+          <span id="payCard"> Pagos </span>
+        </a>
+      </li>
+      <li id="analysis" class="management-analysis" style="display: none">
+        <a
+          class="waves-effect content"
+          id="analysis"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Análisis"
+        >
+          <i class="fas fa-digital-tachograph" id="analysis"></i>
+          <span id="analysis"> Análisis </span>
+        </a>
+      </li>
+      <li id="controlLog" class="management-analysis" style="display: none">
+        <a
+          class="waves-effect content"
+          id="controlLog"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Ir a Bitácora de Control"
+        >
+          <i class="fas fa-book" id="controlLog"></i>
+          <span id="controlLog"> Bitácora de Control </span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <!-- Sidebar -->
+  <div class="clearfix"></div>
+</div>
+<!-- Sidebar -left -->

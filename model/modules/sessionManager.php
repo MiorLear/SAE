@@ -99,7 +99,7 @@ class sessionManager
         $stmt->execute();
         $userPermissions = $stmt->fetchAll();
 
-        $_SESSION['user'] = array(
+        $userSession = array(
             'id' => $user['id'],
             'mail' => $user['mail'],
             'name' => $user['name'],
@@ -107,10 +107,12 @@ class sessionManager
             'permissions' => $userPermissions
         );
 
+        $_SESSION['user'] = $userSession;
+
 
 
         exit(json_encode(
-            value: array("result" => "success")
+            value: array("result" => "success", "content"=>$userSession)
         ));
     }
     private function checkUserSession(): void

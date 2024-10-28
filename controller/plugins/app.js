@@ -8,7 +8,7 @@ class MainApp {
         this.selector = selector || '#datepicker';
     }
 
-    intSlimscrollmenu() {
+    initSlimscrollmenu() {
         $('.slimscroll-menu').slimscroll({
             height: 'auto',
             position: 'right',
@@ -109,8 +109,9 @@ class MainApp {
         jQuery(this.selector).datepicker({
             todayHighlight: true,
             viewDate: true,
-            language: 'es'
+            language: 'es', 
         });
+
         jQuery(this.selector).datepicker('setDate', new Date());
 
         // if ($(".datepicker").length > 0) {
@@ -169,7 +170,7 @@ class MainApp {
     }
 
     init() {
-        this.intSlimscrollmenu();
+        this.initSlimscrollmenu();
         this.initSlimscroll();
         this.initMetisMenu();
         this.initLeftMenuCollapse();

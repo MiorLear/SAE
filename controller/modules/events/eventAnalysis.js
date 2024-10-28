@@ -31,6 +31,8 @@ class content {
         if (eventExist < 1 || Number.isNaN(eventExist))
             return window.history.back();
 
+        const permissions = this.user["permissions"];
+
         switch (event["status"]) {
             case "Pendiente de Iniciar":
                 return window.history.back();
@@ -48,11 +50,15 @@ class content {
                 $("li#start").css("display", "none");
                 $("li#redeem").css("display", "none");
                 $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Listado de Devolución de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#cardsReturn").css("display", "block");
                 $("li#closure").css("display", "none");
-                $("li#checkEventCard").css("display", "block");
-                $("li#analysis").css("display", "block");
-                $("li#eventAnalysis").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#checkEventCard").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#analysis").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#eventAnalysis").css("display", "block");
                 break;
         }
 

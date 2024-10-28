@@ -3,7 +3,7 @@
   <div id="sidebar-menu">
     <!-- Left Menu Start -->
     <ul class="metismenu" id="side-menu">
-      <li class="menu-title">Estadisticas del Evento</li>
+      <li class="menu-title">Panel del Evento</li>
       <li id="eventPanel">
         <a
           class="waves-effect content"
@@ -16,9 +16,8 @@
           <span id="eventPanel"> Panel del Evento </span>
         </a>
       </li>
-
-      <li class="menu-title">Administrar Evento</li>
-      <li id="initialize">
+      <li id="manage-events-title" class="menu-title manage-events" style="display: none">Administrar Evento</li>
+      <li id="initialize" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="initialize"
@@ -30,7 +29,7 @@
           <span id="initialize"> Inicializar Evento </span>
         </a>
       </li>
-      <li id="cardsPresale">
+      <li id="cardsPresale" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="cardsPresale"
@@ -42,7 +41,7 @@
           <span id="cardsPresale"> Preventa de Tarjetas </span>
         </a>
       </li>
-      <li id="cardsDelivery">
+      <li id="cardsDelivery" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="cardsDelivery"
@@ -54,7 +53,7 @@
           <span id="cardsDelivery">Listado de Entrega de Tarjetas</span>
         </a>
       </li>
-      <li id="start">
+      <li id="start" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="start"
@@ -66,7 +65,7 @@
           <span id="start"> Iniciar Evento </span>
         </a>
       </li>
-      <li id="redeem">
+      <li id="redeem" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="redeem"
@@ -78,7 +77,7 @@
           <span id="redeem"> Canjeo </span>
         </a>
       </li>
-      <li id="salesCase">
+      <li id="salesCase" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="salesCase"
@@ -90,19 +89,19 @@
           <span id="salesCase">Caja de Ventas </span>
         </a>
       </li>
-      <li id="closure">
+      <li id="closure" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="closure"
           data-toggle="tooltip"
           data-placement="top"
-          title="Ir a Cierre de Tarjetas"
+          title="Ir a Cierre de Evento"
         >
           <i class="fas fa-hourglass-end" id="closure"></i>
           <span id="closure"> Cerrar Evento </span>
         </a>
       </li>
-      <li id="cardsReturn">
+      <li id="cardsReturn" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="cardsReturn"
@@ -114,7 +113,7 @@
           <span id="cardsReturn">Listado de Devolución de Tarjetas</span>
         </a>
       </li>
-      <li id="checkEventCard">
+      <li id="checkEventCard" class="manage-events" style="display: none">
         <a
           class="waves-effect content"
           id="checkEventCard"
@@ -126,8 +125,8 @@
           <span id="checkEventCard"> Revisar Tarjeta</span>
         </a>
       </li>
-      <li id="analysis" class="menu-title">Análisis</li>
-      <li id="eventAnalysis">
+      <li id="event-management-analysis-title" class="menu-title event-management-analysis" style="display: none">Análisis</li>
+      <li id="eventAnalysis" class="event-management-analysis" style="display: none">
         <a
           class="waves-effect content"
           id="eventAnalysis"
@@ -139,8 +138,8 @@
           <span id="eventAnalysis"> Análisis del Evento</span>
         </a>
       </li>
-      <li class="menu-title">Volver a la plataforma</li>
-      <li>
+      <li id="mainPanel" class="menu-title">Volver a la plataforma</li>
+      <li id="mainPanel">
         <a
           class="waves-effect content"
           id="mainPanel"

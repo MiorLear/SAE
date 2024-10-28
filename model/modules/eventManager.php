@@ -3,7 +3,7 @@ require('../config/config.php');
 
 class eventManager
 {
-    private $action, $id, $json, $complementId, $forgottenCard, $cardsQty;
+    private $action, $id, $json, $complementId, $forgottenCard, $cardsQty, $cardId;
 
     public function __construct($formData)
     {
@@ -11,6 +11,7 @@ class eventManager
         $this->id = $formData['id'];
         $this->complementId = $formData['complementId'];
         $this->cardsQty = $formData['cardsQty'];
+        $this->cardId = $formData['cardId'];
         $this->forgottenCard = $formData['forgottenCard'];
         $this->json = $formData['json'];
         $this->conn = new dbConfig();
@@ -29,6 +30,15 @@ class eventManager
                 break;
             case "getComplement":
                 $this->getComplement();
+                break;
+            case "redeemCard":
+                $this->redeemCard();
+                break;
+            case "getComplements":
+                $this->getComplements();
+                break;
+            case "getModelComplements":
+                $this->getModelComplements();
                 break;
             case "startEvent":
                 $this->startEvent();
@@ -134,6 +144,32 @@ class eventManager
             "content" => $eventInfo,
         )));
     }
+    private function getComplements(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "SELECT jsonb_pretty(e.settings->'complements') AS complements FROM events e WHERE e.id = :id;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+        $eventInfo = $stmt->fetch()["complements"];
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => $eventInfo,
+        )));
+    }
+    private function getModelComplements(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "SELECT jsonb_pretty(e.settings->'model'->'complements') AS complements FROM events e WHERE e.id = :id;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+        $eventInfo = $stmt->fetch();
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => $eventInfo["complements"],
+        )));
+    }
     private function getStudentsPopulation(): void
     {
         $conn = $this->conn->getConnection();
@@ -217,14 +253,18 @@ class eventManager
     {
         $conn = $this->conn->getConnection();
 
+        $json = $this->json;
 
-        $sql = "UPDATE events SET data = jsonb_set(settings, '{cards}', :json::jsonb), status ='Listo' WHERE id = :id;";
+        $sql = "UPDATE events 
+        SET data = jsonb_set(settings, '{cards}', :json, true) WHERE id = :id;";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         $stmt->bindParam(':json', $this->json, PDO::PARAM_STR);
         $stmt->execute();
+
         exit(json_encode(value: array(
-            "result" => "success"
+            "result" => "success",
+            "content"=> $stmt->rowCount()
         )));
     }
     private function addExtraSettings(): void
@@ -244,6 +284,37 @@ class eventManager
 
         exit(json_encode(value: array(
             "result" => "success"
+        )));
+    }
+    private function redeemCard(): void
+    {
+        $conn = $this->conn->getConnection();
+
+        $cardId = $this->cardId;
+        $forgottenCard = $this->forgottenCard;
+
+        $sql = "SELECT COUNT(data->'cards'->'$cardId') FROM events WHERE id = :id;";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        $stmt->execute();
+        $response = $stmt->fetch()["count"];
+
+        if ($response < 1)
+            exit(json_encode(value: array(
+                'error' => "Espera un momento.",
+                'suggestion' => "La Tarjeta Ingresada no existe",
+                "errorType" => "User Error"
+            )));
+
+        $sql = "UPDATE events SET settings = jsonb_set(data, '{cards, $cardId, exchanged}', 'true') WHERE id = :id;";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        $stmt->execute();
+        $response = $stmt->fetch()["count"];
+
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => $response
         )));
     }
     private function getExtraSettings(): void

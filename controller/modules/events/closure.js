@@ -30,6 +30,8 @@ class content {
         if (eventExist < 1 || Number.isNaN(eventExist))
             return window.history.back();
 
+        const permissions = this.user["permissions"];
+
         switch (event["status"]) {
             case "Pendiente de Iniciar":
                 return window.history.back();
@@ -43,13 +45,23 @@ class content {
                 $("li#cardsPresale").css("display", "none");
                 $("li#cardsDelivery").css("display", "none");
                 $("li#start").css("display", "none");
-                $("li#redeem").css("display", "block");
-                $("li#salesCase").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Canjeo' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#redeem").css("display", "block");
+                else
+                    $("li#redeem").css("display", "none");
+                if (Object.values(permissions).filter(permission => permission.name === 'Caja de Ventas' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#salesCase").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Cerrar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#closure").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#checkEventCard").css("display", "block");
+
                 $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "block");
                 $("li#analysis").css("display", "none");
-$("li#eventAnalysis").css("display", "none");
-                $("li#checkEventCard").css("display", "block");
+                $("li#eventAnalysis").css("display", "none");
                 break;
             case "Finalizado":
                 return window.history.back();

@@ -246,7 +246,6 @@ class content extends dataTables {
     }
 
     setupListeners(table = this.table) {
-
         if (table === "users") {
             $(document).on('click', 'a.showUserProfile', (e) => {
                 e.preventDefault();
@@ -840,7 +839,6 @@ class content extends dataTables {
             });
         });
     }
-
     async callColumns(mainTable = this.mainDataTable, table = this.table) {
         if (table == "events")
             return this.callEvents();
@@ -870,7 +868,6 @@ class content extends dataTables {
         await this.initWithButtons();
         this.callContent();
     }
-
     async callEvents(status = this.status, table = "events") {
         try {
             if (!status) {
@@ -907,7 +904,7 @@ class content extends dataTables {
                     return `${meses[mes - 1]} ${dia}, ${año}`;
                 };
                 content += `
-                <div class="col-sm-12 col-md-4 col-lg-4 col-4 card">
+                <div class="col-sm-12 col-md-4 col-lg-4 mx-2 shadow-lg card">
                     <div class="card-header card-primary" style="margin-top: 1rem;">
                         <a style="position: absolute; top: 0; right: 0; background-color: orange; padding: 1rem; background-color:transparent;" id="event-${event["id"]}-settings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i style="display:flex; text-align:center; justify-content:center; font-size:1.2rem;" class="ti-settings"></i>
@@ -982,8 +979,6 @@ class content extends dataTables {
             console.error({ 'error': error, 'errorType': 'notAlert' });
         }
     }
-
-
     async callContent(status = this.status, mainTable = this.mainDataTable, table = this.table) {
         try {
             if (!status) {
@@ -1058,9 +1053,9 @@ class content extends dataTables {
 
                 dataTableRow.push
                     (
-                        content['status'] == 'Habilitado' 
+                        content['status'] == 'Habilitado'
                             ?
-                                table == "roles" && content["name"] == "root" || table == "users" && content["rol_id"] == "root"
+                            table == "roles" && content["name"] == "root" || table == "users" && content["rol_id"] == "root" || table == "users" && content["id"] == this.user["id"]
                                 ?
                                 ``
                                 :
@@ -1110,7 +1105,6 @@ class content extends dataTables {
             console.error({ 'error': error, 'errorType': 'notAlert' });
         }
     }
-
     async callLevels(formData) {
         let levels = await this.ajaxRequest('../model/classes/levels.php', formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -1127,7 +1121,6 @@ class content extends dataTables {
         $("select#levels").html(bsLevels);
         $("select#levels").selectpicker('refresh');
     }
-
     async callRoles(formData) {
         let roles = await this.ajaxRequest('../model/classes/roles.php', formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -1144,7 +1137,6 @@ class content extends dataTables {
         $("select#roles").html(bsRoles);
         $("select#roles").selectpicker('refresh');
     }
-
     async callGrades(formData) {
         let grades = await this.ajaxRequest('../model/classes/grades.php', formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -1161,7 +1153,6 @@ class content extends dataTables {
         $("select#grade").html(bsGrades);
         $("select#grade").selectpicker('refresh');
     }
-
     async callSections(formData) {
         let sections = await this.ajaxRequest('../model/classes/sections.php', formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -1179,7 +1170,6 @@ class content extends dataTables {
         $("select#section").html(bsSections);
         $("select#section").selectpicker('refresh');
     }
-
     async callPermissions(formData) {
         let permissions = await this.ajaxRequest('../model/classes/permissions.php', formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -1197,7 +1187,6 @@ class content extends dataTables {
         $("select#permissions").html(bsPermissions);
         $("select#permissions").selectpicker('refresh');
     }
-
     async callName(id, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'callName');
@@ -1212,7 +1201,6 @@ class content extends dataTables {
         }
         return response['content']['name'];
     }
-
     async showUserModal(id) {
         let formData = new FormData();
         formData.append("action", 'callUserInfo');
@@ -1233,7 +1221,6 @@ class content extends dataTables {
 
         $(".bd-showModal-lg").modal('show');
     }
-
     async showEditModal(id, table = this.table) {
 
         let formData = new FormData();
@@ -1283,7 +1270,13 @@ class content extends dataTables {
                     $(formElement).selectpicker("refresh");
                     break;
                 case "permissions":
-                    $(formElement).selectpicker("val", response["content"]["permissions_id"]);
+                    if (Array.isArray(response["content"]["grade"])) 
+                        if (response["content"]["grade"].length == 1 )
+                            $(formElement).val(response["content"]["permissions_id"]);
+                        else
+                        $(formElement).selectpicker("val", response["content"]["permissions_id"]);
+                     else
+                        $(formElement).val(response["content"]["permissions_id"]);
                     $(formElement).selectpicker("refresh");
                     break;
                 case "levels":
@@ -1321,7 +1314,6 @@ class content extends dataTables {
 
         $(".bd-editModal-lg").modal('show');
     }
-
     async showComplementsModal(id) {
 
         var table = $("#edit-dataTable").DataTable();
@@ -1462,7 +1454,6 @@ class content extends dataTables {
         $("#complements").val(response["content"]["id"]);
         $(".bd-showComplementsModal-lg").modal('show');
     }
-
     async showDisableAlert(id, element = this.traductor["rusure"]()) {
         var name = await this.callName(id);
         if (!name)
@@ -1505,7 +1496,6 @@ class content extends dataTables {
             this.disable(id, result.value["reason"], name);
         });
     }
-
     async showRehabilitateAlert(id, element = this.traductor["rusure"]()) {
         var name = await this.callName(id);
         if (!name)
@@ -1546,7 +1536,6 @@ class content extends dataTables {
 
         });
     }
-
     async addEvent(content, dataTable = $('#add-dataTable')) {
 
         let formData = new FormData();
@@ -1641,7 +1630,6 @@ class content extends dataTables {
         $(".bd-addModal-lg").modal("hide");
 
     }
-
     async addComplementValues(dataTable = $('#add-dataTable')) {
         var table = dataTable.DataTable();
         var id = 0;
@@ -1801,7 +1789,6 @@ class content extends dataTables {
             });
         });
     }
-
     async editComplementValues(dataTable = $('#edit-dataTable')) {
         var table = dataTable.DataTable();
         var id = 0;
@@ -1961,7 +1948,6 @@ class content extends dataTables {
             });
         });
     }
-
     async editEventSettings(content) {
         let formData = new FormData();
         formData.append("action", "editSettings");
@@ -1991,9 +1977,9 @@ class content extends dataTables {
         formData.append("eventDate", content["date"]);
 
         content.date = formatDate(content["date"]);
-        
+
         formData.append("settings", JSON.stringify(content));
-        
+
         let response = await this.ajaxRequest(`../model/classes/events.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
@@ -2001,7 +1987,7 @@ class content extends dataTables {
             console.error(response);
             return;
         }
-         
+
 
         var log = await this.controlLog(formData);
         if (log['result'] !== 'success') {
@@ -2022,7 +2008,6 @@ class content extends dataTables {
         this.callEvents();
         $(".bd-editModal-lg").modal("hide");
     }
-
     async editEventComplements(dataTable = $('#edit-dataTable')) {
         let formData = new FormData();
         formData.append("action", "editComplements");
@@ -2084,7 +2069,6 @@ class content extends dataTables {
         this.callEvents();
         $(".bd-showComplementsModal-lg").modal('hide');
     }
-
     async add(content, table = this.table) {
         let formData = new FormData();
         formData.append("action", "add");
@@ -2168,7 +2152,6 @@ class content extends dataTables {
             this.callEvents();
         $(".bd-addModal-lg").modal("hide");
     }
-
     async edit(content, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'edit');
@@ -2248,7 +2231,6 @@ class content extends dataTables {
         this.callContent();
         $(".bd-editModal-lg").modal("hide");
     }
-
     async disable(id, reason, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'disable');
@@ -2286,7 +2268,6 @@ class content extends dataTables {
         else
             this.callEvents();
     }
-
     async rehabilitate(id, reason, name, table = this.table) {
         let formData = new FormData();
         formData.append("action", 'rehabilitate');
@@ -2324,7 +2305,6 @@ class content extends dataTables {
         else
             this.callEvents();
     }
-
     async controlLog(content, table = this.table) {
         var finalDate = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
@@ -2356,7 +2336,6 @@ class content extends dataTables {
 
         return response;
     }
-
     async ajaxRequest(url, formData) {
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -2384,7 +2363,6 @@ class content extends dataTables {
             });
         });
     }
-
     async cleanup(table = this.table) {
         $(document).off('click', 'a.showEditModal');
         $(document).off('click', 'a.showDisableAlert');

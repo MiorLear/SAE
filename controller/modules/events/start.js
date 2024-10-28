@@ -30,6 +30,8 @@ class content {
         if (eventExist < 1 || Number.isNaN(eventExist))
             return window.history.back();
 
+        const permissions = this.user["permissions"];
+
         switch (event["status"]) {
             case "Pendiente de Iniciar":
                 return window.history.back();
@@ -38,16 +40,25 @@ class content {
             case "Listo":
                 $("li#eventPanel").css("display", "block");
                 $("li#initialize").css("display", "none");
-                $("li#cardsPresale").css("display", "block");
-                $("li#cardsDelivery").css("display", "block");
-                $("li#start").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Preventa de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length > 0)
+                    $("li#cardsPresale").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Listado de Entrega de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length > 0)
+                    $("li#cardsDelivery").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Iniciar Evento' || permission.name === 'Administrar Modulos de Eventos').length > 0)
+                    $("li#start").css("display", "block");
+
                 $("li#redeem").css("display", "none");
                 $("li#salesCase").css("display", "none");
                 $("li#cardsReturn").css("display", "none");
                 $("li#closure").css("display", "none");
                 $("li#analysis").css("display", "none");
-$("li#eventAnalysis").css("display", "none");
-                $("li#checkEventCard").css("display", "none");
+                $("li#eventAnalysis").css("display", "none");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length > 0)
+                    $("li#checkEventCard").css("display", "block");
+                break;
                 break;
             case "En Curso":
                 return window.history.back();
@@ -83,7 +94,7 @@ $("li#eventAnalysis").css("display", "none");
                 showConfirmButton: false,
                 timer: 3000
             }
-        ).then(()=>{
+        ).then(() => {
             window.location.href = './main.html?content=eventPanel&event=' + id;
         });
 

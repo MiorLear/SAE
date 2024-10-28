@@ -10,6 +10,8 @@ class content {
         return param.get('event');
     }
     async checkEventExist(id = this.id) {
+        // console.log("checkEventExist");
+
         let formData = new FormData();
         formData.append("action", "checkEventExist");
         formData.append("id", id);
@@ -29,10 +31,19 @@ class content {
         if (eventExist < 1 || Number.isNaN(eventExist))
             return window.history.back();
 
+        const permissions = this.user["permissions"];
+
         switch (event["status"]) {
             case "Pendiente de Iniciar":
                 $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length > 0){
+                    $("li#adminEvent").css("display", "block");
+                    $("li#initialize").css("display", "block");
+                }else{
+                    $("li#adminEvent").css("display", "none");
+                    $("li#initialize").css("display", "none");
+                }
                 $("li#cardsPresale").css("display", "none");
                 $("li#cardsDelivery").css("display", "none");
                 $("li#start").css("display", "none");
@@ -46,7 +57,9 @@ class content {
                 break;
             case "Inicializado":
                 $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#initialize").css("display", "block");
+
                 $("li#cardsPresale").css("display", "none");
                 $("li#cardsDelivery").css("display", "none");
                 $("li#start").css("display", "none");
@@ -61,16 +74,24 @@ class content {
             case "Listo":
                 $("li#eventPanel").css("display", "block");
                 $("li#initialize").css("display", "none");
-                $("li#cardsPresale").css("display", "block");
-                $("li#cardsDelivery").css("display", "block");
-                $("li#start").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Preventa de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#cardsPresale").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Listado de Entrega de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#cardsDelivery").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Iniciar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#start").css("display", "block");
+
                 $("li#redeem").css("display", "none");
                 $("li#salesCase").css("display", "none");
                 $("li#cardsReturn").css("display", "none");
                 $("li#closure").css("display", "none");
                 $("li#analysis").css("display", "none");
                 $("li#eventAnalysis").css("display", "none");
-                $("li#checkEventCard").css("display", "none");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#checkEventCard").css("display", "block");
                 break;
             case "En Curso":
                 $("li#eventPanel").css("display", "block");
@@ -78,11 +99,21 @@ class content {
                 $("li#cardsPresale").css("display", "none");
                 $("li#cardsDelivery").css("display", "none");
                 $("li#start").css("display", "none");
-                $("li#redeem").css("display", "block");
-                $("li#salesCase").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Canjeo' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#redeem").css("display", "block");
+                else
+                    $("li#redeem").css("display", "none");
+                if (Object.values(permissions).filter(permission => permission.name === 'Caja de Ventas' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#salesCase").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Cerrar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#closure").css("display", "block");
+
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#checkEventCard").css("display", "block");
+
                 $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "block");
-                $("li#checkEventCard").css("display", "block");
                 $("li#analysis").css("display", "none");
                 $("li#eventAnalysis").css("display", "none");
                 break;
@@ -94,11 +125,15 @@ class content {
                 $("li#start").css("display", "none");
                 $("li#redeem").css("display", "none");
                 $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Listado de Devolución de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
+                    $("li#cardsReturn").css("display", "block");
                 $("li#closure").css("display", "none");
-                $("li#checkEventCard").css("display", "block");
-                $("li#analysis").css("display", "block");
-                $("li#eventAnalysis").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#checkEventCard").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#analysis").css("display", "block");
+                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
+                    $("li#eventAnalysis").css("display", "block");
                 break;
         }
 
