@@ -3,7 +3,7 @@ require('../config/config.php');
 
 class eventManager
 {
-    private $action, $id, $json, $complementId, $forgottenCard, $cardsQty, $cardId;
+    private $action, $id, $json, $complementId, $forgottenCard, $cardsQty, $cardId, $studentCarnet;
 
     public function __construct($formData)
     {
@@ -12,6 +12,7 @@ class eventManager
         $this->complementId = $formData['complementId'];
         $this->cardsQty = $formData['cardsQty'];
         $this->cardId = $formData['cardId'];
+        $this->studentCarnet = $formData['studentCarnet'];
         $this->forgottenCard = $formData['forgottenCard'];
         $this->json = $formData['json'];
         $this->conn = new dbConfig();
@@ -79,6 +80,12 @@ class eventManager
             case "checkInitStatus":
                 $this->checkInitStatus();
                 break;
+            case "checkCardExist":
+                $this->checkCardExist();
+                break;
+            case "checkStudentExist":
+                $this->checkStudentExist();
+                break;
             case "initializeEvent":
                 $this->initializeEvent();
                 break;
@@ -117,6 +124,37 @@ class eventManager
             "content" => $eventInfo,
         )));
     }
+    private function checkCardExist(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "SELECT COUNT(id) FROM events WHERE jsonb_exists(data->'cards', :cardId) AND id = :id;";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':cardId', $this->cardId, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+        $eventInfo = $stmt->fetchColumn();
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => $eventInfo,
+        )));
+    }
+    private function checkStudentExist(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "SELECT COUNT(id) FROM students WHERE carnet = :carnet;";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':carnet', $this->studentCarnet, PDO::PARAM_STR);
+        $stmt->execute();
+
+        // Usar fetchColumn para obtener directamente el número de estudiantes
+        $studentCount = $stmt->fetchColumn();
+
+        exit(json_encode(array(
+            "result" => "success",
+            "content" => $studentCount, // Aquí se retorna el conteo directamente
+        )));
+    }
+
     private function getEventComplements(): void
     {
         $conn = $this->conn->getConnection();
@@ -226,9 +264,10 @@ class eventManager
     {
         $conn = $this->conn->getConnection();
 
-        $model = json_encode(array(
+        $model = json_encode(value: array(
             "card_id" => "",
             "student_id" => "",
+            "type" => "",
             "complements" => "{}",
             "exchanged" => false,
             "exchangedDate" => "",
@@ -255,8 +294,7 @@ class eventManager
 
         $json = $this->json;
 
-        $sql = "UPDATE events 
-        SET data = jsonb_set(settings, '{cards}', :json, true) WHERE id = :id;";
+        $sql = "UPDATE events SET data = jsonb_set(data, '{cards}', :json, true), status = 'Listo' WHERE id = :id;";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         $stmt->bindParam(':json', $this->json, PDO::PARAM_STR);
@@ -264,7 +302,7 @@ class eventManager
 
         exit(json_encode(value: array(
             "result" => "success",
-            "content"=> $stmt->rowCount()
+            "content" => $stmt->rowCount()
         )));
     }
     private function addExtraSettings(): void
@@ -346,11 +384,12 @@ class eventManager
         if ($response == "0") {
             $content = "desde 0";
 
-            $model = json_encode([
+            $model = json_encode(value: [
                 "card_id" => "",
                 "student_id" => "",
+                "type" => "",
                 "complements" => [
-                    strval($complementId) => [
+                    strval(value: $complementId) => [
                         "id" => strval(value: $complementId),
                         "exchanged" => false,
                         "payed" => false,
@@ -440,9 +479,10 @@ class eventManager
         $response = $stmt->fetch()["case"];
 
         if ($response == "1") {
-            $model = json_encode(array(
+            $model = json_encode(value: array(
                 "card_id" => "",
                 "student_id" => "",
+                "type" => "",
                 "complements" => "{}",
                 "exchanged" => false,
                 "exchangedDate" => "",

@@ -46,7 +46,7 @@ class permissions
         }))
             $sql = "SELECT id, name FROM permissions ORDER BY id DESC";
         else
-            $sql = "SELECT id, name FROM permissions WHERE name != 'Administrar Plataforma' AND name != 'Administrar Modulos de Eventos' ORDER BY id DESC";
+            $sql = "SELECT id, name FROM permissions WHERE name != 'Administrar Plataforma' AND name != 'Administrar Módulos de Eventos' ORDER BY id DESC";
 
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();

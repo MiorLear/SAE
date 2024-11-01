@@ -16,7 +16,9 @@
           <span id="mainPanel"> Panel de Control </span>
         </a>
       </li>
-      <li id="admin-title" class="menu-title manage-platform" style="display: none">Administrar</li>
+      <li id="admin-title" class="menu-title manage-platform" style="display: none">
+        Administrar
+      </li>
       <li id="events" class="manage-platform" style="display: none">
         <a
           class="waves-effect content"
@@ -92,29 +94,49 @@
       <li id="management-analysis-title" class="menu-title management-analysis" style="display: none">
         Gestión y Análisis
       </li>
-      <li id="checkCard" class="management-analysis" style="display: none">
-        <a
-          class="waves-effect content"
-          id="checkCard"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Ir a Revisión"
-        >
-          <i class="fas fa-eye" id="checkCard"></i>
-          <span id="checkCard"> Revisión </span>
-        </a>
+      <li id="check" class="management-analysis" style="display: none">
+        <a href="javascript:void(0);" class="waves-effect"
+          ><i class="fas fa-eye"></i
+          ><span>
+            Revisión
+            <span class="float-right menu-arrow"
+              ><i class="mdi mdi-chevron-right"></i
+            ></span> </span
+        ></a>
+        <ul class="submenu">
+          <li id="checkCard" class="management-analysis" style="display: none">
+            <a class="content" id="checkCard" data-toggle="tooltip" data-placement="top" title="Ir a Revisión de Tarjetas"
+              >Revisar Tarjetas</a
+            >
+          </li>
+          <li id="checkStudent" class="management-analysis" style="display: none">
+            <a class="content" id="checkStudent" data-toggle="tooltip" data-placement="top" title="Ir a Revisión de Estudiantes"
+              >Revisar Estudiantes</a
+            >
+          </li>
+        </ul>
       </li>
-      <li id="payCard" class="management-analysis" style="display: none">
-        <a
-          class="waves-effect content"
-          id="payCard"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Ir a Pago de Tarjetas"
-        >
-          <i class="fas fa-file-invoice-dollar" id="payCard"></i>
-          <span id="payCard"> Pagos </span>
-        </a>
+      <li id="pay" class="management-analysis" style="display: none">
+        <a href="javascript:void(0);" class="waves-effect"
+          ><i class="fas fa-file-invoice-dollar"></i
+          ><span>
+            Pagos
+            <span class="float-right menu-arrow"
+              ><i class="mdi mdi-chevron-right"></i
+            ></span> </span
+        ></a>
+        <ul class="submenu">
+          <li id="payCard"  class="management-analysis" style="display: none">
+            <a class="content" id="payCard" data-toggle="tooltip" data-placement="top" title="Ir a Pago por Tarjetas"
+              >Pago por Tarjetas</a
+            >
+          </li>
+          <li id="payStudent" class="management-analysis" style="display: none">
+            <a class="content" id="payStudent" data-toggle="tooltip" data-placement="top" title="Ir a Pago por Estudiantes"
+              >Pago por Estudiantes</a
+            >
+          </li>
+        </ul>
       </li>
       <li id="analysis" class="management-analysis" style="display: none">
         <a

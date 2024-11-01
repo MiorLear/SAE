@@ -5,6 +5,7 @@ class content {
         this.checkEventExist();
         this.settupEventListeners();
         this.cards = {};
+        this.actualTab = "#addCards";
     }
     getID() {
         var url = window.location.search;
@@ -29,360 +30,496 @@ class content {
         var eventExist = parseFloat(event["check"]);
 
         if (eventExist < 1 || Number.isNaN(eventExist))
-            return window.history.back();
+            return console.error(
+                {
+                    'error': "Evento Inexistente.",
+                    'errorType': 'User Error',
+                    'suggestion': 'Estás Intentando acceder a un evento inexistente',
+                    "back": true
+                });
 
         const permissions = this.user["permissions"];
 
-        switch (event["status"]) {
-            case "Pendiente de Iniciar":
-                return window.history.back();
-                break;
-            case "Inicializado":
-                return window.history.back();
-                break;
-            case "Listo":
-                $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "none");
+        const sideBarStatus = {
+            "Pendiente de Iniciar": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "Inicializado": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "Listo": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
+                        if (!$(sideBarTab).attr("id")) return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Preventa de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#cardsPresale").css("display", "block");
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Listado de Entrega de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#cardsDelivery").css("display", "block");
+                        if ($(sideBarTab).attr("id") !== "manage-events-title" &&
+                            $(sideBarTab).attr("id") !== "event-management-analysis-title" &&
+                            $(sideBarTab).attr("id") !== "cardsPresale" &&
+                            $(sideBarTab).attr("id") !== "cardsDelivery" &&
+                            $(sideBarTab).attr("id") !== "start" &&
+                            $(sideBarTab).attr("id") !== "checkEvent" &&
+                            $(sideBarTab).attr("id") !== "checkEventCard" &&
+                            $(sideBarTab).attr("id") !== "checkEventStudent")
+                            return $(sideBarTab).css("display", "none");
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Iniciar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#start").css("display", "block");
+                        if (!permissions.some(permission =>
+                            permission.name === 'Preventa de Tarjetas' ||
+                            permission.name === 'Entrega de Tarjetas' ||
+                            permission.name === 'Iniciar Evento' ||
+                            permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                            permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                            permission.name === 'Gestión y Análisis de Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos'))
+                            return $(sideBarTab).css("display", "none");
 
-                $("li#redeem").css("display", "none");
-                $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
-                    $("li#checkEventCard").css("display", "block");
-                break;
-            case "En Curso":
-                return window.history.back();
-                break;
-            case "Finalizado":
-                return window.history.back();
-                break;
+                        if ($(sideBarTab).attr("id") === "manage-events-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Preventa de Tarjetas' ||
+                                permission.name === 'Entrega de Tarjetas' ||
+                                permission.name === 'Iniciar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "event-management-analysis-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "cardsPresale")
+                            if (permissions.some(permission =>
+                                permission.name === 'Preventa de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "cardsDelivery")
+                            if (permissions.some(permission =>
+                                permission.name === 'Entrega de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "start")
+                            if (permissions.some(permission =>
+                                permission.name === 'Iniciar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEvent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventCard")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventStudent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+                    });
+                }
+            },
+            "En Curso": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "Finalizado": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
         }
 
-        this.loadComplements();
+        sideBarStatus[event["status"]].load();
+
+        this.loadCardSettings();
     }
     async settupEventListeners(eventId = this.id) {
-        $(document).on('click', 'a.toggleAction', async (e) => {
+        $(document).on("change", "input.cardsNumber", async (e) => {
             e.preventDefault();
-            var id = e.currentTarget.id;
 
-            //change Card
+            let number = parseFloat($("#" + e.currentTarget.id).val());
+            var cardInputs = "";
 
-        });
+            if (number < 1 || Number.isNaN(number))
+                return $(".cardsContainer").html(cardInputs);
 
-        $(document).on("click", ".addCards", async (e) => {
-            this.addCardsAlert();
-        });
-    }
-
-    async addCardsAlert(id = this.id) {
-        
-        swal.fire(
-            {
-                title: 'Espera un momento',
-                icon: 'info',
-                showCancelButton: true,
-                inputLabel: 'Ingresa el número de Tarjetas que desee',
-                input: "number",
-                inputAttributes: {
-                    autocapitalize: "off"
-                },
-                customClass: {
-                    confirmButton: 'btn btn-primary btn-lg',
-                    cancelButton: 'btn btn-outline-primary btn-lg ml-4'
-                },
-                buttonsStyling: false,
-                confirmButtonText: 'Ingresar',
-                cancelButtonText: 'Cancelar',
-                preConfirm: async (cardsqty) => {
-                    if (!cardsqty || cardsqty <= 0) {
-                        Swal.showValidationMessage('Porfavor, ingrese un número válido.');
-                        return false;
-                    }
-
-                    return { cardsqty: cardsqty };
-                }
-            }
-        ).then(async (result) => {
-
-            if (!result.isConfirmed)
-                return;
-
-            var cardsQty = result.value["cardsqty"];
-            var cardIDs = [];
-
-            for (let index = 1; index < parseFloat(cardsQty) + 1; index++) {
-                swal.fire(
-                    {
-                        title: 'Escanee el ID de la Tarjeta Adicional Número ' + index,
-                        icon: 'info',
-                        showCancelButton: true,
-                        input: "number",
-                        inputAttributes: {
-                            autocapitalize: "off"
-                        },
-                        customClass: {
-                            confirmButton: 'btn btn-primary btn-lg',
-                            cancelButton: 'btn btn-outline-primary btn-lg ml-4'
-                        },
-                        buttonsStyling: false,
-                        confirmButtonText: 'Ingresar',
-                        cancelButtonText: 'Cancelar',
-                        preConfirm: async (cardsqty) => {
-                            if (!cardsqty || cardsqty <= 0) {
-                                Swal.showValidationMessage('Porfavor, ingrese un número válido.');
-                                return false;
-                            }
-        
-                            return { cardsqty: cardsqty };
-                        }
-                    }
-                )
-            }
-
-
-            this.loadCards();
-        });
-
-    }
-    async getComplement(complementId, id = this.id) {
-        let formData = new FormData();
-        formData.append("action", "getComplement");
-        formData.append("complementId", complementId);
-        formData.append("id", id);
-
-        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-
-        if (response['result'] !== 'success') {
-            console.error(response);
-            return;
-        }
-        return JSON.parse(response["content"]);
-    }
-    async loadComplements(id = this.id) {
-
-        let formData = new FormData();
-        formData.append("action", "getEventComplements");
-        formData.append("id", id);
-
-        let responseEventsComplements = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-
-        if (responseEventsComplements['result'] !== 'success') {
-            console.error(responseEventsComplements);
-            return;
-        }
-
-        const eventComplements = responseEventsComplements['content'];
-
-        var eventComplementsContent = "";
-        if (eventComplements?.['complements'] &&
-            JSON?.parse?.(eventComplements['complements']) &&
-            Object?.keys?.(JSON?.parse?.(eventComplements['complements']))?.length || false)
-            for (let index = 0; index < Object.keys(JSON.parse(eventComplements['complements'])).length; index++) {
-
-                const id = Object.keys(JSON.parse(eventComplements['complements']))[index];
-                const element = JSON.parse(eventComplements['complements'])[id];
-
-                eventComplementsContent += `
-                <a class="addComplementToModel" id="${element["id"]}">
-                    <div class="row">
-                    <div class="col-5">
-                            <span
-                                class="badge badge-primary mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
-                                >$${element["price"]}
-                            </span>
+            for (let index = 0; index < number; index++) {
+                cardInputs +=
+                    `<div class="form-group row"> 
+                 <label for="cardNumber${index}" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
+                    >Tarjeta Extra #${index + 1}</label>
+                        <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-cardNumber${index}">
+                            <input type="text" value="" id="cardNumber${index}" name="cardNumber${index}" min-length="4" maxlength="100" placeholder="Ingrese el código de la tarjeta Extra #${index + 1}" class="form-control touchSpin cardNumberType cardNumber${index}">
+                            <div
+                            class="form-control-cardNumber${index}-feedback"
+                            style="display: none"
+                            >
+                            Success! You've done it.
+                            </div>
                         </div>
-                        <div class="col-5 text-center">
-                            ${element["title"]}
-                        </div>
-                        <div class="col-2 text-center">
-                        <span
-                                class="badge badge-success mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
-                                ><i class="mdi mdi-plus"> </i>
-                            </span>
-                        </div>
-                    </div>
-                </a>
+                </div>
                 `;
             }
+
+            $(".cardsContainer").html(cardInputs);
+
+        });
+        // $(document).on("change", "input.cardNumberType", async (e) => {
+        //     var cardId = $("#" + e.currentTarget.id);
+        //     if (cardId == "") return;
+        //     this.validCardNumber(e.currentTarget.id);
+        // });
+        $(document).on("submit", "form.addCards", async (e) => {
+            e.preventDefault();
+            this.formValidator(e.currentTarget);
+        });
+    }
+    async validCardNumber(cardId, id = this.id) {
+        let formData = new FormData();
+        formData.append("action", "checkCardExist");
+        formData.append("cardId", $("#" + cardId).val());
+        formData.append("id", id);
+
+        let eventInfo = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (eventInfo['result'] !== 'success') {
+            console.error(eventInfo);
+            return;
+        }
+        const response =  eventInfo["content"];
+        return response == 0 ? true : false;
+
+    }
+    async validStudent(studentCarnet, id = this.id) {
+        let formData = new FormData();
+        formData.append("action", "checkStudentExist");
+        formData.append("studentCarnet", studentCarnet);
+        formData.append("id", id);
+
+        let eventInfo = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (eventInfo['result'] !== 'success') {
+            console.error(eventInfo);
+            return;
+        }
+        const response =  eventInfo["content"];
+        return response == 0 ? false : true;
+
+    }
+    async formValidator(form, id = this.id) {
+        let notFilledInputs = [];
+        let repeatedInputs = [];
+        let minorThanZeroInputs = [];
+        let notMinLengthInputs = [];
+        let cardNumberType = [];
+        let studentCarnetType = [];
+        let invalidInputs = [];
+        let validInputs = {};
+    
+        // Restablecer clases y feedback al inicio
+        $(form).find("input, select, button").each(function () {
+            let formElement = this;
+            let elementId = $(formElement).attr("id");
+            if (elementId) {
+                $(`.form-${elementId}`).removeClass('has-warning has-success has-danger');
+                $(`.form-control-${elementId}-feedback`).css("display", "none").text('');
+            }
+        });
+    
+        $(form).find("input, select, button").each(function () {
+            let 
+            formElement = this;
+            let elementId = $(formElement).attr("id");
+            let elementValue = $(formElement).val();
+            let minLength = $(formElement).attr("min-length");
+    
+            if (!elementId) return;
+    
+            if (elementValue === "" || elementId !== "complements" && elementValue == 0) {
+                notFilledInputs.push(formElement);
+            } else if (minLength && elementValue.length < minLength) {
+                notMinLengthInputs.push(formElement);
+            } else if (minLength && elementValue.length < minLength) {
+                notMinLengthInputs.push(formElement);
+            } else if ($(formElement).hasClass("cardNumberType")) {
+                cardNumberType.push(formElement);
+            } else if ($(formElement).hasClass("studentCarnet")) {
+                studentCarnetType.push(formElement);
+            }
+             else {
+                validInputs[elementId] = elementValue;
+            }
+        });
+    
+        notFilledInputs.forEach(input => {
+            let inputId = $(input).attr('id');
+            $(`.form-control-${inputId}-feedback`).css("display", "block").text(`Por favor, ${$(input).attr('placeholder')}.`);
+            $(`.form-${inputId}`).addClass('has-warning');
+            $(input).focus();
+        });
+    
+        for (let i = 0; i < cardNumberType.length; i++) {
+            let input = cardNumberType[i];
+            let cardId = $(input).attr("id");
+            let cardValue = $(input).val();
+    
+            // Comprobar si ya existe el valor en validInputs
+            if (Object.values(validInputs).some(val => val === cardValue)) {
+                repeatedInputs.push(input);
+                continue; 
+            }
+    
+            const validCard = await this.validCardNumber(cardId);        
+            let status = validCard ? "has-success" : "has-danger";
+            let message = validCard
+                ? "Código de Tarjeta válido."
+                : "Código de Tarjeta inválido, ya existe una tarjeta con este código.";
+    
+            $(".form-" + cardId).addClass(status);
+            $(".form-control-" + cardId + "-feedback").css("display", "block");
+            $(".form-control-" + cardId + "-feedback").text(message);
+    
+            if (!validCard) {
+                invalidInputs.push(cardValue);
+                continue; 
+            }
+    
+            validInputs[cardId] = cardValue;
+        }
+    
+        for (let i = 0; i < studentCarnetType.length; i++) {
+            let input = studentCarnetType[i];
+            let studentId = $(input).attr("id");
+            let studentCarnet = $(input).val();
+
+            const validCard = await this.validStudent(studentCarnet);        
+            let status = validCard ? "has-success" : "has-danger";
+            let message = validCard
+                ? "Estudiante Seleccionado."
+                : "Carnet Inexistente, este carnet no pertenece a ningún estudiante.";
+    
+            $(".form-" + studentId).addClass(status);
+            $(".form-control-" + studentId + "-feedback").css("display", "block");
+            $(".form-control-" + studentId + "-feedback").text(message);
+    
+            if (!validCard) {
+                invalidInputs.push(studentCarnet);
+                continue; 
+            }
+    
+            validInputs[studentId] = studentCarnet;
+        }
+    
+        repeatedInputs.forEach(input => {
+            let inputId = $(input).attr('id');
+            $(`.form-control-${inputId}-feedback`).css("display", "block").text(`Este código ya ha sido ingresado, por favor, ingrese un código distinto.`);
+            $(`.form-${inputId}`).addClass('has-warning');
+            $(input).focus();
+        });
+    
+        notMinLengthInputs.forEach(input => {
+            let inputId = $(input).attr('id');
+            $(`.form-control-${inputId}-feedback`).css("display", "block").text(`Por favor, escriba por lo menos ${$(input).attr("min-length")} carácteres.`);
+            $(`.form-${inputId}`).addClass('has-warning');
+            $(input).focus();
+        });
+    
+        // Llamar a addCards solo si no hay errores
+        if (!notFilledInputs.length && !repeatedInputs.length && !notMinLengthInputs.length && !invalidInputs.length) {
+            this.addCards(validInputs);
+        }
         else
-            eventComplementsContent = `<p class="text-center">No hay complementos disponibles en el evento.</p>`;
+        console.log("notFilledInputs " + notFilledInputs.length + " repeatedInputs " + repeatedInputs.length + " notMinLengthInputs " + notMinLengthInputs.length+ "  invalidInputs " + invalidInputs.length);
+    }
+    
+    async addCards(add) {
+        console.log("A");
+        $("#pdfModal").modal("show");
+    }
+    async loadCardSettings(id = this.id, actualTab = this.actualTab) {
 
-        $("#asignCards").removeClass("active");
-        $("#createModel").addClass("active");
+        let formData = new FormData();
+        formData.append("action", "getIdNameNPrice");
+        formData.append("id", id);
 
-        const soldCards = this.cards;
+        let eventInfo = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
-        var addedCardContent = "";
-        var cardComplements = "";
+        if (eventInfo['result'] !== 'success') {
+            console.error(eventInfo);
+            return;
+        }
 
+        formData.set("action", "getEventComplements");
+
+        let complementsInfo = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (complementsInfo['result'] !== 'success') {
+            console.error(complementsInfo);
+            return;
+        }
+
+        const complements = JSON.parse(complementsInfo["content"]["complements"]);
+
+        const card = eventInfo["content"];
+
+        const cardsToSell = this.cards;
+
+        var cardsConfig = "";
+
+        var cardTabs = `
+        <li class="nav-item">
+            <a class="nav-link toggleAction" id="addCards" aria-current="page" style="cursor: pointer" data-toggle="tooltip" data-placement="top">
+                Añadir Tarjetas
+            </a>
+        </li>`;
+
+        var cardComplements;
         let cardPrice = 0;
 
+        var cardsToAdd = cardsToSell["quantity"] == undefined ? 0 : cardsToSell["quantity"];
+        var cardsCreated = cardsToSell["cards"] == undefined ? 0 : Object.entries(cardsToSell["cards"]).length;
 
 
-        if (Object.keys(soldCards).length == 0) //Modelo no existe
+        //Formulario de Tarjetas
+        if (cardsToAdd <= 0) //Modelo no existe
         {
-            addedCardContent = `<p class="text-center">No ha solicitado tarjetas.</p> <a style="display:flex;justify-content:center"class="btn btn-primary text-white text-center addCards">Añadir Tarjeta</a>`;
+            cardsConfig +=
+                `<form class ="addCards">
+                    <div class="form-group row">
+                    <label for="cardsNumber" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
+                    >Número de Tarjetas</label>
+                        <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-cardsNumber">
+                            <input type="text" value="" id="cardsNumber" name="cardsNumber" min-length="1" maxlength="2" placeholder="Ingrese el número de tarjetas" class="form-control touchSpin cardsNumber">
+                            <div
+                            class="form-control-cardsNumber-feedback"
+                            style="display: none"
+                            >
+                            Success! You've done it.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cardsContainer">
+                    </div>
+                    <div class="form-group row">
+                    <label for="studentCarnet" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
+                    >Carnet del Estudiante</label>
+                        <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-studentCarnet">
+                            <input type="number" value="" id="studentCarnet" name="studentCarnet" min-length="5" maxlength="8" placeholder="Ingrese el carnet del estudiante" class="form-control studentCarnet">
+                            <div
+                            class="form-control-studentCarnet-feedback"
+                            style="display: none"
+                            >
+                            Success! You've done it.
+                            </div>
+                        </div>
+                        </div>
+                    <div class="form-group row">
+                    <label for="complements" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
+                    >Complementos</label>
+                        <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-complements">
+                            <select class="form-select form-control" name="complements" id="complements" aria-label=" the complements" data-live-search="true" title="Seleccione los complementos" placeholder="Seleccione los complementos " multiple>
+                            </select>
+                            <div
+                            class="form-control-complements-feedback"
+                            style="display: none"
+                            >
+                            Success! You've done it.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-12 d-flex justify-content-center">
+                            <button type="submit" class="btn btn-block btn-primary text-white mt-3 registerCard"  name="registerCard">
+                            Registrar Tarjetas
+                            </button>
+                        </div>
+                    </div>
+                </form>`;
             cardComplements = "No ha seleccionado complementos.";
         }
-        else if (
-            JSON?.parse?.(soldCards?.['model'])?.["complements"] == "{}"
-        ) {
-            $(".cardExample").css("display", "flex");
-            addedCardContent = `<p class="text-center">Modelo de Tarjeta creado sin complementos, puede añadir complementos al modelo.</p> `;
-            cardComplements = "No hay complementos.";
-        }
-        else if (
-            Object?.keys?.(JSON?.parse?.(soldCards?.['model'])?.["complements"])?.length == 0
-        ) {
-            $(".cardExample").css("display", "flex");
-            addedCardContent = `<p class="text-center">Modelo de Tarjeta creado sin complementos, puede añadir complementos al modelo.</p> `;
-            cardComplements = "No hay complementos.";
 
-        }
-        else {
-            addedCardContent = `<p class="text-center">Modelo de Tarjeta creado, complementos:</p><br>`;
-            $(".cardExample").css("display", "flex");
-
-            for (let index = 0; index < Object.keys(JSON.parse(soldCards['model'])["complements"]).length; index++) {
-
-                const id = Object.keys(JSON.parse(soldCards['model'])["complements"])[index];
-                const element = await this.getComplement(id);
-                cardPrice += parseFloat(element["price"]);
-                cardComplements += `
-                <div class="row">
-                        <div class="col-6 text-center">
-                            ${element["title"]}
-                        </div>
-                        <div class="col-6">
-                            <span
-                                class="badge badge-success mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
-                                >$${element["price"]}
-                            </span>
-                        </div>
-                    </div>
-                `;
-                addedCardContent += `
-                <a class="removeComplementToModel" id="${element["id"]}">
-                    <div class="row">
-                        <div class="col-2 text-center">
-                         <span
-                                class="badge badge-danger mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
-                                ><i class="mdi mdi-minus"> </i>
-                            </span>
-                        </div>
-                        <div class="col-5 text-center">
-                            ${element["title"]}
-                        </div>
-                        <div class="col-5">
-                            <span
-                                class="badge badge-primary mb-2 text-left"
-                                style="
-                                display: flex;
-                                text-align: center;
-                                justify-content: center;
-                                font-size: 1rem;"
-                                >$${element["price"]}
-                            </span>
-                        </div>
-                    </div>
+        for (let index = 0; index < cardsToAdd; index++) {
+            cardTabs +=
+                `<li class="nav-item">
+                <a class="nav-link toggleAction" id="card-${index}"
+                aria-current="page" style="cursor: pointer"
+                data-toggle="tooltip" data-placement="top">   
+                Tarjeta #${index}
                 </a>
-                `;
-            }
+            </li>`;
         }
 
-        var content = `
-        <div class="col-sm-12 col-md-6 col-lg-6 mb-2">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="mt-0 header-title pb-2 text-center">Complementos disponibles</h4> 
-                    ${eventComplementsContent}
-                </div>
-            </div>
-        </div>
+        var complementsOption = "";
 
-        <div class="col-sm-12 col-md-6 col-lg-6 mb-2">
-            <div class="card">
-                <div class="card-header">
-                    <ul class="nav nav-tabs grades-tabs">
-                        <li class="nav-item">
-                            <a
-                            class="nav-link toggleAction"
-                            id="createModel"
-                            aria-current="page"
-                            style="cursor: pointer"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            >Crear Modelo de Tarjeta</a
-                            >
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <h4 class="mt-0 header-title pb-0 text-center">Tarjeta Adicional</h4>
-                    ${addedCardContent}
-                </div>
-            </div>
-        </div>
-        `;
-
-        $(".initContent").html(content);
-
-        formData.set("action", "getIdNameNPrice");
-
-        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-
-        if (response['result'] !== 'success') {
-            console.error(response);
-            return;
+        for (let index = 0; index < Object.entries(complements).length; index++) {
+            const element = Object.entries(complements)[index][1];
+            complementsOption += `<option data-tokens="${element["title"]} (${element["price"]})" value="${element["id"]}">${element["title"]} ($${element["price"]})</option>`;
         }
 
-        const card = response["content"];
+        $('.form-select').selectpicker({
+            locale: 'es'
+        });
 
-        cardPrice += parseFloat(card["price"]);
+        $(".cardTabs").html(cardTabs);
+        $(".cardsConfig").html(cardsConfig);
 
-        $(".cardTitle").text(card["name"]);
-        $(".cardPrice").text("$" + card["price"]);
-        $(".cardTotal").text("$" + cardPrice.toFixed(2));
+        $("select#complements").html(complementsOption);
+        $("select#complements").selectpicker("refresh");
 
-        if (!cardComplements)
-            $(".complementsTitle").css("display", "none");
+        $(this.actualTab).addClass("active");
 
-        $(".cardContent").html(cardComplements);
+        $('.touchSpin').TouchSpin({
+            min: 0,
+            max: 10,
+            step: 1,
+            boostat: 5,
+            maxboostedstep: 10
+        });
 
     }
     async ajaxRequest(url, formData) {

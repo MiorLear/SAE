@@ -27,53 +27,99 @@ class content {
         var eventExist = parseFloat(event["check"]);
 
         if (eventExist < 1 || Number.isNaN(eventExist))
-            return window.history.back();
+            return console.error(
+                {
+                    'error': "Evento Inexistente.",
+                    'errorType': 'User Error',
+                    'suggestion': 'Estás Intentando acceder a un evento inexistente',
+                    "back": true
+                });
 
         const permissions = this.user["permissions"];
 
-        switch (event["status"]) {
-            case "Pendiente de Iniciar":
-                $("li#eventPanel").css("display", "block");
+        const sideBarStatus = {
+            "Pendiente de Iniciar": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length > 0) {
+                        if (!$(sideBarTab).attr("id")) return;
 
-                    $("li#adminEvent").css("display", "block");
-                    $("li#initialize").css("display", "block");
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
+
+                        if ($(sideBarTab).attr("id") !== "initialize" &&
+                            $(sideBarTab).attr("id") !== "manage-events-title")
+                            return $(sideBarTab).css("display", "none");
+
+                        if (!permissions.some(permission =>
+                            permission.name === 'Inicializar Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos'))
+                            return $(sideBarTab).css("display", "none");
+
+                        $(sideBarTab).css("display", "block");
+                    });
                 }
-                $("li#cardsPresale").css("display", "none");
-                $("li#cardsDelivery").css("display", "none");
-                $("li#start").css("display", "none");
-                $("li#redeem").css("display", "none");
-                $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                $("li#checkEventCard").css("display", "none");
-                break;
-            case "Inicializado":
-                $("li#eventPanel").css("display", "block");
-                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#initialize").css("display", "block");
+            },
+            "Inicializado": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
 
-                $("li#cardsPresale").css("display", "none");
-                $("li#cardsDelivery").css("display", "none");
-                $("li#start").css("display", "none");
-                $("li#redeem").css("display", "none");
-                $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                $("li#checkEventCard").css("display", "none");
-                break;
-            case "Listo":
-                return window.history.back();
-            case "En Curso":
-                return window.history.back();
-            case "Finalizado":
-                return window.history.back();
+                        if (!$(sideBarTab).attr("id")) return;
+
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
+
+                        if ($(sideBarTab).attr("id") !== "initialize" &&
+                            $(sideBarTab).attr("id") !== "manage-events-title")
+                            return $(sideBarTab).css("display", "none");
+
+                        if (!permissions.some(permission =>
+                            permission.name === 'Inicializar Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos'))
+                            return $(sideBarTab).css("display", "none");
+
+                        $(sideBarTab).css("display", "block");
+                    });
+                }
+            },
+            "Listo": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "En Curso": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "Finalizado": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
         }
+
+        sideBarStatus[event["status"]].load();
 
         this.checkStatus();
     }
@@ -339,6 +385,7 @@ class content {
 
                     card.student_id = $(formElement).attr("id").substring(0, $(formElement).attr("id").indexOf('-'));
                     card.card_id = $(formElement).val();
+                    card.type = "assignedCard";
 
                     cards[card.card_id] = card;
                 }
@@ -419,6 +466,8 @@ class content {
         formData.append("id", this.id);
         formData.append("json", json);
 
+        console.log(json);
+
         let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
@@ -426,6 +475,8 @@ class content {
             console.error(response);
             return;
         }
+        
+        this.checkStatus();
 
         Swal.fire(
             {
@@ -435,9 +486,11 @@ class content {
                 showConfirmButton: false,
                 timer: 3000
             }
-        );
+            
+        ).then(() =>{
+            window.location.href = './main.html?content=eventPanel&event=' + id;
+        });
 
-        this.checkStatus();
     }
     async doneCard() {
         $(".cardExample").css("display", "none");
@@ -810,7 +863,7 @@ class content {
                         <div class="col-lg-5 col-md-5 col-sm-4 col-4 text-center">
                             ${element["title"]}
                         </div>
-                        <div class="col-lg-2 col-md-2 col-sm-3 col-3 text-center">
+                        <div class="col-lg-2 col-md-2 col-sm-3 col-3 mb-2 text-center">
                             <span
                                 class="badge badge-success mb-2 text-left d-flex justify-content-center"
                                 style="cursor: pointer; font-size: 1rem;"

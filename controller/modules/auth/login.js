@@ -32,7 +32,7 @@ class Login {
             var response = await new sessionManager().startSession(user, password, src);
 
             if (response['result'] != 'success')
-                console.error(response);
+                return console.error(response);
 
             window.location.href = '../../main.html?content=mainPanel';
 

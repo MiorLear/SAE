@@ -38,15 +38,25 @@ class contentManager {
         // console.log("loadContent");
         $("#overlay").css("display", "block");
 
+        $("#sidebar-menu").find('a').each(function () {
+            var sideBarTab = this;
+
+            if (!$(sideBarTab).attr("id")) return;
+            if (!$(sideBarTab).hasClass("content")) return;
+            $(sideBarTab).css("color", "#9CA8B3");
+
+        });
+
+        $('[data-toggle="tooltip"]').tooltip('dispose');
+
         if (!this.unAuth(content)) {
-            console.error(
+            return console.error(
                 {
                     'error': "Contenido Restringido.",
                     'errorType': 'User Error',
                     'suggestion': 'No estás autorizado para entrar a este contenido. Comuniquese con el administrador del sitio para más información',
+                    "back": true
                 });
-            window.history.back();
-            throw new Error('Execution stopped!');
         }
 
         var reloadElements;
@@ -61,7 +71,7 @@ class contentManager {
                     elementToCall = "main";
                     reloadElements = elements !== elementToCall;
                     pageToLoad = `modules/main/${content}.html`;
-                    contentToInitialize = "../controller/modules/mainContent/content.js";
+                    contentToInitialize = "../controller/modules/main/content.js";
                     return true;
                 }
             },
@@ -70,7 +80,7 @@ class contentManager {
                     elementToCall = "main";
                     reloadElements = elements !== "elementToCall";
                     pageToLoad = `modules/main/${content}.html`;
-                    contentToInitialize = "../controller/modules/mainContent/content.js";
+                    contentToInitialize = "../controller/modules/main/content.js";
                     return true;
                 }
             },
@@ -79,7 +89,7 @@ class contentManager {
                     elementToCall = "main";
                     reloadElements = elements !== elementToCall;
                     pageToLoad = `modules/main/${content}.html`;
-                    contentToInitialize = "../controller/modules/mainContent/content.js";
+                    contentToInitialize = "../controller/modules/main/content.js";
                     return true;
                 }
             },
@@ -88,7 +98,7 @@ class contentManager {
                     elementToCall = "main";
                     reloadElements = elements !== elementToCall;
                     pageToLoad = `modules/main/${content}.html`;
-                    contentToInitialize = "../controller/modules/mainContent/content.js";
+                    contentToInitialize = "../controller/modules/main/content.js";
                     return true;
                 }
             },
@@ -97,7 +107,7 @@ class contentManager {
                     elementToCall = "main";
                     reloadElements = elements !== elementToCall;
                     pageToLoad = `modules/main/${content}.html`;
-                    contentToInitialize = "../controller/modules/mainContent/content.js";
+                    contentToInitialize = "../controller/modules/main/content.js";
                     return true;
                 }
             },
@@ -106,7 +116,7 @@ class contentManager {
                     elementToCall = "main";
                     reloadElements = elements !== elementToCall;
                     pageToLoad = `modules/main/${content}.html`;
-                    contentToInitialize = "../controller/modules/mainContent/content.js";
+                    contentToInitialize = "../controller/modules/main/content.js";
                     return true;
                 }
             },
@@ -115,7 +125,7 @@ class contentManager {
                     elementToCall = "main";
                     reloadElements = elements !== elementToCall;
                     pageToLoad = `modules/main/${content}.html`;
-                    contentToInitialize = `../controller/modules/mainContent/${content}.js`;
+                    contentToInitialize = `../controller/modules/main/${content}.js`;
                     return true;
                 }
             },
@@ -194,6 +204,15 @@ class contentManager {
                     return true;
                 }
             },
+            checkEventStudent: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
             initialize: {
                 preLoad: () => {
                     elementToCall = "events";
@@ -239,7 +258,16 @@ class contentManager {
                     return true;
                 }
             },
-            redeem: {
+            redeemCards: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            redeemComplements: {
                 preLoad: () => {
                     elementToCall = "events";
                     reloadElements = elements !== elementToCall;
@@ -297,8 +325,6 @@ class contentManager {
 
         $(`a#${content}`).css("color", "#FFF");
         $("#overlay").css("display", "none");
-
-        await this.validatePermissions();
     }
 
     async logout(e) {
@@ -350,189 +376,220 @@ class contentManager {
         this.page = this.getPage();
 
         await this.loadContent();
+        await this.validatePermissions();
     }
 
     unAuth(content = this.content) {
         // console.log("unAuth " + content);
 
         const permissions = this.user["permissions"];
-        var resultado;
 
-        switch (content) {
-            case "events":
-                resultado = Object.values(permissions).filter(permission => permission.name === 'Administrar Plataforma' || permission.name === 'Administrar Eventos' || permission.name === 'Listar Eventos');
-
-                if (resultado.length > 0)
+        const authContent = {
+            mainPanel: {
+                check() {
                     return true;
-                else
-                    return false;
-            case "grades":
-                resultado = Object.values(permissions).filter(permission => permission.name === 'Administrar Plataforma' || permission.name === 'Administrar Grados' || permission.name === 'Listar Grados');
-
-                if (resultado.length > 0)
+                }
+            },
+            eventPanel: {
+                check() {
                     return true;
-                else
-                    return false;
-            case "levels":
-                resultado = Object.values(permissions).filter(permission => permission.name === 'Administrar Plataforma' || permission.name === 'Administrar Niveles' || permission.name === 'Listar Niveles');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "roles":
-                resultado = Object.values(permissions).filter(permission => permission.name === 'Administrar Plataforma' || permission.name === 'Administrar Roles' || permission.name === 'Listar Roles');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "students":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Administrar Plataforma' || permission.name === 'Administrar Estudiantes' || permission.name === 'Listar Estudiantes');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "users":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Administrar Plataforma' || permission.name === 'Administrar Usuarios' || permission.name === 'Listar Usuarios');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "checkCard":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "checkStudent":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "controlLog":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "analysis":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "payCard":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "payStudent":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "payStudent":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "checkEventCard":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "initialize":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "cardsPresale":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Preventa de Tarjetas' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "salesCase":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Caja de Ventas' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "cardsDelivery":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Listado de Entrega de Tarjetas' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "cardsReturn":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Listado de Devolución de Tarjetas' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "redeem":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Canjeo' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-
-                else
-                    return false;
-
-            case "start":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Iniciar Evento' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "closure":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Cerrar Evento' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            case "eventAnalysis":
-                var resultado = Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento' || permission.name === 'Administrar Modulos de Eventos');
-
-                if (resultado.length > 0)
-                    return true;
-                else
-                    return false;
-            default:
-                // console.log("Excepción " + content);
-                return true;
+                }
+            },
+            events: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Eventos' ||
+                        permission.name === 'Listar Eventos'));
+                }
+            },
+            grades: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Grados' ||
+                        permission.name === 'Listar Grados'));
+                }
+            },
+            levels: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Niveles' ||
+                        permission.name === 'Listar Niveles'));
+                }
+            },
+            roles: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Roles' ||
+                        permission.name === 'Listar Roles'));
+                }
+            },
+            students: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Estudiantes' ||
+                        permission.name === 'Listar Estudiantes'));
+                }
+            },
+            users: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Usuarios' ||
+                        permission.name === 'Listar Usuarios'));
+                }
+            },
+            checkCard: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Revisión de Tarjetas por Código' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            checkStudent: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Revisión de Tarjetas por Estudiante' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            controlLog: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Bitácora de Control' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            analysis: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Análisis' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            payCard: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Pago de Tarjetas por Código' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            payStudent: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Pago de Tarjetas por Estudiante' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            checkEventCard: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Gestión y Análisis de Evento' ||
+                        permission.name === 'Revisión de Tarjetas por Código en Evento'
+                    ));
+                }
+            },
+            checkEventStudent: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Gestión y Análisis de Evento' ||
+                        permission.name === 'Revisión de Tarjetas por Estudiante en Evento'
+                    ));
+                }
+            },
+            initialize: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Inicializar Evento' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            cardsPresale: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Preventa de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            salesCase: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Caja de Ventas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            cardsDelivery: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Entrega de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            cardsReturn: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Devolución de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            redeemCards: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Canjeo de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            redeemComplements: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Canjeo de Complementos' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            start: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Iniciar Evento' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            closure: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Cerrar Evento' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            eventAnalysis: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Gestión y Análisis de Evento' ||
+                        permission.name === 'Análisis del Evento')
+                    );
+                }
+            },
         }
+
+        return authContent?.[content]?.check();
     }
 
     async validatePermissions(user = this.user) {
-        // console.log("validatePermissions " + user["name"]);
 
         const permissions = user["permissions"];
-
+                
         $("#sidebar-menu").find('li').each(function () {
             var sideBarTab = this;
 
@@ -549,7 +606,7 @@ class contentManager {
             if (permissions.some(permission =>
                 permission.name === 'Listar Estudiantes' ||
                 permission.name === 'Administrar Estudiantes'))
-                if ($(sideBarTab).attr("id") === "student") $(sideBarTab).css("display", "block");
+                if ($(sideBarTab).attr("id") === "students") $(sideBarTab).css("display", "block");
 
             if (permissions.some(permission =>
                 permission.name === 'Listar Roles' ||
@@ -577,10 +634,63 @@ class contentManager {
                 if ($(sideBarTab).attr("id") === "grades") $(sideBarTab).css("display", "block");
 
             if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Código' ||
+                permission.name === 'Revisión de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "check") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Código'))
+                if ($(sideBarTab).attr("id") === "checkCard") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "checkStudent") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Pago de Tarjetas por Código' ||
+                permission.name === 'Pago de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "pay") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Pago de Tarjetas por Código'))
+                if ($(sideBarTab).attr("id") === "payCard") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Pago de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "payStudent") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Análisis'))
+                if ($(sideBarTab).attr("id") === "analysis") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Bitácora de Control'))
+                if ($(sideBarTab).attr("id") === "controlLog") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Administrar Plataforma' ||
+                permission.name === 'Listar Estudiantes' ||
+                permission.name === 'Administrar Estudiantes' ||
+                permission.name === 'Listar Roles' ||
+                permission.name === 'Administrar Roles' ||
+                permission.name === 'Listar Niveles' ||
+                permission.name === 'Administrar Niveles' ||
+                permission.name === 'Listar Eventos' ||
+                permission.name === 'Administrar Eventos' ||
+                permission.name === 'Listar Usuarios' ||
+                permission.name === 'Administrar Usuarios' ||
                 permission.name === 'Listar Grados' ||
                 permission.name === 'Administrar Grados'))
-                if ($(sideBarTab).attr("id") === "grades") $(sideBarTab).css("display", "block");
+                if ($(sideBarTab).attr("id") === "admin-title") $(sideBarTab).css("display", "block");
 
+            if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Código' ||
+                permission.name === 'Revisión de Tarjetas por Estudiante' ||
+                permission.name === 'Pago de Tarjetas por Código' ||
+                permission.name === 'Pago de Tarjetas por Estudiante' ||
+                permission.name === 'Bitácora de Control' ||
+                permission.name === 'Análisis'))
+                if ($(sideBarTab).attr("id") === "management-analysis-title") $(sideBarTab).css("display", "block");
         });
     }
 
@@ -647,6 +757,7 @@ class contentManager {
                 );
             });
 
+        await this.validatePermissions();
         await this.loadPlugins('elements');
     }
 
@@ -682,6 +793,7 @@ class contentManager {
                     app.initActiveMenu();
                     app.initComponents();
                     app.initToggleSearch();
+                    app.initToolTip();
                     await this.fillUserInfo();
                 }
             },
@@ -703,6 +815,11 @@ class contentManager {
                 }
             },
             checkEventCard: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            checkEventStudent: {
                 load: async () => {
                     app.initDatePicker();
                 }
@@ -742,7 +859,12 @@ class contentManager {
                     app.initDatePicker();
                 }
             },
-            redeem: {
+            redeemCards: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            redeemComplements: {
                 load: async () => {
                     app.initDatePicker();
                 }
@@ -808,11 +930,13 @@ class contentManager {
                 load: async () => {
                     app.initDatePicker();
                     app.initMaxLength();
+                    app.initSelect();
                 }
             },
             mainPanel: {
                 load: async () => {
                     app.initDatePicker();
+                    app.initToolTip();
                 }
             },
             controlLog: {
@@ -870,10 +994,8 @@ class contentManager {
         this.currentContentInstance = await new content(params);
     }
 
-    async redirectionHandler(e, prevContent = this.content) {
+    async redirectionHandler(e) {
         // console.log("redirectionHandler " + newContent);
-        $(`a#${prevContent}`).css("color", "#9CA8B3");
-
         let url = new URL(window.location.href);
         var newContent = e.target.id;
         var actualEvent = e.target.name;
@@ -888,7 +1010,7 @@ class contentManager {
         window.history.pushState({}, '', url);
 
         this.content = newContent;
-        this.validateSession();
+        this.loadContent();
     }
 }
 

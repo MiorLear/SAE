@@ -3,7 +3,9 @@
   <div id="sidebar-menu">
     <!-- Left Menu Start -->
     <ul class="metismenu" id="side-menu">
-      <li class="menu-title">Panel del Evento</li>
+      <li class="menu-title">
+        Panel del Evento
+      </li>
       <li id="eventPanel">
         <a
           class="waves-effect content"
@@ -16,8 +18,13 @@
           <span id="eventPanel"> Panel del Evento </span>
         </a>
       </li>
-      <li id="manage-events-title" class="menu-title manage-events" style="display: none">Administrar Evento</li>
-      <li id="initialize" class="manage-events" style="display: none">
+      <li id="manage-events-title" class="menu-title manage-events"
+        style="display: none"
+      >
+        Administrar Evento
+      </li>
+      <li id="initialize" class="manage-events" 
+      style="display: none">
         <a
           class="waves-effect content"
           id="initialize"
@@ -29,7 +36,8 @@
           <span id="initialize"> Inicializar Evento </span>
         </a>
       </li>
-      <li id="cardsPresale" class="manage-events" style="display: none">
+      <li id="cardsPresale" class="manage-events" 
+      style="display: none">
         <a
           class="waves-effect content"
           id="cardsPresale"
@@ -41,19 +49,21 @@
           <span id="cardsPresale"> Preventa de Tarjetas </span>
         </a>
       </li>
-      <li id="cardsDelivery" class="manage-events" style="display: none">
+      <li id="cardsDelivery" class="manage-events" 
+      style="display: none">
         <a
           class="waves-effect content"
           id="cardsDelivery"
           data-toggle="tooltip"
           data-placement="top"
-          title="Ir a Listado de Entrega de Tarjetas"
+          title="Ir a Entrega de Tarjetas"
         >
           <i class="ion ion-ios-list-box" id="cardsDelivery"></i>
-          <span id="cardsDelivery">Listado de Entrega de Tarjetas</span>
+          <span id="cardsDelivery">Entrega de Tarjetas</span>
         </a>
       </li>
-      <li id="start" class="manage-events" style="display: none">
+      <li id="start" class="manage-events" 
+      style="display: none">
         <a
           class="waves-effect content"
           id="start"
@@ -65,19 +75,49 @@
           <span id="start"> Iniciar Evento </span>
         </a>
       </li>
-      <li id="redeem" class="manage-events" style="display: none">
-        <a
-          class="waves-effect content"
-          id="redeem"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Ir a Canjeo de Tarjetas"
-        >
-          <i class="fas fa-check" id="redeem"></i>
-          <span id="redeem"> Canjeo </span>
-        </a>
+      <li id="redeem" class="manage-events" 
+      style="display: none">
+        <a href="javascript:void(0);" class="waves-effect"
+          ><i class="fas fa-check"></i
+          ><span>
+            Canjear
+            <span class="float-right menu-arrow"
+              ><i class="mdi mdi-chevron-right"></i
+            ></span> </span
+        ></a>
+        <ul class="submenu">
+          <li
+            id="redeemCards"
+            class="manage-events"
+            style="display: none"
+          >
+            <a
+              class="content"
+              id="redeemCards"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Ir a Canjear Tarjetas"
+              >Cajear Tarjetas</a
+            >
+          </li>
+          <li
+            id="redeemComplements"
+            class="manage-events"
+            style="display: none"
+          >
+            <a
+              class="content"
+              id="redeemComplements"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Ir a Canjear Complementos"
+              >Canjear Complementos</a
+            >
+          </li>
+        </ul>
       </li>
-      <li id="salesCase" class="manage-events" style="display: none">
+      <li id="salesCase" class="manage-events" 
+      style="display: none">
         <a
           class="waves-effect content"
           id="salesCase"
@@ -89,7 +129,8 @@
           <span id="salesCase">Caja de Ventas </span>
         </a>
       </li>
-      <li id="closure" class="manage-events" style="display: none">
+      <li id="closure" class="manage-events" 
+      style="display: none">
         <a
           class="waves-effect content"
           id="closure"
@@ -101,32 +142,62 @@
           <span id="closure"> Cerrar Evento </span>
         </a>
       </li>
-      <li id="cardsReturn" class="manage-events" style="display: none">
+      <li id="cardsReturn" class="manage-events" 
+      style="display: none">
         <a
           class="waves-effect content"
           id="cardsReturn"
           data-toggle="tooltip"
           data-placement="top"
-          title="Ir a Listado de Devolución de Tarjetas"
+          title="Ir a Devolución de Tarjetas"
         >
           <i class="ti-back-left" id="cardsReturn"></i>
-          <span id="cardsReturn">Listado de Devolución de Tarjetas</span>
+          <span id="cardsReturn">Devolución de Tarjetas</span>
         </a>
       </li>
-      <li id="checkEventCard" class="manage-events" style="display: none">
-        <a
-          class="waves-effect content"
-          id="checkEventCard"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Ir a Revisión de Tarjeta"
-        >
-          <i class="fas fa-eye" id="checkEventCard"></i>
-          <span id="checkEventCard"> Revisar Tarjeta</span>
-        </a>
+      <li id="event-management-analysis-title" class="menu-title event-management-analysis"
+
+        style="display: none"
+      >
+        Análisis
       </li>
-      <li id="event-management-analysis-title" class="menu-title event-management-analysis" style="display: none">Análisis</li>
-      <li id="eventAnalysis" class="event-management-analysis" style="display: none">
+      <li id="checkEvent" class="event-management-analysis" style="display: none">
+        <a href="javascript:void(0);" class="waves-effect"
+          ><i class="fas fa-eye"></i
+          ><span>
+            Revisión
+            <span class="float-right menu-arrow"
+              ><i class="mdi mdi-chevron-right"></i
+            ></span> </span
+        ></a>
+        <ul class="submenu">
+          <li id="checkEventCard" class="event-management-analysis" style="display: none">
+            <a
+              class="content"
+              id="checkEventCard"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Ir a Revisión por Tarjetas en Evento"
+              >Revisar Tarjetas</a
+            >
+          </li>
+          <li id="checkEventStudent" class="event-management-analysis"
+            style="display: none"
+          >
+            <a
+              class="content"
+              id="checkEventStudent"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Ir a Revisión por Estudiantes en Evento"
+              >Revisar Estudiantes</a
+            >
+          </li>
+        </ul>
+      </li>
+      <li id="eventAnalysis" class="event-management-analysis"
+        style="display: none"
+      >
         <a
           class="waves-effect content"
           id="eventAnalysis"
@@ -138,7 +209,9 @@
           <span id="eventAnalysis"> Análisis del Evento</span>
         </a>
       </li>
-      <li id="mainPanel" class="menu-title">Volver a la plataforma</li>
+      <li id="mainPanel" class="menu-title">
+        Volver a la plataforma
+      </li>
       <li id="mainPanel">
         <a
           class="waves-effect content"

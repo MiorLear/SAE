@@ -28,44 +28,167 @@ class content {
         var eventExist = parseFloat(event["check"]);
 
         if (eventExist < 1 || Number.isNaN(eventExist))
-            return window.history.back();
+            return console.error(
+                {
+                    'error': "Evento Inexistente.",
+                    'errorType': 'User Error',
+                    'suggestion': 'Estás Intentando acceder a un evento inexistente',
+                    "back": true
+                });
 
         const permissions = this.user["permissions"];
 
-        switch (event["status"]) {
-            case "Pendiente de Iniciar":
-                return window.history.back();
-            case "Inicializado":
-                return window.history.back();
-            case "Listo":
-                return window.history.back();
-            case "En Curso":
-                $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "none");
-                $("li#cardsPresale").css("display", "none");
-                $("li#cardsDelivery").css("display", "none");
-                $("li#start").css("display", "none");
+        const sideBarStatus = {
+            "Pendiente de Iniciar": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "Inicializado": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "Listo": {
+                load() {
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+                }
+            },
+            "En Curso": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Canjeo' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#redeem").css("display", "block");
-                else
-                    $("li#redeem").css("display", "none");
-                if (Object.values(permissions).filter(permission => permission.name === 'Caja de Ventas' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#salesCase").css("display", "block");
+                        if (!$(sideBarTab).attr("id")) return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Cerrar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#closure").css("display", "block");
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
-                    $("li#checkEventCard").css("display", "block");
+                        if ($(sideBarTab).attr("id") !== "manage-events-title" &&
+                            $(sideBarTab).attr("id") !== "event-management-analysis-title" &&
+                            $(sideBarTab).attr("id") !== "redeem" &&
+                            $(sideBarTab).attr("id") !== "redeemCards" &&
+                            $(sideBarTab).attr("id") !== "redeemComplements" &&
+                            $(sideBarTab).attr("id") !== "salesCase" &&
+                            $(sideBarTab).attr("id") !== "closure" &&
+                            $(sideBarTab).attr("id") !== "checkEvent" &&
+                            $(sideBarTab).attr("id") !== "checkEventCard" &&
+                            $(sideBarTab).attr("id") !== "checkEventStudent")
+                            return $(sideBarTab).css("display", "none");
 
-                $("li#cardsReturn").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                break;
-            case "Finalizado":
-                return window.history.back();
+                        if (!permissions.some(permission =>
+                            permission.name === 'Canjeo de Tarjetas' ||
+                            permission.name === 'Canjeo de Complementos' ||
+                            permission.name === 'Caja de Ventas' ||
+                            permission.name === 'Cerrar Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos' ||
+                            permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                            permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                            permission.name === 'Gestión y Análisis de Evento'))
+                            return $(sideBarTab).css("display", "none");
+
+                        if ($(sideBarTab).attr("id") === "manage-events-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Tarjetas' ||
+                                permission.name === 'Canjeo de Complementos' ||
+                                permission.name === 'Caja de Ventas' ||
+                                permission.name === 'Cerrar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "event-management-analysis-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "redeem")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Tarjetas' ||
+                                permission.name === 'Canjeo de Complementos' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "redeemCards")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "redeemComplements")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Complementos' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "salesCase")
+                            if (permissions.some(permission =>
+                                permission.name === 'Caja de Ventas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "closure")
+                            if (permissions.some(permission =>
+                                permission.name === 'Cerrar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEvent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventCard")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventStudent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+                    });
+                }
+            },
+            "Finalizado": {
+                load() {
+
+                    return console.error(
+                        {
+                            'error': "Módulo no disponible.",
+                            'errorType': 'User Error',
+                            'suggestion': 'Estás Intentando acceder a un módulo no disponible por el momento.',
+                            "back": true
+                        });
+
+                }
+            },
         }
+
+        sideBarStatus[event["status"]].load();
 
     }
     async settupEventListeners(eventId = this.id) {

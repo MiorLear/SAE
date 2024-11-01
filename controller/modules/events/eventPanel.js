@@ -29,113 +29,328 @@ class content {
         var eventExist = parseFloat(event["check"]);
 
         if (eventExist < 1 || Number.isNaN(eventExist))
-            return window.history.back();
+            return console.error(
+                {
+                    'error': "Evento Inexistente.",
+                    'errorType': 'User Error',
+                    'suggestion': 'Estás Intentando acceder a un evento inexistente',
+                    "back": true
+                });
 
         const permissions = this.user["permissions"];
 
-        switch (event["status"]) {
-            case "Pendiente de Iniciar":
-                $("li#eventPanel").css("display", "block");
+        const sideBarStatus = {
+            "Pendiente de Iniciar": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length > 0){
-                    $("li#adminEvent").css("display", "block");
-                    $("li#initialize").css("display", "block");
-                }else{
-                    $("li#adminEvent").css("display", "none");
-                    $("li#initialize").css("display", "none");
+                        if (!$(sideBarTab).attr("id")) return;
+
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
+
+                        if ($(sideBarTab).attr("id") !== "initialize" &&
+                            $(sideBarTab).attr("id") !== "manage-events-title")
+                            return $(sideBarTab).css("display", "none");
+
+                        if (!permissions.some(permission =>
+                            permission.name === 'Inicializar Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos'))
+                            return $(sideBarTab).css("display", "none");
+
+                        $(sideBarTab).css("display", "block");
+                    });
                 }
-                $("li#cardsPresale").css("display", "none");
-                $("li#cardsDelivery").css("display", "none");
-                $("li#start").css("display", "none");
-                $("li#redeem").css("display", "none");
-                $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                $("li#checkEventCard").css("display", "none");
-                break;
-            case "Inicializado":
-                $("li#eventPanel").css("display", "block");
-                if (Object.values(permissions).filter(permission => permission.name === 'Inicializar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#initialize").css("display", "block");
+            },
+            "Inicializado": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
 
-                $("li#cardsPresale").css("display", "none");
-                $("li#cardsDelivery").css("display", "none");
-                $("li#start").css("display", "none");
-                $("li#redeem").css("display", "none");
-                $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                $("li#checkEventCard").css("display", "none");
-                break;
-            case "Listo":
-                $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "none");
+                        if (!$(sideBarTab).attr("id")) return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Preventa de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#cardsPresale").css("display", "block");
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Listado de Entrega de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#cardsDelivery").css("display", "block");
+                        if ($(sideBarTab).attr("id") !== "initialize" &&
+                            $(sideBarTab).attr("id") !== "manage-events-title")
+                            return $(sideBarTab).css("display", "none");
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Iniciar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#start").css("display", "block");
+                        if (!permissions.some(permission =>
+                            permission.name === 'Inicializar Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos'))
+                            return $(sideBarTab).css("display", "none");
 
-                $("li#redeem").css("display", "none");
-                $("li#salesCase").css("display", "none");
-                $("li#cardsReturn").css("display", "none");
-                $("li#closure").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
-                    $("li#checkEventCard").css("display", "block");
-                break;
-            case "En Curso":
-                $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "none");
-                $("li#cardsPresale").css("display", "none");
-                $("li#cardsDelivery").css("display", "none");
-                $("li#start").css("display", "none");
+                        $(sideBarTab).css("display", "block");
+                    });
+                }
+            },
+            "Listo": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
+                        if (!$(sideBarTab).attr("id")) return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Canjeo' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#redeem").css("display", "block");
-                else
-                    $("li#redeem").css("display", "none");
-                if (Object.values(permissions).filter(permission => permission.name === 'Caja de Ventas' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#salesCase").css("display", "block");
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Cerrar Evento' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#closure").css("display", "block");
+                        if ($(sideBarTab).attr("id") !== "manage-events-title" &&
+                            $(sideBarTab).attr("id") !== "event-management-analysis-title" &&
+                            $(sideBarTab).attr("id") !== "cardsPresale" &&
+                            $(sideBarTab).attr("id") !== "cardsDelivery" &&
+                            $(sideBarTab).attr("id") !== "start" &&
+                            $(sideBarTab).attr("id") !== "checkEvent" &&
+                            $(sideBarTab).attr("id") !== "checkEventCard" &&
+                            $(sideBarTab).attr("id") !== "checkEventStudent")
+                            return $(sideBarTab).css("display", "none");
 
-                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
-                    $("li#checkEventCard").css("display", "block");
+                        if (!permissions.some(permission =>
+                            permission.name === 'Preventa de Tarjetas' ||
+                            permission.name === 'Entrega de Tarjetas' ||
+                            permission.name === 'Iniciar Evento' ||
+                            permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                            permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                            permission.name === 'Gestión y Análisis de Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos'))
+                            return $(sideBarTab).css("display", "none");
 
-                $("li#cardsReturn").css("display", "none");
-                $("li#analysis").css("display", "none");
-                $("li#eventAnalysis").css("display", "none");
-                break;
-            case "Finalizado":
-                $("li#eventPanel").css("display", "block");
-                $("li#initialize").css("display", "none");
-                $("li#cardsPresale").css("display", "none");
-                $("li#cardsDelivery").css("display", "none");
-                $("li#start").css("display", "none");
-                $("li#redeem").css("display", "none");
-                $("li#salesCase").css("display", "none");
-                if (Object.values(permissions).filter(permission => permission.name === 'Listado de Devolución de Tarjetas' || permission.name === 'Administrar Modulos de Eventos').length >0)
-                    $("li#cardsReturn").css("display", "block");
-                $("li#closure").css("display", "none");
-                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
-                    $("li#checkEventCard").css("display", "block");
-                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
-                    $("li#analysis").css("display", "block");
-                if (Object.values(permissions).filter(permission => permission.name === 'Gestión y Análisis de Evento').length >0)
-                    $("li#eventAnalysis").css("display", "block");
-                break;
+                        if ($(sideBarTab).attr("id") === "manage-events-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Preventa de Tarjetas' ||
+                                permission.name === 'Entrega de Tarjetas' ||
+                                permission.name === 'Iniciar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "event-management-analysis-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "cardsPresale")
+                            if (permissions.some(permission =>
+                                permission.name === 'Preventa de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "cardsDelivery")
+                            if (permissions.some(permission =>
+                                permission.name === 'Entrega de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "start")
+                            if (permissions.some(permission =>
+                                permission.name === 'Iniciar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEvent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventCard")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventStudent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+                    });
+                }
+            },
+            "En Curso": {
+                load() {
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
+
+                        if (!$(sideBarTab).attr("id")) return;
+
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
+
+                        if ($(sideBarTab).attr("id") !== "manage-events-title" &&
+                            $(sideBarTab).attr("id") !== "event-management-analysis-title" &&
+                            $(sideBarTab).attr("id") !== "redeem" &&
+                            $(sideBarTab).attr("id") !== "redeemCards" &&
+                            $(sideBarTab).attr("id") !== "redeemComplements" &&
+                            $(sideBarTab).attr("id") !== "salesCase" &&
+                            $(sideBarTab).attr("id") !== "closure" &&
+                            $(sideBarTab).attr("id") !== "checkEvent" &&
+                            $(sideBarTab).attr("id") !== "checkEventCard" &&
+                            $(sideBarTab).attr("id") !== "checkEventStudent")
+                            return $(sideBarTab).css("display", "none");
+
+                        if (!permissions.some(permission =>
+                            permission.name === 'Canjeo de Tarjetas' ||
+                            permission.name === 'Canjeo de Complementos' ||
+                            permission.name === 'Caja de Ventas' ||
+                            permission.name === 'Cerrar Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos' ||
+                            permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                            permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                            permission.name === 'Gestión y Análisis de Evento'))
+                            return $(sideBarTab).css("display", "none");
+
+                        if ($(sideBarTab).attr("id") === "manage-events-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Tarjetas' ||
+                                permission.name === 'Canjeo de Complementos' ||
+                                permission.name === 'Caja de Ventas' ||
+                                permission.name === 'Cerrar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "event-management-analysis-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "redeem")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Tarjetas' ||
+                                permission.name === 'Canjeo de Complementos' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "redeemCards")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "redeemComplements")
+                            if (permissions.some(permission =>
+                                permission.name === 'Canjeo de Complementos' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "salesCase")
+                            if (permissions.some(permission =>
+                                permission.name === 'Caja de Ventas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "closure")
+                            if (permissions.some(permission =>
+                                permission.name === 'Cerrar Evento' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEvent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventCard")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventStudent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+                    });
+                }
+            },
+            "Finalizado": {
+                load() {
+
+                    $("#sidebar-menu").find('li').each(function () {
+                        var sideBarTab = this;
+
+                        if (!$(sideBarTab).attr("id")) return;
+
+                        if ($(sideBarTab).attr("id") === "mainPanel") return;
+                        if ($(sideBarTab).attr("id") === "eventPanel") return;
+
+                        if ($(sideBarTab).attr("id") !== "manage-events-title" &&
+                            $(sideBarTab).attr("id") !== "event-management-analysis-title" &&
+                            $(sideBarTab).attr("id") !== "cardsReturn" &&
+                            $(sideBarTab).attr("id") !== "eventAnalysis" &&
+                            $(sideBarTab).attr("id") !== "checkEvent" &&
+                            $(sideBarTab).attr("id") !== "checkEventCard" &&
+                            $(sideBarTab).attr("id") !== "checkEventStudent")
+                            return $(sideBarTab).css("display", "none");
+
+                        if (!permissions.some(permission =>
+                            permission.name === 'Devolución de Tarjetas' ||
+                            permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                            permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                            permission.name === 'Análisis del Evento' ||
+                            permission.name === 'Gestión y Análisis de Evento' ||
+                            permission.name === 'Administrar Módulos de Eventos'))
+                            return $(sideBarTab).css("display", "none");
+
+                        if ($(sideBarTab).attr("id") === "manage-events-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Devolución de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "event-management-analysis-title")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Análisis del Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+
+                        if ($(sideBarTab).attr("id") === "cardsReturn")
+                            if (permissions.some(permission =>
+                                permission.name === 'Devolución de Tarjetas' ||
+                                permission.name === 'Administrar Módulos de Eventos'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEvent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventCard")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Código en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "checkEventStudent")
+                            if (permissions.some(permission =>
+                                permission.name === 'Revisión de Tarjetas por Estudiante en Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+
+                        if ($(sideBarTab).attr("id") === "eventAnalysis")
+                            if (permissions.some(permission =>
+                                permission.name === 'Análisis del Evento' ||
+                                permission.name === 'Gestión y Análisis de Evento'))
+                                $(sideBarTab).css("display", "block");
+                    });
+
+                }
+            },
         }
+
+        sideBarStatus[event["status"]].load();
 
         this.checkUpElements();
     }
