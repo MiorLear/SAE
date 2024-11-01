@@ -1603,11 +1603,12 @@ class content extends dataTables {
                             return `${meses[mes - 1]} ${dia}, ${año}`;
                         };
                         var date = largeDate(response["content"]["date"]);
+                        console.log(date);
 
                         $(formElement)
                             .datepicker({
                                 language: "es",
-                                startDate: new Date(),
+                                startDate: date,
                             })
                             .datepicker("setDate", date);
                         break;

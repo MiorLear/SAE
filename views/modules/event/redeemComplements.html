@@ -1,101 +1,131 @@
 <div class="content">
-    <div class="container-fluid">
-      <div class="page-title-box">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <div class="page-title-box">
-              <h4 class="page-title">Canjear Complementos</h4>
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                  <a href="javascript:void(0);">SAE</a>
-                </li>
-                <li class="breadcrumb-item">
-                  <a href="javascript:void(0);">Eventos</a>
-                </li>
-                <li class="breadcrumb-item active">Canjear Complementos</li>
-              </ol>
-            </div>
+  <div class="container-fluid">
+    <div class="page-title-box">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="page-title-box">
+            <h4 class="page-title">Canjear Complementos</h4>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">SAE</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">Eventos</a>
+              </li>
+              <li class="breadcrumb-item active">Canjear Complementos</li>
+            </ol>
           </div>
-  
-          <div class="col-md-4">
-            <div class="float-right d-none d-md-block app-datepicker">
-              <input
-                type="text"
-                class="form-control"
-                data-date-format="MM dd, yyyy"
-                readonly="readonly"
-                disabled
-                id="datepicker"
-              />
-              <i class="mdi mdi-chevron-down mdi-drop"></i>
-            </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="float-right d-none d-md-block app-datepicker">
+            <input
+              type="text"
+              class="form-control"
+              data-date-format="MM dd, yyyy"
+              readonly="readonly"
+              disabled
+              id="datepicker"
+            />
+            <i class="mdi mdi-chevron-down mdi-drop"></i>
           </div>
         </div>
       </div>
-      <!-- end page-title -->
-  
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-body">
-              <h4 class="mt-0 header-title pb-0">Canjear Complementos</h4>
-              <div class="mb-2">
-                Canjea complementos en el evento.
-              </div>
+    </div>
+    <!-- end page-title -->
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title pb-0">Canjear Complementos</h4>
+            <div class="mb-2">
+              Canjea complementos en el evento.
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">
-              <ul class="nav nav-pills flex-column flex-sm-row grades-tabs">
-                <li class="nav-item">
-                  <a
-                    class="flex-sm-fill nav-link text-center py-1 toggleAction"
-                    id="redeemCardEntry"
-                    aria-current="page"
-                    style="cursor: pointer"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    title="Ir al modulo: Canjeo de Entrada por tarjeta."
-                    >Canjear Entrada por tarjeta</a
+  <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <ul class="nav nav-pills flex-column flex-sm-row grades-tabs">
+              <li class="nav-item">
+                <a
+                  class="flex-sm-fill nav-link text-center active py-1 toggleAction"
+                  id="redeemCardEntry"
+                  aria-current="page"
+                  style="cursor: pointer"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="Ir al modulo: Canjeo de Entrada por tarjeta."
+                  >Canjear Complementos por tarjeta</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="card-body">
+            <form class="checkCard">
+              <div class="form-group row">
+                <label
+                  for="checkCardInput"
+                  class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
+                  >Código de la tarjeta</label
+                >
+                <div
+                  class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-checkCardInput"
+                >
+                  <input
+                    type="text"
+                    value=""
+                    id="checkCardInput"
+                    name="checkCardInput"
+                    min-length="4"
+                    maxlength="100"
+                    placeholder="Ingrese el código de la tarjeta"
+                    class="form-control checkCardInput"
+                  />
+                  <div
+                    class="form-control-checkCardInput-feedback"
+                    style="display: none"
                   >
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="flex-sm-fill nav-link text-center py-1 toggleAction"
-                    id="redeemCardComplement"
-                    aria-current="page"
-                    style="cursor: pointer"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    title="Ir a modulo: Canjeo de Complementos por tarjeta."
-                    >Canjear Complemento Por Tarjeta</a
+                    Success! You've done it.
+                  </div>
+                </div>  
+              </div>
+              <div class="form-group row">
+                <label for="complements" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
+                >Complementos</label>
+                    <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-complements">
+                        <select class="form-select form-control" name="complements" id="complements" aria-label="select the complement to redeem" data-live-search="true" title="Seleccione el complemento a canjear" placeholder="Seleccione el complemento a canjear">
+                        </select>
+                        <div
+                        class="form-control-complements-feedback"
+                        style="display: none"
+                        >
+                        Success! You've done it.
+                        </div>
+                    </div>
+                </div>
+              <div class="form-group row">
+                <div class="col-12 d-flex justify-content-center">
+                  <button
+                    type="submit"
+                    class="btn btn-block btn-primary text-white mt-3 registerCard"
+                    name="registerCard"
                   >
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="flex-sm-fill nav-link text-center py-1 toggleAction"
-                    id="redeemComplement"
-                    aria-current="page"
-                    style="cursor: pointer"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    title="Ir a modulo: Canjeo de Complementos."
-                    >Canjear Complemento</a
-                  >
-                </li>
-              </ul>
-            </div>
-            <div class="card-body redeemContent"></div>
+                    Revisar Tarjeta
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
-  
-    <!-- container-fluid -->
-  </div>
-  
+    </div>
+
+  <!-- container-fluid -->
+</div>

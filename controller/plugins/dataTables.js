@@ -5,9 +5,6 @@ class dataTables {
     }
 
     initWithButtons(table = this.selector) {
-
-        console.log("initWithButtons");
-
         $(document).ready(() => {
             const dataTable = $(table).DataTable({
                 lengthChange: true,

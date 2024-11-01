@@ -205,11 +205,6 @@ class content {
             $(".cardsContainer").html(cardInputs);
 
         });
-        // $(document).on("change", "input.cardNumberType", async (e) => {
-        //     var cardId = $("#" + e.currentTarget.id);
-        //     if (cardId == "") return;
-        //     this.validCardNumber(e.currentTarget.id);
-        // });
         $(document).on("submit", "form.addCards", async (e) => {
             e.preventDefault();
             this.formValidator(e.currentTarget);
@@ -228,7 +223,7 @@ class content {
             console.error(eventInfo);
             return;
         }
-        const response =  eventInfo["content"];
+        const response = eventInfo["content"];
         return response == 0 ? true : false;
 
     }
@@ -245,7 +240,7 @@ class content {
             console.error(eventInfo);
             return;
         }
-        const response =  eventInfo["content"];
+        const response = eventInfo["content"];
         return response == 0 ? false : true;
 
     }
@@ -258,7 +253,7 @@ class content {
         let studentCarnetType = [];
         let invalidInputs = [];
         let validInputs = {};
-    
+
         // Restablecer clases y feedback al inicio
         $(form).find("input, select, button").each(function () {
             let formElement = this;
@@ -268,16 +263,16 @@ class content {
                 $(`.form-control-${elementId}-feedback`).css("display", "none").text('');
             }
         });
-    
+
         $(form).find("input, select, button").each(function () {
-            let 
-            formElement = this;
+            let
+                formElement = this;
             let elementId = $(formElement).attr("id");
             let elementValue = $(formElement).val();
             let minLength = $(formElement).attr("min-length");
-    
+
             if (!elementId) return;
-    
+
             if (elementValue === "" || elementId !== "complements" && elementValue == 0) {
                 notFilledInputs.push(formElement);
             } else if (minLength && elementValue.length < minLength) {
@@ -289,92 +284,91 @@ class content {
             } else if ($(formElement).hasClass("studentCarnet")) {
                 studentCarnetType.push(formElement);
             }
-             else {
+            else {
                 validInputs[elementId] = elementValue;
             }
         });
-    
+
         notFilledInputs.forEach(input => {
             let inputId = $(input).attr('id');
             $(`.form-control-${inputId}-feedback`).css("display", "block").text(`Por favor, ${$(input).attr('placeholder')}.`);
             $(`.form-${inputId}`).addClass('has-warning');
             $(input).focus();
         });
-    
+
         for (let i = 0; i < cardNumberType.length; i++) {
             let input = cardNumberType[i];
             let cardId = $(input).attr("id");
             let cardValue = $(input).val();
-    
+
             // Comprobar si ya existe el valor en validInputs
             if (Object.values(validInputs).some(val => val === cardValue)) {
                 repeatedInputs.push(input);
-                continue; 
+                continue;
             }
-    
-            const validCard = await this.validCardNumber(cardId);        
+
+            const validCard = await this.validCardNumber(cardId);
             let status = validCard ? "has-success" : "has-danger";
             let message = validCard
                 ? "Código de Tarjeta válido."
                 : "Código de Tarjeta inválido, ya existe una tarjeta con este código.";
-    
+
             $(".form-" + cardId).addClass(status);
             $(".form-control-" + cardId + "-feedback").css("display", "block");
             $(".form-control-" + cardId + "-feedback").text(message);
-    
+
             if (!validCard) {
                 invalidInputs.push(cardValue);
-                continue; 
+                continue;
             }
-    
+
             validInputs[cardId] = cardValue;
         }
-    
+
         for (let i = 0; i < studentCarnetType.length; i++) {
             let input = studentCarnetType[i];
             let studentId = $(input).attr("id");
             let studentCarnet = $(input).val();
 
-            const validCard = await this.validStudent(studentCarnet);        
+            const validCard = await this.validStudent(studentCarnet);
             let status = validCard ? "has-success" : "has-danger";
             let message = validCard
                 ? "Estudiante Seleccionado."
                 : "Carnet Inexistente, este carnet no pertenece a ningún estudiante.";
-    
+
             $(".form-" + studentId).addClass(status);
             $(".form-control-" + studentId + "-feedback").css("display", "block");
             $(".form-control-" + studentId + "-feedback").text(message);
-    
+
             if (!validCard) {
                 invalidInputs.push(studentCarnet);
-                continue; 
+                continue;
             }
-    
+
             validInputs[studentId] = studentCarnet;
         }
-    
+
         repeatedInputs.forEach(input => {
             let inputId = $(input).attr('id');
             $(`.form-control-${inputId}-feedback`).css("display", "block").text(`Este código ya ha sido ingresado, por favor, ingrese un código distinto.`);
             $(`.form-${inputId}`).addClass('has-warning');
             $(input).focus();
         });
-    
+
         notMinLengthInputs.forEach(input => {
             let inputId = $(input).attr('id');
             $(`.form-control-${inputId}-feedback`).css("display", "block").text(`Por favor, escriba por lo menos ${$(input).attr("min-length")} carácteres.`);
             $(`.form-${inputId}`).addClass('has-warning');
             $(input).focus();
         });
-    
+
         // Llamar a addCards solo si no hay errores
         if (!notFilledInputs.length && !repeatedInputs.length && !notMinLengthInputs.length && !invalidInputs.length) {
             this.addCards(validInputs);
         }
         else
-        console.log("notFilledInputs " + notFilledInputs.length + " repeatedInputs " + repeatedInputs.length + " notMinLengthInputs " + notMinLengthInputs.length+ "  invalidInputs " + invalidInputs.length);
+            console.log("notFilledInputs " + notFilledInputs.length + " repeatedInputs " + repeatedInputs.length + " notMinLengthInputs " + notMinLengthInputs.length + "  invalidInputs " + invalidInputs.length);
     }
-    
     async addCards(add) {
         console.log("A");
         $("#pdfModal").modal("show");
@@ -550,8 +544,8 @@ class content {
         });
     }
     async cleanup() {
-        $(document).off('click', 'a.toggleAction');
-        $(document).off('click', 'a.addCards');
+        $(document).off("change", "input.cardsNumber");
+        $(document).off("submit", "form.addCards");
     }
 }
 

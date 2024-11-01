@@ -4,14 +4,100 @@ class content {
         this.id = this.getID();
         this.checkEventExist();
         this.settupEventListeners();
-        this.toggleAction();
+        this.loadComplementsSelect();
     }
     getID() {
         var url = window.location.search;
         const param = new URLSearchParams(url);
         return param.get('event');
     }
+    async loadComplementsSelect(id = this.id){
+        let formData = new FormData();
+        formData.append("action", "getEventComplements");
+        formData.append("id", id);
 
+        let complementsInfo = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (complementsInfo['result'] !== 'success') {
+            console.error(complementsInfo);
+            return;
+        }
+
+        const complements = JSON.parse(complementsInfo["content"]["complements"]);
+        var complementsOption = "";
+
+        for (let index = 0; index < Object.entries(complements).length; index++) {
+            const element = Object.entries(complements)[index][1];
+            complementsOption += `<option data-tokens="${element["title"]}" value="${element["id"]}">${element["title"]}</option>`;
+        }
+        $('.form-select').selectpicker({
+            locale: 'es'
+        });
+        $("select#complements").html(complementsOption);
+        $("select#complements").selectpicker("refresh");
+    }
+    async settupEventListeners() {
+        $(document).on("submit", "form.checkCard", async (e) => {
+            e.preventDefault();
+
+            let cardInput = $("#checkCardInput");
+            let cardInputVal = $("#checkCardInput").val();
+            
+            let complementsInput = $("#complements");
+            let complementsInputVal = $("#complements").val();
+            
+            if (cardInputVal == "") {
+                $(`.form-control-checkCardInput-feedback`).css("display", "block").text(`Por favor, ${$(cardInput).attr('placeholder')}.`);
+                $(`.form-checkCardInput`).addClass('has-warning');
+                $(cardInputVal).focus();
+            } else {
+                $(`.form-control-checkCardInput-feedback`).css("display", "none");
+                $(`.form-checkCardInput`).removeClass('has-warning');
+            }
+            
+            if (complementsInputVal == "") {
+                $(`.form-control-complements-feedback`).css("display", "block").text(`Por favor, ${$(complementsInput).attr('placeholder')}.`);
+                $(`.form-complements`).addClass('has-warning');
+                $(complementsInputVal).focus();
+            } else {
+                $(`.form-control-complements-feedback`).css("display", "none");
+                $(`.form-complements`).removeClass('has-warning');
+            }
+
+            if (cardInputVal == "" || complementsInputVal == "")
+                return;
+
+            this.checkCard(cardInputVal, complementsInputVal);
+        });
+    }
+
+    async checkCard(cardId, complementId, id = this.id) {
+        let formData = new FormData();
+        formData.append("action", "redeemComplement");
+        formData.append("cardId", cardId);
+        formData.append("complementId", complementId);
+        formData.append("id", id);
+
+
+        let cardRedeem = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (cardRedeem['result'] !== 'success') {
+            console.error(cardRedeem);
+            return;
+        }
+
+        Swal.fire(
+            {
+                title: "Éxito!",
+                text: 'Complemento Canjeado Correctamente.',
+                icon: "success",
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+    }
 
     async checkEventExist(id = this.id) {
         let formData = new FormData();
@@ -192,240 +278,6 @@ class content {
         sideBarStatus[event["status"]].load();
 
     }
-    async settupEventListeners(eventId = this.id) {
-        $(document).on('click', 'a.toggleAction', async (e) => {
-            e.preventDefault();
-            var id = e.currentTarget.id;
-            this.toggleAction(id);
-        });
-
-        $(document).on('click', 'form.redeemEntryCard', async (e) => {
-            e.preventDefault();
-            var cardId = $("#cardCode").val();
-
-            if (cardId == '')
-                return Swal.fire(
-                    {
-                        title: "Espera un momento",
-                        text: 'Ingrese un codigo de Tarjeta',
-                        icon: "warning",
-                        showConfirmButton: true,
-                    }
-                );
-
-            let formData = new FormData();
-            formData.append("action", "redeemCard");
-            formData.append("id", this.id);
-            formData.append("cardId", cardId);
-
-            let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
-                .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-
-            if (response['result'] !== 'success') {
-                console.error(response);
-                return;
-            }
-
-            console.log(response);
-
-        });
-        $(document).on('click', 'form.redeemComplementCard', async (e) => {
-            e.preventDefault();
-            $(".cardCode")
-        });
-        $(document).on('click', 'form.redeemComplement', async (e) => {
-            e.preventDefault();
-            $(".cardCode")
-        });
-    }
-    async toggleAction(id) {
-        switch (id) {
-            case 'redeemCardEntry':
-                $("#redeemCardComplement").removeClass("active");
-                $("#redeemComplement").removeClass("active");
-                $("#redeemCardEntry").addClass("active");
-                this.redeemCardEntry();
-                break;
-            case 'redeemCardComplement':
-                $("#redeemCardEntry").removeClass("active");
-                $("#redeemComplement").removeClass("active");
-                $("#redeemCardComplement").addClass("active");
-                this.redeemCardComplement();
-                break;
-            case 'redeemComplement':
-                $("#redeemCardEntry").removeClass("active");
-                $("#redeemCardComplement").removeClass("active");
-                $("#redeemComplement").addClass("active");
-                this.redeemComplement();
-                break;
-            default:
-                $("#redeemCardComplement").removeClass("active");
-                $("#redeemComplement").removeClass("active");
-                $("#redeemCardEntry").addClass("active");
-                this.redeemCardEntry();
-                break;
-        }
-    }
-
-    async redeemCardEntry() {
-
-        var content =
-            `<form class="mx-2 px-2 redeemEntryCard">
-                <div class="form-group row d-flex justify-content-center">
-                    <label for="cardCode" class="text-left col-sm-2 col-form-label">Código de Tarjeta</label>
-                    <div class="col-sm-10 form-cardCode">
-                        <input class="form-control maxlength" id="cardCode"
-                        name="cardCode" min-length="1" maxlength="100"
-                        placeholder="Ingrese el codigo de tarjeta"
-                        />
-                        <div class="form-control-cardCode-feedback" style="display: none">
-                            Success! You've done it.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row d-flex justify-content-center mb-0 pb-0">   
-                    <button type="submit" class="btn btn-primary" title="Canjear Entrada" data-toggle="tooltip" data-placement="top">Canjear Entrada</button>
-                </div>
-            </form>
-        `;
-
-        $(".redeemContent").html(content);
-    }
-    async redeemCardComplement() {
-
-        let formData = new FormData();
-        formData.append("action", "getComplements");
-        formData.append("id", this.id);
-
-        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-
-        if (response['result'] !== 'success') {
-            console.error(response);
-            return;
-        }
-
-
-        const complements = JSON.parse(response['content']);
-        var selectComplements;
-
-        for (let index = 0; index < Object.entries(complements).length; index++) {
-            const element = Object.entries(complements)[index][1];
-            selectComplements +=
-                `<option data-tokens="${element["title"]}" value="${element["id"]}">${element["title"]}</option>`;
-        }
-
-        var content =
-            `<form class="mx-2 px-2 redeemComplementCard">
-                <div class="form-group row d-flex justify-content-center">
-                    <label for="cardCode" class="text-left col-sm-2 col-form-label">Código de Tarjeta</label>
-                    <div class="col-sm-10 form-cardCode">
-                        <input class="form-control maxlength" id="cardCode"
-                        name="cardCode" min-length="1" maxlength="100"
-                        placeholder="Ingrese el codigo de tarjeta"
-                        />
-                        <div class="form-control-cardCode-feedback" style="display: none">
-                            Success! You've done it.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row d-flex justify-content-center">
-                    <label for="complement" class="text-left col-sm-2 col-form-label">Complemento a Canjear</label>
-                    <div class="col-sm-10 form-complement">
-                        <select
-                        class="form-select form-control"
-                        name="complement"
-                        id="complement"
-                        aria-label="Select the complement to redeem"
-                        data-live-search="true"
-                        placeholder="Seleccione el complemento a canjear"
-                        title="Seleccione el complemento a canjear"
-                        ></select>
-
-                        <div class="form-control-complement-feedback" style="display: none">
-                            Success! You've done it.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row d-flex justify-content-center mb-0 pb-0">   
-                    <button type="submit" class="btn btn-primary" title="Canjear Entrada" data-toggle="tooltip" data-placement="top">Canjear Entrada</button>
-                </div>
-            </form>
-        `;
-
-        await $(".redeemContent").html(content);
-
-        $("select#complement").html(selectComplements);
-        $("select#complement").selectpicker('refresh');
-    }
-    async redeemComplement() {
-
-        let formData = new FormData();
-        formData.append("action", "getComplements");
-        formData.append("id", this.id);
-
-        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
-
-        if (response['result'] !== 'success') {
-            console.error(response);
-            return;
-        }
-
-
-        const complements = JSON.parse(response['content']);
-        var selectComplements;
-
-        for (let index = 0; index < Object.entries(complements).length; index++) {
-            const element = Object.entries(complements)[index][1];
-            selectComplements +=
-                `<option data-tokens="${element["title"]}" value="${element["id"]}">${element["title"]}</option>`;
-        }
-
-        var content =
-            `<form class="mx-2 px-2 redeemComplement">
-                <div class="form-group row d-flex justify-content-center">
-                    <label for="ticketCode" class="text-left col-sm-2 col-form-label">Código de Ticket</label>
-                    <div class="col-sm-10 form-ticketCode">
-                        <input class="form-control maxlength" id="ticketCode"
-                        name="ticketCode" min-length="1" maxlength="100"
-                        placeholder="Ingrese el codigo de tarjeta"
-                        />
-                        <div class="form-control-ticketCode-feedback" style="display: none">
-                            Success! You've done it.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row d-flex justify-content-center">
-                    <label for="complement" class="text-left col-sm-2 col-form-label">Complemento a Canjear</label>
-                    <div class="col-sm-10 form-complement">
-                        <select
-                        class="form-select form-control"
-                        name="complement"
-                        id="complement"
-                        aria-label="Select the complement to redeem"
-                        data-live-search="true"
-                        placeholder="Seleccione el complemento a canjear"
-                        title="Seleccione el complemento a canjear"
-                        ></select>
-
-                        <div class="form-control-complement-feedback" style="display: none">
-                            Success! You've done it.
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row d-flex justify-content-center mb-0 pb-0">   
-                    <button type="submit" class="btn btn-primary" title="Canjear Entrada" data-toggle="tooltip" data-placement="top">Canjear Entrada</button>
-                </div>
-            </form>
-        `;
-
-        await $(".redeemContent").html(content);
-
-        $("select#complement").html(selectComplements);
-        $("select#complement").selectpicker('refresh');
-    }
-
     async ajaxRequest(url, formData) {
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -454,7 +306,7 @@ class content {
         });
     }
     async cleanup() {
-
+        $(document).off("submit", "form.checkCard");
     }
 }
 
