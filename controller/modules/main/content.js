@@ -1763,7 +1763,7 @@ class content extends dataTables {
                             );
                             return false;
                         }
-                        if (newPrice <= 0) {
+                        if (newPrice < 0) {
                             Swal.showValidationMessage(
                                 "El precio debe ser un valor positivo"
                             );
@@ -2011,7 +2011,7 @@ class content extends dataTables {
             $(".form-control-add-complements-price-feedback").text(
                 "Por favor, Ingrese el precio del Complemento."
             );
-        } else if (price <= 0) {
+        } else if (price < 0) {
             $(".form-control-add-complements-price-feedback").css("display", "block");
             $(".form-add-complements-price").addClass("has-warning");
             $(".form-control-add-complements-price-feedback").text(
@@ -2027,7 +2027,7 @@ class content extends dataTables {
             name === "" ||
             name.length < $(".add-complements-name").attr("min-length") ||
             price === "" ||
-            price <= 0
+            price < 0
         )
             return;
 
@@ -2126,7 +2126,7 @@ class content extends dataTables {
                         );
                         return false;
                     }
-                    if (newPrice <= 0) {
+                    if (newPrice < 0) {
                         Swal.showValidationMessage("El precio debe ser un valor positivo");
                         return false;
                     }
@@ -2187,7 +2187,7 @@ class content extends dataTables {
             $(".form-control-edit-complements-price-feedback").text(
                 "Por favor, Ingrese el precio del Complemento."
             );
-        } else if (price <= 0) {
+        } else if (price < 0) {
             $(".form-control-edit-complements-price-feedback").css(
                 "display",
                 "block"
@@ -2206,7 +2206,7 @@ class content extends dataTables {
             name === "" ||
             name.length < $(".edit-complements-name").attr("min-length") ||
             price === "" ||
-            price <= 0
+            price < 0
         )
             return;
 
@@ -2308,7 +2308,7 @@ class content extends dataTables {
                             );
                             return false;
                         }
-                        if (newPrice <= 0) {
+                        if (newPrice < 0) {
                             Swal.showValidationMessage(
                                 "El precio debe ser un valor positivo"
                             );
