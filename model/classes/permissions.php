@@ -41,7 +41,12 @@ class permissions
     {
         $conn = $this->conn->getConnection();
 
-        $sql = "SELECT id, name, event_id FROM permissions ORDER BY id DESC";
+        if (array_filter($_SESSION["user"]["permissions"], function($permission) {
+            return $permission['name'] === 'Administrar Plataforma' ? true : false;
+        }))
+            $sql = "SELECT id, name FROM permissions ORDER BY id DESC";
+        else
+            $sql = "SELECT id, name FROM permissions WHERE name != 'Administrar Plataforma' AND name != 'Administrar Módulos de Eventos' ORDER BY id DESC";
 
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();
@@ -55,11 +60,11 @@ class permissions
     {
         $conn = $this->conn->getConnection();
         $id = $this->id;
-        
+
         $sql = "SELECT name FROM permissions WHERE id = :id";
 
         $stmt = $conn->prepare(query: $sql);
-        $stmt ->bindParam(':id', $id, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, PDO::PARAM_STR);
         $stmt->execute();
         $response = $stmt->fetch();
         exit(json_encode(value: array(

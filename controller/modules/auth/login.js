@@ -31,12 +31,13 @@ class Login {
             var src = '../../../model/modules/sessionManager.php'
             var response = await new sessionManager().startSession(user, password, src);
 
-            if (response['result'] == 'success')
-                window.location.href = '../../main.html?content=mainPanel';
-            else
-                console.error(response);
+            if (response['result'] != 'success')
+                return console.error(response);
+
+            window.location.href = '../../main.html?content=mainPanel';
+
         } catch (error) {
-            console.error({ 'error': error, 'errorType' : 'notAlert'});
+            console.error({ 'error': error, 'errorType': 'notAlert' });
         }
 
     }

@@ -71,6 +71,9 @@ class errorHandler {
         else
           console.error(response);
       };
+      if (alertContent?.["back"]) {
+        window.history.back();  
+      };
     });
   }
 }

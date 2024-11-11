@@ -138,7 +138,7 @@
     });
 
     demo("#alertify-notification-html", function (ev) {
-        alertify.log("<img src='https://placehold.it/256x128'><h3 class='font-18'>This is HTML</h3>");
+        alertify.log("<img><h3 class='font-18'>This is HTML</h3>");
     });
 
     demo("#alertify-notification-callback", function(ev) {

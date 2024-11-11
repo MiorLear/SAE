@@ -97,7 +97,7 @@
             swal({
                 title: 'Sweet!',
                 text: 'Modal with a custom image.',
-                imageUrl: '../assets/images/logo-light.svg',
+                imageUrl: '../assets/images/logo-light.png',
                 imageHeight: 30,
                 animation: false
             })

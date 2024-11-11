@@ -24,6 +24,7 @@
               class="form-control"
               data-date-format="MM dd, yyyy"
               readonly="readonly"
+              disabled
               id="datepicker"
             />
             <i class="mdi mdi-chevron-down mdi-drop"></i>
@@ -33,61 +34,56 @@
     </div>
     <!-- end page-title -->
 
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="mt-0 header-title">Administrar Eventos</h4>
-            <p class="sub-title">
-              Lista y centraliza los eventos de la plataforma, registra eventos
-              y administra su configuración.
-            </p>
-            <button
-              type="button"
-              class="btn btn-primary btn-lg btn-block waves-effect waves-light"
-              data-toggle="modal"
-              data-target=".bd-addModal-lg"
-            >
-              Registrar Evento
-            </button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <ul class="nav nav-tabs">
-              <li class="nav-item">
-                <a
-                  class="nav-link active status"
-                  id="enable"
-                  aria-current="page"
-                  style="cursor: pointer"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  title="Listar Eventos Habilitados"
-                  >Eventos Habilitados</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link status"
-                  id="unable"
-                  aria-current="page"
-                  style="cursor: pointer"
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  title="Listar Eventos Inhabilitados"
-                  >Eventos Inhabilitados</a
-                >
-              </li>
-            </ul>
-          </div>
-          <div
-            class="card-body eventsContent row"
-            style="background-color: #00000008; margin: 0"
-          ></div>
-        </div>
+    <div class="card">
+      <div class="card-body">
+        <h4 class="mt-0 header-title">Administrar Eventos</h4>
+        <p class="sub-title">
+          Lista y centraliza los eventos de la plataforma, registra eventos
+          y administra su configuración.
+        </p>
+        <button
+          type="button"
+          class="btn btn-primary btn-lg btn-block waves-effect waves-light"
+          data-toggle="modal"
+          data-target=".bd-addModal-lg"
+        >
+          Registrar Evento
+        </button>
       </div>
-      <!-- end col -->
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <ul class="nav nav-pills flex-column flex-sm-row">
+          <li class="nav-item">
+            <a
+              class="flex-sm-fill nav-link text-center py-1 active status "
+              id="enable"
+              aria-current="page"
+              style="cursor: pointer"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Listar Eventos Habilitados"
+              >Eventos Habilitados</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="flex-sm-fill nav-link text-center py-1 status"
+              id="unable"
+              aria-current="page"
+              style="cursor: pointer"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Listar Eventos Inhabilitados"
+              >Eventos Inhabilitados</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div
+        class="card-body row eventsContent"
+        style="background-color: #00000008; margin: 0"
+      ></div>
     </div>
     <!-- end row -->
 
@@ -110,10 +106,10 @@
             <div class="modal-body">
               <form class="add">
                 <div class="form-group row">
-                  <label for="name" class="col-sm-2 col-form-label"
+                  <label for="name" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Nombre</label
                   >
-                  <div class="col-sm-10 form-name">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-name">
                     <input
                       class="form-control maxlength"
                       type="text"
@@ -132,12 +128,13 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="price" class="col-sm-2 col-form-label"
+                  <label for="price" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Precio</label
                   >
-                  <div class="col-sm-10 form-price">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-price">
                     <input
                       class="form-control touchSpin"
+                      type="number"
                       id="price"
                       name="price"
                       placeholder="Escriba el precio"
@@ -151,10 +148,10 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="date" class="col-sm-2 col-form-label"
+                  <label for="date" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Fecha</label
                   >
-                  <div class="col-sm-10 form-date">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-date">
                     <input
                       class="form-control maxlength datepicker"
                       type="text"
@@ -174,10 +171,10 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="levels" class="col-sm-2 col-form-label"
+                  <label for="levels" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Nivel</label
                   >
-                  <div class="col-sm-10 form-levels">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-levels">
                     <select
                       class="form-select form-control"
                       name="levels"
@@ -197,7 +194,7 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label class="col-sm-2 col-form-label"
+                  <label class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Complementos</label
                   >
                   <div class="col-sm-5 form-add-complements-name">
@@ -298,10 +295,10 @@
             <div class="modal-body">
               <form class="edit">
                 <div class="form-group row">
-                  <label for="name" class="col-sm-2 col-form-label"
+                  <label for="name" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Nombre</label
                   >
-                  <div class="col-sm-10 form-name">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-name">
                     <input
                       class="form-control maxlength"
                       type="text"
@@ -320,14 +317,15 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="price" class="col-sm-2 col-form-label"
+                  <label for="price" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Precio</label
                   >
-                  <div class="col-sm-10 form-price">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-price">
                     <input
                       class="form-control touchSpin"
                       id="price"
                       name="price"
+                      type="number"
                       placeholder="Escriba el precio"
                     />
                     <div
@@ -339,10 +337,10 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="date" class="col-sm-2 col-form-label"
+                  <label for="date" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Fecha</label
                   >
-                  <div class="col-sm-10 form-date">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-date">
                     <input
                       class="form-control maxlength"
                       type="text"
@@ -362,10 +360,10 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <label for="levels" class="col-sm-2 col-form-label"
+                  <label for="levels" class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Nivel</label
                   >
-                  <div class="col-sm-10 form-levels">
+                  <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 form-levels">
                     <select
                       class="form-select form-control"
                       name="levels"
@@ -427,7 +425,7 @@
             <div class="modal-body">
               <form class="complements">
                 <div class="form-group row">
-                  <label class="col-sm-2 col-form-label"
+                  <label class="col-lg-2 col-md-2 col-sm-12 col-xs-12 col-form-label text-center"
                     >Complementos</label
                   >
                   <div class="col-sm-5 form-edit-complements-name">

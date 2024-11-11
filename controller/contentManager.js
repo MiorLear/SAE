@@ -4,373 +4,332 @@ import sessionManager from '../controller/sessionManager.js';
 class contentManager {
     constructor() {
         this.sessionManager = new sessionManager();
-
         this.errorHandler = new errorHandler();
+
+        this.currentContentInstance;
+        this.user;
+        this.elements;
+        this.content;
+        this.page;
 
         this.validateSession();
 
-        this.currentContentInstance = null;
-
-        this.elements = "main";
-
-        this.redirection = {
-            //Main Modules
-            "events": {
-                load: async () => {
-                    await this.loadPage("modules/main/events.html").then(async () => {
-                        await this.initializeContent("../controller/modules/mainContent/content.js", "events");
-
-                        if (this.elements !== "main")
-                            await this.loadElements('main');
-                        else
-                            await this.loadPlugins('events');
-
-                        $("a#events").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "grades": {
-                load: async () => {
-                    await this.loadPage("modules/main/grades.html").then(async () => {
-                        await this.initializeContent("../controller/modules/mainContent/content.js", "grades");
-
-                        if (this.elements !== "main")
-                            await this.loadElements('main');
-                        else
-                            await this.loadPlugins('grades');
-
-                        $("a#grades").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "levels": {
-                load: async () => {
-
-                    await this.loadPage("modules/main/levels.html").then(async () => {
-                        await this.initializeContent("../controller/modules/mainContent/content.js", "levels");
-
-                        if (this.elements !== "main")
-                            await this.loadElements('main');
-                        else
-                            await this.loadPlugins('levels');
-
-                        $("a#levels").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "mainPanel": {
-                load: async () => {
-                    console.log("Pending to load dinamic data");
-                    await this.loadPage("modules/main/mainPanel.html").then(async () => {
-                        await this.initializeContent("../controller/plugins/dashBoard.js");
-
-                        if (this.elements !== "main")
-                            await this.loadElements('main');
-                        else
-                            await this.loadPlugins('mainPanel');
-
-                        $("a#mainPanel").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "roles": {
-                load: async () => {
-                    await this.loadPage("modules/main/roles.html").then(async () => {
-                        await this.initializeContent("../controller/modules/mainContent/content.js", "roles");
-
-                        if (this.elements !== "main")
-                            await this.loadElements('main');
-                        else
-                            await this.loadPlugins('roles');
-
-                        $("a#roles").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "students": {
-                load: async () => {
-                    await this.loadPage("modules/main/students.html").then(async () => {
-                        await this.initializeContent("../controller/modules/mainContent/content.js", "students");
-
-                        if (this.elements !== "main")
-                            await this.loadElements('main');
-                        else
-                            await this.loadPlugins('students');
-
-                        $("a#students").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "users": {
-                load: async () => {
-                    await this.loadPage("modules/main/users.html").then(async () => {
-                        await this.initializeContent("../controller/modules/mainContent/content.js", "users");
-
-                        if (this.elements !== "main")
-                            await this.loadElements('main');
-                        else
-                            await this.loadPlugins('users');
-
-                        $("a#users").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            //Management Modules
-            "checkCard": {
-                load: async () => {
-                    console.log("checkCard isn't finished");
-
-                    await this.loadPage("modules/management/checkCard.html").then(async () => {
-                        $("a#checkCard").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "checkStudent": {
-                load: async () => {
-                    console.log("checkStudent isn't finished");
-
-                    await this.loadPage("modules/management/checkStudent.html").then(async () => {
-                        $("a#checkStudent").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            //Analysis Modules
-            "controlLog": {
-                load: async () => {
-                    await this.loadPage("modules/analysis/controlLog.html").then(async () => {
-                        await this.initializeContent("../controller/modules/analysis/controlLog.js", "controlLog");
-                        await this.loadPlugins('controlLog');
-                        $("a#controlLog").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "statistics": {
-                load: async () => {
-                    console.log("statistics isn't finished");
-
-                    await this.loadPage("modules/analysis/statistics.html").then(async () => {
-                        $("a#statistics").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            //Payment Modules
-            "payCard": {
-                load: async () => {
-                    console.log("payCard isn't finished");
-
-                    await this.loadPage("modules/payment/payCard.html").then(async () => {
-                        $("a#payCard").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "payStudent": {
-                load: async () => {
-                    console.log("payStudent isn't finished");
-
-                    await this.loadPage("modules/payment/payStudent.html").then(async () => {
-                        $("a#payCard").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            //Event Modules
-            "eventPanel": {
-                load: async (e) => {
-
-                    await this.loadPage("modules/event/eventPanel.html").then(async () => {
-                        await this.initializeContent("../controller/modules/events/startEvent.js");
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        else
-                            await this.loadPlugins('events');
-
-                        $("a#eventPanel").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "initialize": {
-                load: async () => {
-                    console.log("initialize isn't finished");
-
-                    await this.loadPage("modules/event/initialize.html").then(async () => {
-                        await this.initializeContent("../controller/modules/events/initialize.js");
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        else
-                            await this.loadPlugins('initialize');
-
-                        $("a#initialize").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "cardsPresale": {
-                load: async () => {
-                    console.log("cardsPresale isn't finished");
-
-                    await this.loadPage("modules/event/cardsPresale.html").then(async () => {
-                        // await this.initializeContent();
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
-
-                        $("a#cardsPresale").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "salesCase": {
-                load: async () => {
-                    console.log("salesCase isn't finished");
-                    await this.loadPage("modules/event/salesCase.html").then(async () => {
-                        // await this.initializeContent();
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
-
-                        $("a#salesCase").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "cardsDelivery": {
-                load: async () => {
-                    console.log("cardsDelivery isn't finished");
-                    await this.loadPage("modules/event/cardsDelivery.html").then(async () => {
-                        // await this.initializeContent();
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
-
-                        $("a#cardsDelivery").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "cardsReturn": {
-                load: async () => {
-                    console.log("cardsReturn isn't finished");
-                    await this.loadPage("modules/event/cardsReturn.html").then(async () => {
-                        // await this.initializeContent();
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
-
-                        $("a#cardsReturn").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "redeem": {
-                load: async () => {
-                    console.log("redeem isn't finished");
-                    await this.loadPage("modules/event/redeem.html").then(async () => {
-                        // await this.initializeContent();
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
-
-                        $("a#redeem").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "closure": {
-                load: async () => {
-                    console.log("closure isn't finished");
-
-                    await this.loadPage("modules/event/closure.html").then(async () => {
-                        // await this.initializeContent();
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
-
-                        $("a#closure").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-            "eventLog": {
-                load: async () => {
-                    console.log("eventLog isn't finished");
-
-                    await this.loadPage("modules/event/eventLog.html").then(async () => {
-                        // await this.initializeContent();
-
-                        if (this.elements !== "events")
-                            await this.loadElements('events');
-                        // else
-                        // await this.loadPlugins();
-
-                        $("a#eventLog").css("color", "#FFF");
-                        $("#overlay").css("display", "none");
-                    });
-                }
-            },
-        }
-
-        this.loadElements(this.elements, true);
-
         $(document).on('click', 'a.content', (event) => this.redirectionHandler(event));
         $(document).on('click', 'a.logout', async (e) => this.logout(e));
-
-        $(window).on('popstate', async () => {
-            if (!this.redirection?.[this.content()]?.load()) console.error(
-                {
-                    'error': "Error al cargar el sitio.",
-                    'errorType': 'Client Error',
-                    'errorCode': '404',
-                    'errorDetails': `Selected content (${this.content()}) doesn't exist.`,
-                    'suggestion': 'Vuelve a ingresar a la plataforma.',
-                    'logout': true
-                }
-            );
-            await this.loadElements();
-            $(`a#${this.content()}`).css("color", "#FFF");
-        });
-
-        $("#overlay").css("display", "block");
+        $(window).on('popstate', async () => this.validateSession());
     }
 
-    page() {
+    getPage() {
+        // console.log("getPage");
+
         var filename = document.URL.split('/').pop();
         return filename.split('.').slice(0, -1).join('.');
     }
 
-    content() {
+    getContent() {
+        // console.log("getContent");
+
         var url = window.location.search;
         const param = new URLSearchParams(url);
         return param.get('content');
     }
+
+    async loadContent(content = this.content, elements = this.elements) {
+        // console.log("loadContent");
+        $("#overlay").css("display", "block");
+
+        $("#sidebar-menu").find('a').each(function () {
+            var sideBarTab = this;
+
+            if (!$(sideBarTab).attr("id")) return;
+            if (!$(sideBarTab).hasClass("content")) return;
+            $(sideBarTab).css("color", "#9CA8B3");
+
+        });
+
+        $('[data-toggle="tooltip"]').tooltip('dispose');
+
+        if (!this.unAuth(content)) {
+            return console.error(
+                {
+                    'error': "Contenido Restringido.",
+                    'errorType': 'User Error',
+                    'suggestion': 'No estás autorizado para entrar a este contenido. Comuniquese con el administrador del sitio para más información',
+                    "back": true
+                });
+        }
+
+        var reloadElements;
+        var elementToCall;
+        var pageToLoad;
+        var contentToInitialize;
+
+        const pages = {
+            //Main
+            events: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/main/${content}.html`;
+                    contentToInitialize = "../controller/modules/main/content.js";
+                    return true;
+                }
+            },
+            grades: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== "elementToCall";
+                    pageToLoad = `modules/main/${content}.html`;
+                    contentToInitialize = "../controller/modules/main/content.js";
+                    return true;
+                }
+            },
+            levels: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/main/${content}.html`;
+                    contentToInitialize = "../controller/modules/main/content.js";
+                    return true;
+                }
+            },
+            roles: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/main/${content}.html`;
+                    contentToInitialize = "../controller/modules/main/content.js";
+                    return true;
+                }
+            },
+            students: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/main/${content}.html`;
+                    contentToInitialize = "../controller/modules/main/content.js";
+                    return true;
+                }
+            },
+            users: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/main/${content}.html`;
+                    contentToInitialize = "../controller/modules/main/content.js";
+                    return true;
+                }
+            },
+            mainPanel: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/main/${content}.html`;
+                    contentToInitialize = `../controller/modules/main/${content}.js`;
+                    return true;
+                }
+            },
+            //Analysis Modules
+            checkCard: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/management/${content}.html`;
+                    contentToInitialize = `../controller/modules/analysis/${content}.js`;
+                    return true;
+                }
+            },
+            checkStudent: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/management/${content}.html`;
+                    contentToInitialize = `../controller/modules/analysis/${content}.js`;
+                    return true;
+                }
+            },
+            controlLog: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/analysis/${content}.html`;
+                    contentToInitialize = `../controller/modules/analysis/${content}.js`;
+                    return true;
+                }
+            },
+            analysis: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/analysis/${content}.html`;
+                    contentToInitialize = `../controller/modules/analysis/${content}.js`;
+                    return true;
+                }
+            },
+            //Payment Modules
+            payCard: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/payment/${content}.html`;
+                    contentToInitialize = `../controller/modules/payment/${content}.js`;
+                    return true;
+                }
+            },
+            payStudent: {
+                preLoad: () => {
+                    elementToCall = "main";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/payment/${content}.html`;
+                    contentToInitialize = `../controller/modules/payment/${content}.js`;
+                    return true;
+                }
+            },
+            //Event Modules
+            eventPanel: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            checkEventCard: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            checkEventStudent: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            initialize: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            cardsPresale: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            salesCase: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            cardsDelivery: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            cardsReturn: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            redeemCards: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            redeemComplements: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            start: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            closure: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            },
+            eventAnalysis: {
+                preLoad: () => {
+                    elementToCall = "events";
+                    reloadElements = elements !== elementToCall;
+                    pageToLoad = `modules/event/${content}.html`;
+                    contentToInitialize = `../controller/modules/events/${content}.js`;
+                    return true;
+                }
+            }
+        };
+
+        if (!pages?.[content]?.preLoad()) console.error(
+            {
+                'error': "Error al cargar el sitio.",
+                'errorType': 'Client Error',
+                'errorCode': '404',
+                'errorDetails': `Selected content (${content}) doesn't exist.`,
+                'suggestion': 'Vuelve a ingresar a la plataforma.',
+                'logout': true
+            }
+        );
+
+        if (reloadElements)
+            await this.loadElements(elementToCall);
+
+        await this.loadPage(pageToLoad);
+        await this.initializeContent(contentToInitialize, content);
+        await this.loadPlugins(content);
+
+        $(`a#${content}`).css("color", "#FFF");
+        $("#overlay").css("display", "none");
+    }
+
     async logout(e) {
         e.preventDefault();
+        // console.log("logout");
 
         swal.fire(
             {
@@ -401,6 +360,8 @@ class contentManager {
     }
 
     async validateSession() {
+        // console.log("validateSession");
+
         var response = await this.sessionManager.checkSession('../model/modules/sessionManager.php')
         if (response?.["result"] != 'success')
             console.error(response);
@@ -408,54 +369,376 @@ class contentManager {
         if (response["status"] != 'validSession')
             window.location.href = './modules/auth/login.html';
 
-        return response["content"];
+        var user = response["content"];
+
+        this.user = user;
+        this.content = this.getContent();
+        this.page = this.getPage();
+
+        await this.loadContent();
+        await this.validatePermissions();
     }
 
-    async loadElements(elements = this.elements, redirect = false) {
+    unAuth(content = this.content) {
+        // console.log("unAuth " + content);
+
+        const permissions = this.user["permissions"];
+
+        const authContent = {
+            mainPanel: {
+                check() {
+                    return true;
+                }
+            },
+            eventPanel: {
+                check() {
+                    return true;
+                }
+            },
+            events: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Eventos' ||
+                        permission.name === 'Listar Eventos'));
+                }
+            },
+            grades: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Grados' ||
+                        permission.name === 'Listar Grados'));
+                }
+            },
+            levels: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Niveles' ||
+                        permission.name === 'Listar Niveles'));
+                }
+            },
+            roles: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Roles' ||
+                        permission.name === 'Listar Roles'));
+                }
+            },
+            students: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Estudiantes' ||
+                        permission.name === 'Listar Estudiantes'));
+                }
+            },
+            users: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Administrar Plataforma' ||
+                        permission.name === 'Administrar Usuarios' ||
+                        permission.name === 'Listar Usuarios'));
+                }
+            },
+            checkCard: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Revisión de Tarjetas por Código' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            checkStudent: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Revisión de Tarjetas por Estudiante' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            controlLog: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Bitácora de Control' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            analysis: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Análisis' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            payCard: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Pago de Tarjetas por Código' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            payStudent: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Pago de Tarjetas por Estudiante' ||
+                        permission.name === 'Gestión y Análisis'));
+                }
+            },
+            checkEventCard: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Gestión y Análisis de Evento' ||
+                        permission.name === 'Revisión de Tarjetas por Código en Evento'
+                    ));
+                }
+            },
+            checkEventStudent: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Gestión y Análisis de Evento' ||
+                        permission.name === 'Revisión de Tarjetas por Estudiante en Evento'
+                    ));
+                }
+            },
+            initialize: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Inicializar Evento' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            cardsPresale: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Preventa de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            salesCase: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Caja de Ventas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            cardsDelivery: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Entrega de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            cardsReturn: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Devolución de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            redeemCards: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Canjeo de Tarjetas' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            redeemComplements: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Canjeo de Complementos' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            start: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Iniciar Evento' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            closure: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Cerrar Evento' ||
+                        permission.name === 'Administrar Módulos de Eventos')
+                    );
+                }
+            },
+            eventAnalysis: {
+                check() {
+                    return (permissions.some(permission =>
+                        permission.name === 'Gestión y Análisis de Evento' ||
+                        permission.name === 'Análisis del Evento')
+                    );
+                }
+            },
+        }
+
+        return authContent?.[content]?.check();
+    }
+
+    async validatePermissions(user = this.user) {
+
+        const permissions = user["permissions"];
+                
+        $("#sidebar-menu").find('li').each(function () {
+            var sideBarTab = this;
+
+            if (!$(sideBarTab).attr("id")) return;
+
+            if (permissions.some(permission =>
+                permission.name === 'Administrar Plataforma'))
+                if ($(sideBarTab).hasClass("manage-platform")) $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Gestión y Análisis'))
+                if ($(sideBarTab).hasClass("management-analysis")) $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Listar Estudiantes' ||
+                permission.name === 'Administrar Estudiantes'))
+                if ($(sideBarTab).attr("id") === "students") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Listar Roles' ||
+                permission.name === 'Administrar Roles'))
+                if ($(sideBarTab).attr("id") === "roles") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Listar Niveles' ||
+                permission.name === 'Administrar Niveles'))
+                if ($(sideBarTab).attr("id") === "levels") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Listar Eventos' ||
+                permission.name === 'Administrar Eventos'))
+                if ($(sideBarTab).attr("id") === "events") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Listar Usuarios' ||
+                permission.name === 'Administrar Usuarios'))
+                if ($(sideBarTab).attr("id") === "users") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Listar Grados' ||
+                permission.name === 'Administrar Grados'))
+                if ($(sideBarTab).attr("id") === "grades") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Código' ||
+                permission.name === 'Revisión de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "check") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Código'))
+                if ($(sideBarTab).attr("id") === "checkCard") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "checkStudent") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Pago de Tarjetas por Código' ||
+                permission.name === 'Pago de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "pay") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Pago de Tarjetas por Código'))
+                if ($(sideBarTab).attr("id") === "payCard") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Pago de Tarjetas por Estudiante'))
+                if ($(sideBarTab).attr("id") === "payStudent") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Análisis'))
+                if ($(sideBarTab).attr("id") === "analysis") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Bitácora de Control'))
+                if ($(sideBarTab).attr("id") === "controlLog") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Administrar Plataforma' ||
+                permission.name === 'Listar Estudiantes' ||
+                permission.name === 'Administrar Estudiantes' ||
+                permission.name === 'Listar Roles' ||
+                permission.name === 'Administrar Roles' ||
+                permission.name === 'Listar Niveles' ||
+                permission.name === 'Administrar Niveles' ||
+                permission.name === 'Listar Eventos' ||
+                permission.name === 'Administrar Eventos' ||
+                permission.name === 'Listar Usuarios' ||
+                permission.name === 'Administrar Usuarios' ||
+                permission.name === 'Listar Grados' ||
+                permission.name === 'Administrar Grados'))
+                if ($(sideBarTab).attr("id") === "admin-title") $(sideBarTab).css("display", "block");
+
+            if (permissions.some(permission =>
+                permission.name === 'Revisión de Tarjetas por Código' ||
+                permission.name === 'Revisión de Tarjetas por Estudiante' ||
+                permission.name === 'Pago de Tarjetas por Código' ||
+                permission.name === 'Pago de Tarjetas por Estudiante' ||
+                permission.name === 'Bitácora de Control' ||
+                permission.name === 'Análisis'))
+                if ($(sideBarTab).attr("id") === "management-analysis-title") $(sideBarTab).css("display", "block");
+        });
+    }
+
+    async loadElements(elements = this.elements) {
+        // console.log("loadElements " + elements);
+
         this.elements = elements;
 
         $(".side-menu").empty();
         $(".topbar").empty();
-        switch (elements) {
-            case 'main':
-                await fetch('other/sidebarMain.html')
-                    .then(response => response.text())
-                    .then(async data => {
-                        await $(".side-menu").append(data);
-                    })
-                    .catch(error => {
-                        console.error(
-                            {
-                                'error': `No se encuentra el elemento seleccionado.`,
-                                'errorType': 'Client Error',
-                                'errorCode': '404',
-                                'errorDetails': `Selected element (sidebarMain.html) not found. \nERROR THROWN BY JS: \n${error}`,
-                                'suggestion': 'Vuelva a ingresar a la plataforma.',
-                                'logout': true
-                            }
-                        );
-                    });
-                break;
-            case 'events':
-                await fetch('other/sidebarEvent.html')
-                    .then(response => response.text())
-                    .then(async data => {
-                        await $(".side-menu").append(data);
-                    })
-                    .catch(error => {
-                        console.error(
-                            {
-                                'error': `No se encuentra el elemento seleccionado.`,
-                                'errorType': 'Client Error',
-                                'errorCode': '404',
-                                'errorDetails': `Selected element (sidebarEvent.html) not found. \nERROR THROWN BY JS: \n${error}`,
-                                'suggestion': 'Vuelva a ingresar a la plataforma.',
-                                'logout': true
-                            }
-                        );
-                    });
-                break;
-        }
+
+        if (elements === 'main')
+            await fetch('other/sidebarMain.html')
+                .then(response => response.text())
+                .then(async data => {
+                    await $(".side-menu").append(data);
+                })
+                .catch(error => {
+                    console.error(
+                        {
+                            'error': `No se encuentra el elemento seleccionado.`,
+                            'errorType': 'Client Error',
+                            'errorCode': '404',
+                            'errorDetails': `Selected element (sidebarMain) not found. \nERROR THROWN BY JS: \n${error}`,
+                            'suggestion': 'Vuelva a ingresar a la plataforma.',
+                            'logout': true
+                        }
+                    );
+                });
+        else if (elements === 'events')
+            await fetch('other/sidebarEvent.html')
+                .then(response => response.text())
+                .then(async data => {
+                    await $(".side-menu").append(data);
+                })
+                .catch(error => {
+                    console.error(
+                        {
+                            'error': `No se encuentra el elemento seleccionado.`,
+                            'errorType': 'Client Error',
+                            'errorCode': '404',
+                            'errorDetails': `Selected element (sidebarEvent) not found. \nERROR THROWN BY JS: \n${error}`,
+                            'suggestion': 'Vuelva a ingresar a la plataforma.',
+                            'logout': true
+                        }
+                    );
+                });
+
         await fetch('other/topbar.html')
             .then(response => response.text())
             .then(async data => {
@@ -474,155 +757,260 @@ class contentManager {
                 );
             });
 
-        if (redirect)
-            if (!this.redirection?.[this.content()]?.load()) console.error(
-                {
-                    'error': "Error al cargar el sitio.",
-                    'errorType': 'Client Error',
-                    'errorCode': '404',
-                    'errorDetails': `Selected content (${this.content()}) doesn't exist.`,
-                    'suggestion': 'Vuelve a ingresar a la plataforma.',
-                    'logout': true
-                }
-            );
-
-        await this.loadPlugins('all');
+        await this.validatePermissions();
+        await this.loadPlugins('elements');
     }
 
     async fillUserInfo() {
-        var content = await this.validateSession()
+        // console.log("fillUserInfo");
+
+        var content = this.user;
 
         if ($(".topbarphoto").length > 0)
             $(".topbarphoto")[0].src = '../assets/images/users/' + content["picture"];
     }
 
-    async loadPlugins(func) {
+    async loadPlugins(plugin) {
+        // console.log("loadPlugins " + plugin);
+
         const { default: Mainapp } = await import('./plugins/app.js');
         const app = new Mainapp();
 
-        switch (func) {
-            case 'all':
-                app.init();
-                break;
-            case 'initialize':
-                app.initTouchSpin();
-                app.initDatePicker();
-                app.initMaxLength();
-                break;
-            case 'events':
-                app.initTouchSpin();
-                app.initDatePicker();
-                break;
-            case 'students':
-                app.initDatePicker();
-                app.initMaxLength();
-                app.initSelect();
-                break;
-            case 'levels':
-                app.initDatePicker();
-                app.initMaxLength();
-                app.initSelect();
-                break;
-            case 'roles':
-                app.initDatePicker();
-                app.initMaxLength();
-                app.initSelect();
-                break;
-            case 'events':
-                app.initDatePicker();
-                app.initMaxLength();
-                app.initSelect();
-                app.initTouchSpin()
-                break;
-            case 'users':
-                app.initDatePicker();
-                app.initMaxLength();
-                app.initSelect();
-                break;
-            case 'mainPanel':
-                app.initDatePicker();
-                break;
-            case 'grades':
-                app.initDatePicker();
-                app.initMaxLength();
-                break;
-            case 'controlLog':
-                app.initDatePicker();
-                break;
-        }
+        const plugins = {
+            all: {
+                load: async () => {
+                    app.init();
+                    await this.fillUserInfo();
+                }
+            },
+            elements: {
+                load: async () => {
+                    app.initSlimscrollmenu();
+                    app.initSlimscroll();
+                    app.initMetisMenu();
+                    app.initLeftMenuCollapse();
+                    app.initEnlarge();
+                    app.initActiveMenu();
+                    app.initComponents();
+                    app.initToggleSearch();
+                    app.initToolTip();
+                    await this.fillUserInfo();
+                }
+            },
+            initialize: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initTouchSpin();
+                    app.initMaxLength();
+                }
+            },
+            checkStudent: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            checkCard: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            checkEventCard: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            checkEventStudent: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            cardsPresale: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            salesCase: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            start: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            payCard: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            payStudent: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            closure: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            cardsDelivery: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            redeemCards: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            redeemComplements: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            cardsReturn: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            analysis: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            eventAnalysis: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+            eventPanel: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initTouchSpin();
+                }
+            },
+            students: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initMaxLength();
+                    app.initSelect();
+                }
+            },
+            levels: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initMaxLength();
+                    app.initSelect();
+                }
+            },
+            roles: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initMaxLength();
+                    app.initSelect();
+                }
+            },
+            events: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initMaxLength();
+                    app.initSelect();
+                    app.initTouchSpin();
+                }
+            },
+            users: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initMaxLength();
+                    app.initSelect();
+                }
+            },
+            grades: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initMaxLength();
+                    app.initSelect();
+                }
+            },
+            mainPanel: {
+                load: async () => {
+                    app.initDatePicker();
+                    app.initToolTip();
+                }
+            },
+            controlLog: {
+                load: async () => {
+                    app.initDatePicker();
+                }
+            },
+        };
 
-        this.fillUserInfo();
+        if (!plugins?.[plugin]?.load()) console.error(
+            {
+                'error': "Error al cargar el paquete de extensiones.",
+                'errorType': 'Client Error',
+                'errorCode': '404',
+                'errorDetails': `Selected package (${plugin}) doesn't exist.`,
+                'suggestion': 'Vuelve a ingresar a la plataforma.',
+                'logout': true
+            }
+        );
     }
 
     async loadPage(content) {
-        return fetch(content)
-            .then(response => {
-                var content = response.text();
-                if (response['ok'])
-                    return content;
-                else
-                    console.error(
-                        {
-                            'error': `No se encuentra el contenido.`,
-                            'errorType': 'Client Error',
-                            'errorCode': response['status'],
-                            'errorDetails': `HTML content not found. \nERROR THROWN BY JS: \n${error}`,
-                            'suggestion': 'Vuelva a ingresar a la plataforma.',
-                            'logout': true
-                        }
-                    );
-            }
-            )
-            .then(data => {
-                $(".content-page").empty().append(data);
-            })
+        // console.log("loadPage " + content);
+
+        return fetch(content).then(response => {
+            if (response['ok'])
+                return response.text();
+            else
+                console.error({
+                    'error': `No se encuentra el contenido.`,
+                    'errorType': 'Client Error',
+                    'errorCode': response['status'],
+                    'errorDetails': `HTML content not found.`,
+                    'suggestion': 'Vuelva a ingresar a la plataforma.',
+                    'logout': true
+                });
+        }).then(data => {
+            $(".content-page").empty().append(data);
+        })
     }
 
-    async initializeContent(source, module = this.content()) {
-        var user = await this.validateSession();
+    async initializeContent(source, module = this.content) {
+        // console.log("initializeContent " + module);
 
+        var user = this.user;
         let params = {
             "table": module,
             "user": user
         }
 
-        if (this.currentContentInstance && typeof this.currentContentInstance.cleanup === 'function') {
+        if (this.currentContentInstance && typeof this.currentContentInstance.cleanup === 'function')
             this.currentContentInstance.cleanup();
-        }
 
         const { default: content } = await import(source);
-        this.currentContentInstance = new content(params);
+        this.currentContentInstance = await new content(params);
     }
 
     async redirectionHandler(e) {
-        // console.log(e.target.id);
-
-        $(`a#${this.content()}`).css("color", "#9CA8B3");
-
+        // console.log("redirectionHandler " + newContent);
         let url = new URL(window.location.href);
+        var newContent = e.target.id;
+        var actualEvent = e.target.name;
 
-        if (e.target.id === "mainPanel")
+        if (newContent === "mainPanel")
             url.searchParams.delete("event");
 
-        url.searchParams.set("content", e.target.id);
-        if (e.target.name)
-            url.searchParams.set("event", e.target.name);
+        if (actualEvent)
+            url.searchParams.set("event", actualEvent);
 
+        url.searchParams.set("content", newContent);
         window.history.pushState({}, '', url);
 
-        // $(`a#${e.target.id}`).css("color", "#FFF");
-        $("#overlay").css("display", "block");
-
-        if (!this.redirection?.[e.target.id]?.load()) console.error(
-            {
-                'error': "Error al cargar el sitio.",
-                'errorType': 'Client Error',
-                'errorCode': '404',
-                'errorDetails': `Selected content (${this.content()}) doesn't exist.`,
-                'suggestion': 'Vuelve a ingresar a la plataforma.',
-                'logout': true
-            }
-        );
+        this.content = newContent;
+        this.loadContent();
     }
 }
 

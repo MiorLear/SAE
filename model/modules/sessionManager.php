@@ -87,7 +87,7 @@ class sessionManager
                 )
             ));
 
-        $sql = "SELECT id, concat(name[1], ' ', name[2]) as name, mail, picture FROM users WHERE id = :id";
+        $sql = "SELECT u.id, concat(u.name[1], ' ', u.name[2]) as name, u.mail, u.picture, r.name AS rol FROM users u LEFT JOIN roles r ON u.rol_id = r.id WHERE u.id = :id";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(param: ":id", var: $user['id'], type: PDO::PARAM_STR);
         $stmt->execute();
@@ -97,20 +97,23 @@ class sessionManager
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(param: ":id", var: $user['id'], type: PDO::PARAM_STR);
         $stmt->execute();
-        $userPermissions = $stmt->fetch();
+        $userPermissions = $stmt->fetchAll();
 
-        $_SESSION['user'] = array(
+        $userSession = array(
             'id' => $user['id'],
             'mail' => $user['mail'],
             'name' => $user['name'],
+            'rol' => $user['rol'],
             'picture' => $user['picture'],
-            'permissions' => $userPermissions['name']
+            'permissions' => $userPermissions
         );
+
+        $_SESSION['user'] = $userSession;
 
 
 
         exit(json_encode(
-            value: array("result" => "success")
+            value: array("result" => "success", "content"=>$userSession)
         ));
     }
     private function checkUserSession(): void

@@ -298,6 +298,19 @@ class roles
         $conn = $this->conn->getConnection();
         $id = $this->id;
 
+        $sql = "SELECT status FROM events WHERE id = :id;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+        $eventstatus = $stmt->fetch()['status'];
+
+        if ($eventstatus != "Pendiente de Iniciar")
+            exit(json_encode(value: [
+                'error' => "Espera un momento.",
+                'suggestion' => "El evento ya ha sido inicializado ($id). Estado: \"$eventstatus,  no se puede deshabilitar.",
+                'errorType' => "User Error"
+            ]));
+
         $sql = "UPDATE events SET status = 'Deshabilitado' WHERE id = :id";
 
         $stmt = $conn->prepare(query: $sql);

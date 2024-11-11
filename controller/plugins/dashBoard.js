@@ -1,32 +1,36 @@
 export default class content {
     constructor() {
-      this.init();
+      // this.init();
     }
   
     createStackedChart(element, data, xkey, ykeys, labels, lineColors) {
       Morris.Bar({
-        element: element,
-        data: data,
-        xkey: xkey,
-        ykeys: ykeys,
-        stacked: true,
-        labels: labels,
-        hideHover: 'auto',
-        barSizeRatio: 0.4,
-        resize: true,
-        gridLineColor: '#eeeeee',
-        barColors: lineColors
+          element: element,
+          data: data,
+          xkey: xkey,
+          ykeys: ykeys,
+          stacked: true,
+          labels: labels,
+          hideHover: 'auto',
+          barSizeRatio: 0.4,
+          preUnits:"$",
+          resize: true,
+          gridLineColor: '#eeeeee',
+          barColors: lineColors,
+          formatter: function (value) {
+              return '$' + value.toLocaleString(); 
+          }
       });
-    }
+  }
   
-    createDonutChart(element, data, colors) {
-      Morris.Donut({
-        element: element,
-        data: data,
-        resize: true,
-        colors: colors
-      });
-    }
+    // createDonutChart(element, data, colors) {
+    //   Morris.Donut({
+    //     element: element,
+    //     data: data,
+    //     resize: true,
+    //     colors: colors
+    //   });
+    // }
   
     createAreaChart(element, data, color) {
       const options = {
@@ -75,7 +79,7 @@ export default class content {
         { label: "In-Store Sales", value: 50 },
         { label: "Mail-Order Sales", value: 30 }
       ];
-      this.createDonutChart('morris-donut-example', donutData, ['#0e86e7', '#23cbe0', '#745af1']);
+      // this.createDonutChart('morris-donut-example', donutData, ['#0e86e7', '#23cbe0', '#745af1']);
   
       // Ejemplo de gráficos de área
       this.createAreaChart("#chart1", [24, 66, 42, 88, 62, 24, 45, 12, 36, 10], '#0e86e7');
