@@ -35,9 +35,7 @@ class content {
             locale: 'es'
         });
         $("select#events").html(eventsOption);
-        $("select#events").selectpicker("refresh"); // Correct: Refresh selectpicker
-
-        // Now, you can setup event listeners
+        $("select#events").selectpicker("refresh"); 
     }
     async settupEventListeners() {
         const self = this;

@@ -57,7 +57,10 @@ class eventManager
                 $this->getCardFromStudent();
                 break;
             case "getCardOnlyFromStudent":
-                $this->getCardFromStudent();
+                $this->getCardOnlyFromStudent();
+                break;
+            case "getCardOnlyFromStudentCheck":
+                $this->getCardOnlyFromStudentCheck();
                 break;
             case "getComplement":
                 $this->getComplement();
@@ -67,6 +70,12 @@ class eventManager
                 break;
             case "payCard":
                 $this->payCard();
+                break;
+            case "payCardIndividual":
+                $this->payCardIndividual();
+                break;
+            case "payedRegister":
+                $this->payedRegister();
                 break;
             case "redeemComplement":
                 $this->redeemComplement();
@@ -156,7 +165,7 @@ class eventManager
     private function getGraphInfo(): void
     {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT event_name, SUM(total_value) AS total_value FROM (SELECT CONCAT(events.name, ' (', EXTRACT(year FROM TO_DATE(events.settings->'settings'->>'date', 'DD/MM/YYYY')), ')') AS event_name, COUNT(*) * totalPrices.totalPrice AS total_value FROM events JOIN jsonb_each(data->'cards') AS card ON true LEFT JOIN students s ON card.value->>'family_id' = s.id::text LEFT JOIN (SELECT SUM(CAST(ROUND(CAST(REPLACE(TRIM(menu.value->>'price'), '\"', '') AS NUMERIC)) AS INTEGER)) + CAST(ROUND(CAST(REPLACE(TRIM(settings->'settings'->>'price'), '\"', '') AS NUMERIC)) AS INTEGER) AS totalPrice, events.settings FROM events, jsonb_each(settings->'complements') AS menu, jsonb_each(settings->'model'->'complements') AS complement WHERE complement.key = menu.value->>'id' GROUP BY events.settings) AS totalPrices ON totalPrices.settings = events.settings GROUP BY event_name, totalPrices.totalPrice) AS subquery GROUP BY event_name ORDER BY event_name;";
+        $sql = "SELECT event_name, SUM(total_value) AS total_value FROM (SELECT CONCAT(events.name, ' (', EXTRACT(year FROM TO_DATE(events.settings->'settings'->>'date', 'DD/MM/YYYY')), ')') AS event_name, COUNT(*) * totalPrices.totalPrice AS total_value FROM events LEFT JOIN jsonb_each(data->'cards') AS card ON true LEFT JOIN students s ON card.value->>'family_id' = s.id::text LEFT JOIN (SELECT SUM(CAST(ROUND(CAST(REPLACE(TRIM(menu.value->>'price'), '\"', '') AS NUMERIC)) AS INTEGER)) + CAST(ROUND(CAST(REPLACE(TRIM(settings->'settings'->>'price'), '\"', '') AS NUMERIC)) AS INTEGER) AS totalPrice, events.settings FROM events, jsonb_each(settings->'complements') AS menu, jsonb_each(settings->'model'->'complements') AS complement WHERE complement.key = menu.value->>'id' GROUP BY events.settings) AS totalPrices ON totalPrices.settings = events.settings GROUP BY event_name, totalPrices.totalPrice) AS subquery GROUP BY event_name ORDER BY event_name;";
         $stmt = $conn->prepare(query: $sql);
         $stmt->execute();
         $eventRevenues = $stmt->fetchAll();
@@ -308,15 +317,40 @@ class eventManager
     private function getCardOnlyFromStudent(): void
     {
         $conn = $this->conn->getConnection();
-        $sql = "SELECT  id, CONCAT(name, ' (', EXTRACT(year FROM TO_DATE(settings->'settings'->>'date', 'DD/MM/YYYY')), ')') AS name, settings->'settings'->>'price' as price, jsonb_pretty(value) AS card FROM events e, jsonb_each(e.data->'cards') AS card(key, value) WHERE e.id = :id AND value->>'family_id' = :studentId;";
+        $sql = "SELECT e.id, CONCAT(e.name, ' (', EXTRACT(year FROM TO_DATE(e.settings->'settings'->>'date', 'DD/MM/YYYY')), ')') AS name, e.settings->'settings'->>'price' AS price, json_agg(card.value) AS cards, (SELECT COUNT(*) FROM jsonb_object_keys(data->'payment')) + 1 AS paymentId  FROM events e JOIN jsonb_each(e.data->'cards') AS card (key, value) ON true WHERE value->>'family_id' = :studentId AND value->>'payed' = 'false' AND e.id = :id GROUP BY e.id, e.name, e.settings->'settings'->>'price';";
         $stmt = $conn->prepare(query: $sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->bindParam(':studentId', $this->studentId, PDO::PARAM_STR);
         $stmt->execute();
-        $eventInfo = $stmt->fetchAll();
+        $eventInfo = $stmt->fetch();
         exit(json_encode(value: array(
             "result" => "success",
-            "content" => $eventInfo,
+            "content" => array(
+                "name" => $eventInfo["name"],
+                "price" => $eventInfo["price"],
+                "cards" => $eventInfo["cards"],
+                "paymentId" => str_pad($eventInfo["paymentid"], 8, '0', STR_PAD_LEFT)
+            ),
+        )));
+    }
+    
+    private function getCardOnlyFromStudentCheck(): void
+    {
+        $conn = $this->conn->getConnection();
+        $sql = "SELECT e.id, CONCAT(e.name, ' (', EXTRACT(year FROM TO_DATE(e.settings->'settings'->>'date', 'DD/MM/YYYY')), ')') AS name, e.settings->'settings'->>'price' AS price, json_agg(card.value) AS cards, (SELECT COUNT(*) FROM jsonb_object_keys(data->'payment')) + 1 AS paymentId  FROM events e JOIN jsonb_each(e.data->'cards') AS card (key, value) ON true WHERE value->>'family_id' = :studentId AND e.id = :id GROUP BY e.id, e.name, e.settings->'settings'->>'price';";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->bindParam(':studentId', $this->studentId, PDO::PARAM_STR);
+        $stmt->execute();
+        $eventInfo = $stmt->fetch();
+        exit(json_encode(value: array(
+            "result" => "success",
+            "content" => array(
+                "name" => $eventInfo["name"],
+                "price" => $eventInfo["price"],
+                "cards" => $eventInfo["cards"],
+                "paymentId" => str_pad($eventInfo["paymentid"], 8, '0', STR_PAD_LEFT)
+            ),
         )));
     }
     private function getComplements(): void
@@ -458,7 +492,7 @@ class eventManager
         if ($exists)
             exit(json_encode(value: [
                 'error' => "Espera un momento.",
-                'suggestion' => "Has ingresado tarjetas existentes. ",
+                'suggestion' => "Haz ingresado tarjetas existentes. ",
                 'errorType' => "User Error"
             ]));
 
@@ -627,6 +661,91 @@ class eventManager
         $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
         $stmt->bindValue(':new_payment', $model, PDO::PARAM_STR);
         $stmt->execute();
+
+        // exit(json_encode(value: array(
+        //     "result" => "error",
+        //     "content" => $model,
+        // )));
+
+        exit(json_encode(value: array(
+            "result" => "success",
+        )));
+    }
+    private function payedRegister(): void
+    {
+        $conn = $this->conn->getConnection();
+
+        setlocale(LC_TIME, 'es_ES.UTF-8'); // Establece el idioma en español
+        date_default_timezone_set('America/El_Salvador'); // Configura la zona horaria para El Salvador
+
+        $fechaHora = strftime('%d/%m/%Y a las %I:%M %p');
+        ucfirst($fechaHora);
+
+        $model = json_encode([
+            $this->paymentId => [
+                "paymentId" => $this->paymentId,
+                "cashier" => $this->cashier,
+                "client" => $this->client,
+                "total" => $this->total,
+                "description" => $this->description,
+                "date" => $fechaHora
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+
+
+        $sql = "UPDATE events SET data = jsonb_set(data, '{payment}', COALESCE(data->'payment', '{}'::jsonb) || :new_payment::jsonb) WHERE id = :id;";
+        $stmt = $conn->prepare(query: $sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->bindValue(':new_payment', $model, PDO::PARAM_STR);
+        $stmt->execute();
+
+        exit(json_encode(value: array(
+            "result" => "success",
+        )));
+    }
+    private function payCardIndividual(): void
+    {
+        $conn = $this->conn->getConnection();
+
+        $sql = "SELECT COUNT(id) FROM events WHERE jsonb_exists(data->'cards', :cardId) AND id = :id;";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':cardId', $this->cardId, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($stmt->fetchColumn() == 0)
+            exit(json_encode(value: [
+                'error' => "Espera un momento.",
+                'suggestion' => "Has ingresado una tarjeta sin registrar. ",
+                'errorType' => "User Error"
+            ]));
+
+        $sql = "SELECT data->'cards'->:cardId->'payed' AS result, data->'cards'->:cardId->'payedDate' AS date  FROM events WHERE jsonb_exists(data->'cards', :cardId) AND id = :id;";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':cardId', $this->cardId, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch();
+
+        if ($result["result"] == '"true"')
+            exit(json_encode(value: [
+                'error' => "La tarjeta ya ha sido pagada.",
+                'suggestion' => "La tarjeta fue pagada el " . $result["date"],
+                'errorType' => "User Error"
+            ]));
+
+        setlocale(LC_TIME, 'es_ES.UTF-8'); // Establece el idioma en español
+        date_default_timezone_set('America/El_Salvador'); // Configura la zona horaria para El Salvador
+
+        $fechaHora = strftime('%d/%m/%Y a las %I:%M %p');
+        ucfirst($fechaHora);
+
+
+        $sql = "UPDATE events SET data = jsonb_set(jsonb_set(data, '{cards, " . $this->cardId . ", payedDate}', '\"" . ucfirst($fechaHora) . "\"'), '{cards, " . $this->cardId . ", payed}', '\"true\"') WHERE id = :id;";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        $stmt->execute();
+
 
         // exit(json_encode(value: array(
         //     "result" => "error",

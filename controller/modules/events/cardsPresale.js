@@ -224,12 +224,10 @@ class content {
             $(".cardsContainer").html(cardInputs);
 
         });
-
         $(document).on("submit", "form.addCards", async (e) => {
             e.preventDefault();
             this.formValidator(e.currentTarget);
         });
-
         $(document).on("change", "#isAnActiveFamilie", (e) => {
             if (e.currentTarget.checked) {
                 $(".group-clientName").css("display", "none");
@@ -241,7 +239,6 @@ class content {
             }
 
         });
-
         $(document).on("change", "#addComplements", (e) => {
             if (e.currentTarget.checked) {
                 $(".group-complements").css("display", "flex");
@@ -251,7 +248,6 @@ class content {
             }
 
         });
-
         $(document).on("click", "#printContent", async (e) => {
             e.preventDefault();
             self.printPDF();
@@ -570,6 +566,7 @@ class content {
         var cardContent = "";
         var student;
         var payRows = "";
+        const complementCounts = {};
 
         formData.set("action", "getPaymentCode");
         formData.set("id", eventId);
@@ -625,20 +622,6 @@ class content {
                 <td>$${event["price"]}</td>
             </tr>
             `;
-        }
-
-        const complementCounts = {};
-
-        for (let index = 0; index < Object.entries(cards).length; index++) {
-            const card = Object.entries(cards)[index][1];
-            if (!card)
-                return console.error(
-                    {
-                        'error': "Tarjeta Inexistente.",
-                        'errorType': 'User Error',
-                        'suggestion': 'La tarjeta Ingresada no existe en el evento seleccionado.'
-                    });
-
 
             if (card["complements"] !== '{}')
                 for (let index = 0; index < Object.entries(card["complements"]).length; index++) {
@@ -1074,8 +1057,13 @@ class content {
         });
     }
     async cleanup() {
+        $(document).off("click", "#payCardContent");
         $(document).off("change", "input.cardsNumber");
         $(document).off("submit", "form.addCards");
+        $(document).off("change", "#isAnActiveFamilie");
+        $(document).off("change", "#addComplements");
+        $(document).off("click", "#printContent");
+        $(document).on("click", "#saveContent");
     }
 }
 

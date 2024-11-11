@@ -2,8 +2,35 @@ class content {
     constructor(params) {
         this.user = params["user"];
         this.settupEventListeners();
+        this.loadComplementsSelect();
     }
+    async loadComplementsSelect() {
+        let formData = new FormData();
+        formData.append("action", "getEvents");
 
+        let eventsInfo = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (eventsInfo['result'] !== 'success') {
+            console.error(eventsInfo);
+            return;
+        }
+
+        const events = eventsInfo["content"];
+        let eventsOption = "";
+
+        for (let index = 0; index < Object.entries(events).length; index++) {
+            const element = Object.entries(events)[index][1];
+            eventsOption += `<option data-tokens="${element["name"]}" value="${element["id"]}">${element["name"]}</option>`;
+        }
+
+        $('.form-select').selectpicker({
+            locale: 'es'
+        });
+        $("select#events").html(eventsOption);
+        $("select#events").selectpicker("refresh");
+
+    }
     async settupEventListeners() {
         const self = this;
         $(document).on("click", "#printContent", async (e) => {
@@ -17,20 +44,34 @@ class content {
         $(document).on("submit", "form.checkCard", async (e) => {
             e.preventDefault();
 
-            let input = $("#checkCardInput");
-            let inputVal = $("#checkCardInput").val();
+            let notFilled = [];
+            let validInputs = {};
 
-            if (inputVal == "") {
-                $(`.form-control-checkCardInput-feedback`).css("display", "block").text(`Por favor, ${$(input).attr('placeholder')}.`);
-                $(`.form-checkCardInput`).addClass('has-warning');
-                $(inputVal).focus();
-                return;
-            } else {
-                $(`.form-control-checkCardInput-feedback`).css("display", "none");
-                $(`.form-checkCardInput`).removeClass('has-warning');
-            }
+            $(e.currentTarget).find("input, select").each(function () {
+                var formElement = this;
+                var formElementVal = $(formElement).val();
 
-            this.checkStudent(inputVal);
+                if (!$(formElement).attr("id")) return;
+
+                $(`.form-control-${$(formElement).attr("id")}-feedback`).css("display", "none");
+                $(`.form-${$(formElement).attr("id")}`).removeClass('has-warning');
+
+                if (formElementVal == "") {
+                    notFilled.push(formElement);
+                } else {
+                    validInputs[$(formElement).attr("id")] = formElementVal;
+                }
+            })
+
+            notFilled.forEach(input => {
+                $(`.form-control-${$(input).attr("id")}-feedback`).css("display", "block").text(`Por favor, ${$(input).attr('placeholder')}.`);
+                $(`.form-${$(input).attr("id")}`).addClass('has-warning');
+                $(input).focus(); // Corrected: Using 'cardInput'
+            });
+
+
+            if (!notFilled.length)
+                this.checkStudent(validInputs["checkCardInput"], validInputs["events"]);
         });
     }
     printPDF() {
@@ -105,7 +146,7 @@ class content {
 
         });
     }
-    async checkStudent(carnet) {
+    async checkStudent(carnet, event) {
 
         if (isNaN(carnet))
             return console.error({
@@ -137,8 +178,9 @@ class content {
                 });
 
 
-        formData.set("action", "getCardOnlyFromStudent");
+        formData.set("action", "getCardOnlyFromStudentCheck");
         formData.append("studentId", student["id"]);
+        formData.append("id", event);
 
         let eventInfo = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -155,103 +197,117 @@ class content {
                 {
                     'error': "No se han encontrado tarjetas.",
                     'errorType': 'User Error',
-                    'suggestion': 'No se han encontrado tarjetas relacionadas al estudiante ' + student["name"] + '.'
+                    'suggestion': 'No se han encontrado tarjetas relacionadas a la familia ' + student["name"] + '.'
                 });
 
         var cardContent = "";
 
-        for (let eventIndex = 0; eventIndex < Object.entries(events).length; eventIndex++) {
-            const event = Object.entries(events)[eventIndex][1];
 
-            const card = JSON.parse(event["card"]);
-            let cardPrice = parseFloat(event["price"]);
+        const cards = JSON.parse(events["cards"]);
+        if (!cards || cards == '{}')
+            return console.error(
+                {
+                    'error': "No se Econtraron tarjetas.",
+                    'errorType': 'User Error',
+                    'suggestion': 'El estudiante no tiene tarjetas de la familia en el evento seleccionado.'
+                });
+
+        for (let eventIndex = 0; eventIndex < Object.entries(cards).length; eventIndex++) {
+            const card = Object.entries(cards)[eventIndex][1];
+
+            let cardPrice = parseFloat(events["price"]);
 
             var complements = ""
-            if (card["complements"] !== '{}')
+
+            console.log(card);
+
+            if (card?.["complements"] || card["complements"] !== '{}')
                 for (let complementIndex = 0; complementIndex < Object.entries(card["complements"]).length; complementIndex++) {
                     const element = Object.entries(card["complements"])[complementIndex][1];
-                    const complement = await this.getComplement(element["id"], event["id"])
+                    const complement = await this.getComplement(element["id"], event)
                     complements += `${complement["title"]} (${element["exchanged"] ? 'Canjeado el ' + element["exchangedDate"] : 'Pendiente de Canjear'}) <br>`;
                     cardPrice += parseFloat(complement["price"]);
                 }
 
             cardContent += `
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Código de Tarjeta</h6>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
-                    ${card["card_id"]}
-                </div>
-            </div>
-            <hr class="px-4 mx-4">
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Nombre del Evento</h6>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
-                    ${event["name"]}
-                </div>
-            </div>
-            <hr class="px-4 mx-4">
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Precio de la Tarjeta</h6>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
-                    $${cardPrice}
-                </div>
-            </div>
-            <hr class="px-4 mx-4">
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Estudiante</h6>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
-                    ${student["name"]}
-                </div>
-            </div>
-            <hr class="px-4 mx-4">
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Tipo de Tarjeta</h6>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
-                    ${card["type"] == "assignedCard" ? "Tarjeta Asignada" : "Tarjeta Añadida"}
-                </div>        
-            </div>
-            <hr class="px-4 mx-4">
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Estado de Canjeo</h6>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
-                    ${card["exchanged"] ? 'Canjeado el ' + card["exchangedDate"] : "Tarjeta Pendiente de Canjear"}
-                </div>        
-            </div>
-            <hr class="px-4 mx-4">
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Estado de Pago</h6>
-                </div>
-                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
-                    ${card["payed"] ? 'Pagado el ' + card["payedDate"] : "Tarjeta Pendiente de Pago"}
-                </div>        
-            </div>
-            <hr class="px-4 mx-4">
-            <div class="row px-4 mx-4">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <h6 class="mb-0">Complementos de la tarjeta</h6>
-                </div>
-            <div class="col-lg-9 col-md-9 col-sm-12 mt-2 py-2 text-secondary">
-                    ${complements}
-                </div>        
-            </div>
-
-            <hr class="px-2 mx-2 pt-5 mt-5">    
-            `;
-
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Código de Tarjeta</h6>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                            ${card["card_id"]}
+                        </div>
+                    </div>
+                    <hr class="px-4 mx-4">
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Nombre del Evento</h6>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                            ${events["name"]}
+                        </div>
+                    </div>
+                    <hr class="px-4 mx-4">
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Precio de la Tarjeta</h6>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                            $${cardPrice}
+                        </div>
+                    </div>
+                    <hr class="px-4 mx-4">
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Estudiante</h6>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                            ${student["name"]}
+                        </div>
+                    </div>
+                    <hr class="px-4 mx-4">
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Tipo de Tarjeta</h6>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                            ${card["type"] == "assignedCard" ? "Tarjeta Asignada" : "Tarjeta Añadida"}
+                        </div>        
+                    </div>
+                    <hr class="px-4 mx-4">
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Estado de Canjeo</h6>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                            ${card["exchanged"] ? 'Canjeado el ' + card["exchangedDate"] : "Tarjeta Pendiente de Canjear"}
+                        </div>        
+                    </div>
+                    <hr class="px-4 mx-4">
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Estado de Pago</h6>
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                            ${card["payed"] ? 'Pagado el ' + card["payedDate"] : "Tarjeta Pendiente de Pago"}
+                        </div>        
+                    </div>
+                    <hr class="px-4 mx-4">
+                    <div class="row px-4 mx-4">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <h6 class="mb-0">Complementos de la tarjeta</h6>
+                        </div>
+                    <div class="col-lg-9 col-md-9 col-sm-12 mt-2 py-2 text-secondary">
+                            ${complements}
+                        </div>        
+                    </div>
+        
+                    <hr class="px-2 mx-2 pt-5 mt-5">    
+                    `;
         }
+
+
+
 
         $(".checkContent").html(cardContent);
 

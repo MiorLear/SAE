@@ -179,7 +179,7 @@ class content {
                     'suggestion': 'La tarjeta Ingresada no existe en el evento seleccionado.'
                 });
 
-        if (!isNan(card["family_id"])) {
+        if (!isNaN(card["family_id"])) {
             formData.set("action", "callName");
             formData.set("id", card["family_id"]);
 
