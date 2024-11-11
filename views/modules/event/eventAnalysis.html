@@ -1,53 +1,191 @@
 <div class="content">
-    <div class="container-fluid">
-      <div class="page-title-box">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <div class="page-title-box">
-              <h4 class="page-title">Análisis del Evento</h4>
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                  <a href="javascript:void(0);">SAE</a>
-                </li>
-                <li class="breadcrumb-item">
-                  <a href="javascript:void(0);">Eventos</a>
-                </li>
-                <li class="breadcrumb-item active">Análisis</li>
-              </ol>
-            </div>
+  <div class="container-fluid">
+    <div class="page-title-box">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="page-title-box">
+            <h4 class="page-title">Reportes</h4>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">SAE</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="javascript:void(0);">Eventos</a>
+              </li>
+              <li class="breadcrumb-item active">Reportes</li>
+            </ol>
           </div>
-  
-          <div class="col-md-4">
-            <div class="float-right d-none d-md-block app-datepicker">
-              <input
-                type="text"
-                class="form-control"
-                data-date-format="MM dd, yyyy"
-                readonly="readonly"
-                disabled
-                id="datepicker"
-              />
-              <i class="mdi mdi-chevron-down mdi-drop"></i>
+        </div>
+
+        <div class="col-md-4">
+          <div class="float-right d-none d-md-block app-datepicker">
+            <input
+              type="text"
+              class="form-control"
+              data-date-format="MM dd, yyyy"
+              readonly="readonly"
+              disabled
+              id="datepicker"
+            />
+            <i class="mdi mdi-chevron-down mdi-drop"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end page-title -->
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title pb-0">Reportes</h4>
+            <div class="mb-2">Genera reportes del Evento.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- start top-Contant -->
+    <div class="row stadisticsContent">
+      <div class="col-sm-6 col-xl-4">
+        <div class="card">
+          <div class="card-body px-4 mx-4">
+            <!-- First row with d-flex -->
+            <div class="row align-items-center p-1 d-flex flex-column">
+              <div class="col-12 d-flex justify-content-center">
+                <h5 class="font-16">Generar Reporte:</h5>
+              </div>
+              <div class="col-12 d-flex justify-content-center">
+                <h5 class="font-16">Pagos</h5>
+              </div>
+            </div>
+            <hr />
+            <!-- Second row for the button -->
+            <div class="row">
+              <a href="../model/logs/paymentsReport.php" target="_blank"   rel="noopener noreferrer" role="button" class="btn btn-primary btn-block paymentsReport"
+                >Generar</a
+              >
             </div>
           </div>
         </div>
       </div>
-      <!-- end page-title -->
-  
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-body">
-              <h4 class="mt-0 header-title pb-0">Análisis del Evento</h4>
-              <div class="mb-2">
-                Genera reportes y estadísticas del evento.
+      <div class="col-sm-6 col-xl-4">
+        <div class="card">
+          <div class="card-body px-4 mx-4">
+            <!-- First row with d-flex -->
+            <div class="row align-items-center p-1 d-flex flex-column">
+              <div class="col-12 d-flex justify-content-center">
+                <h5 class="font-16">Generar Reporte:</h5>
+              </div>
+              <div class="col-12 d-flex justify-content-center">
+                <h5 class="font-16">Familias Deudoras</h5>
+              </div>
+            </div>
+            <hr />
+            <!-- Second row for the button -->
+            <div class="row">
+              <a href="../model/logs/pendingFamilies.php" target="_blank" download rel="noopener noreferrer" role="button" class="btn btn-primary btn-block pendingFamilies"
+                >Generar</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 
+      <div class="col-sm-6 col-xl-3">
+        <div class="card">
+          <div class="card-body px-4 mx-4">
+            <div class="row align-items-center p-1 d-flex flex-column">
+              <div class="col-12 d-flex justify-content-center">
+                <h5 class="font-16">Generar Reporte: Estádisticas</h5>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <a href="" role="button" class="btn btn-primary btn-block"
+                >Generar</a
+              >
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+    <!-- end top-Contant -->
+
+    <div class="row">
+      
+      <div class="col-sm-12 col-xl-6">
+        <div class="card">
+          <div class="card-body">
+            <div
+              class="row align-items-center p-1 d-flex justify-content-center"
+            >
+              <div class="col-12">
+                <h5 class="font-16 text-center ">Recaudación Estimada</h5>
+                <hr />
+                <h4 class="text-warning pt-1 mb-0 text-center anualRevenues">$7,360</h4>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- <div class="col-12 barGraphContainer">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title mb-4">Ganancia Por Evento</h4>
+            <ul class="list-inline widget-chart mt-4 mb-0 text-center">
+              <li class="list-inline-item">
+                <h5>3654</h5>
+                <p class="text-muted">Marketplace</p>
+              </li>
+              <li class="list-inline-item">
+                <h5>954</h5>
+                <p class="text-muted">Last week</p>
+              </li>
+              <li class="list-inline-item">
+                <h5>8462</h5>
+                <p class="text-muted">Last Month</p>
+              </li>
+            </ul>
+            <div
+              id="morris-bar-stacked"
+              class="text-center"
+              style="height: 350px"
+            ></div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- <div class="col-xl-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="mt-0 header-title mb-4">Deudas Por Nivel</h4>
+            <ul class="list-inline widget-chart mt-4 mb-0 text-center">
+              <li class="list-inline-item">
+                <h5>3654</h5>
+                <p class="text-muted">Primer Año</p>
+              </li>
+              <li class="list-inline-item">
+                <h5>954</h5>
+                <p class="text-muted">Segundo Año</p>
+              </li>
+              <li class="list-inline-item">
+                <h5>8462</h5>
+                <p class="text-muted">Tercer Año</p>
+              </li>
+            </ul>
+            <div
+              id="morris-donut-example"
+              class="morris-charts morris-chart-height text-center"
+              style="height: 350px"
+            ></div>
+          </div>
+        </div>
+      </div> -->
     </div>
-  
     <!-- container-fluid -->
   </div>
-  
+  <!-- End content -->
+</div>

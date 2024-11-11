@@ -41,12 +41,12 @@ class content {
     }
     async settupEventListeners() {
         const self = this;
-        $(document).on("click", "#pay", async (e) => {
+        $(document).on("click", "#payCardContent", async (e) => {
             e.preventDefault();
-            if (!self.cardId || !self.eventId || !self.cashier || !self.client || !self.description || !self.paymentId || !self.total )
+            if (!self.cardId || !self.eventId || !self.cashier || !self.client || !self.description || !self.paymentId || !self.total)
                 return console.error(
                     {
-                        'error': "Información de pago válida.",
+                        'error': "Información de pago no válida.",
                         'errorType': 'User Error',
                         'suggestion': 'Inténtalo Nuevamente en otro momento.'
                     });
@@ -223,24 +223,32 @@ class content {
 
         const card = JSON.parse(cardInfo['content']);
 
+        console.log(card);
+
         if (!card)
             return console.error(
                 {
                     'error': "Tarjeta Inexistente.",
                     'errorType': 'User Error',
-                    'suggestion': 'La tarjeta Ingresada no existe'
+                    'suggestion': 'La tarjeta Ingresada no existe en el evento seleccionado.'
                 });
 
-        formData.set("action", "callName");
-        formData.set("id", card["student_id"]);
+        if (card["type"] == "assignedCard") {
+            formData.set("action", "callName");
+            formData.set("id", card["family_id"]);
 
-        let studentName = await this.ajaxRequest(`../model/classes/students.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+            let studentName = await this.ajaxRequest(`../model/classes/students.php`, formData)
+                .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
-        if (studentName['result'] !== 'success') {
-            console.error(studentName);
-            return;
+            if (studentName['result'] !== 'success') {
+                console.error(studentName);
+                return;
+            }
+            var student = ["content"]["name"];
+        }else{
+            var student = card["family_id"];
         }
+
 
         formData.set("action", "getCardToPay");
         formData.set("id", eventId);
@@ -268,12 +276,14 @@ class content {
         `;
 
         var complements = ""
-        for (let index = 0; index < Object.entries(card["complements"]).length; index++) {
-            const element = Object.entries(card["complements"])[index][1];
-            const complement = await this.getComplement(element["id"], eventId)
-            complements += `${complement["title"]} (${element["exchanged"] ? 'Canjeado el ' + element["exchangedDate"] : 'Pendiente de Canjear'}) <br>`;
-            payRows +=
-                `
+
+        if (card["complements"] !== '{}')
+            for (let index = 0; index < Object.entries(card["complements"]).length; index++) {
+                const element = Object.entries(card["complements"])[index][1];
+                const complement = await this.getComplement(element["id"], eventId)
+                complements += `${complement["title"]} (${element["exchanged"] ? 'Canjeado el ' + element["exchangedDate"] : 'Pendiente de Canjear'}) <br>`;
+                payRows +=
+                    `
             <tr>
                 <th scope="row">${index + 2}</th>
                 <td>${complement["title"]}</td>
@@ -282,8 +292,8 @@ class content {
                 <td>$${complement["price"]}</td>
             </tr>
             `;
-            cardPrice += parseFloat(complement["price"]);
-        }
+                cardPrice += parseFloat(complement["price"]);
+            }
 
         payRows += `
         <tfooter style="background-color:#84B0CA ;" class="text-white">
@@ -296,8 +306,6 @@ class content {
               </tr>
         </tfooter>
         `;
-
-        const student = studentName["content"]["name"];
 
         var cardContent = `<div class="card">
   <div class="card-body">
@@ -399,6 +407,7 @@ class content {
         });
     }
     async cleanup() {
+        $(document).off("click", "#payCardContent");
         $(document).off("click", "#printContent");
         $(document).off("click", "#saveContent");
         $(document).off("submit", "form.checkCard");

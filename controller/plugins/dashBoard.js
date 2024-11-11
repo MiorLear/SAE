@@ -5,19 +5,23 @@ export default class content {
   
     createStackedChart(element, data, xkey, ykeys, labels, lineColors) {
       Morris.Bar({
-        element: element,
-        data: data,
-        xkey: xkey,
-        ykeys: ykeys,
-        stacked: true,
-        labels: labels,
-        hideHover: 'auto',
-        barSizeRatio: 0.4,
-        resize: true,
-        gridLineColor: '#eeeeee',
-        barColors: lineColors
+          element: element,
+          data: data,
+          xkey: xkey,
+          ykeys: ykeys,
+          stacked: true,
+          labels: labels,
+          hideHover: 'auto',
+          barSizeRatio: 0.4,
+          preUnits:"$",
+          resize: true,
+          gridLineColor: '#eeeeee',
+          barColors: lineColors,
+          formatter: function (value) {
+              return '$' + value.toLocaleString(); 
+          }
       });
-    }
+  }
   
     // createDonutChart(element, data, colors) {
     //   Morris.Donut({

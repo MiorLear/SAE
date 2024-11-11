@@ -365,21 +365,21 @@ class content {
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
 
             var topPadding = 25;
-            
+
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
-            
-            let imgWidth = pageWidth; 
-            let imgHeight = ((canvas.height * imgWidth) / canvas.width); 
-    
+
+            let imgWidth = pageWidth;
+            let imgHeight = ((canvas.height * imgWidth) / canvas.width);
+
             if (imgHeight > pageHeight) {
                 topPadding = 10;
-              const scaleFactor = pageHeight / imgHeight;
-              imgWidth *= scaleFactor;
-              imgHeight *= scaleFactor;
+                const scaleFactor = pageHeight / imgHeight;
+                imgWidth *= scaleFactor;
+                imgHeight *= scaleFactor;
             }
-  
-          pdf.addImage(imgData, 'PNG', 0, topPadding, imgWidth, imgHeight);
+
+            pdf.addImage(imgData, 'PNG', 0, topPadding, imgWidth, imgHeight);
 
             self.pdfBlob = pdf.output('blob');
 
@@ -445,24 +445,31 @@ class content {
         }
 
         const card = JSON.parse(cardInfo['content']);
+        var student;
 
         if (!card)
             return console.error(
                 {
                     'error': "Tarjeta Inexistente.",
                     'errorType': 'User Error',
-                    'suggestion': 'La tarjeta Ingresada no existe'
+                    'suggestion': 'La tarjeta Ingresada no existe en el evento seleccionado.'
                 });
 
-        formData.set("action", "callName");
-        formData.set("id", card["student_id"]);
+        if (!isNaN(card["family_id"])) {
+            formData.set("action", "callName");
+            formData.set("id", card["family_id"]);
 
-        let studentName = await this.ajaxRequest(`../model/classes/students.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+            let studentName = await this.ajaxRequest(`../model/classes/students.php`, formData)
+                .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
-        if (studentName['result'] !== 'success') {
-            console.error(studentName);
-            return;
+            if (studentName['result'] !== 'success') {
+                console.error(studentName);
+                return;
+            }
+            var student = studentName["content"]["name"];
+            console.log(student);
+        } else {
+            var student = card["family_id"];
         }
 
         formData.set("action", "getIdNameNPrice");
@@ -481,6 +488,7 @@ class content {
         let cardPrice = parseFloat(event["price"]);
 
         var complements = ""
+        if (card["complements"] !== '{}')
         for (let index = 0; index < Object.entries(card["complements"]).length; index++) {
             const element = Object.entries(card["complements"])[index][1];
             const complement = await this.getComplement(element["id"])
@@ -488,7 +496,7 @@ class content {
             cardPrice += parseFloat(complement["price"]);
         }
 
-        const student = studentName["content"]["name"]
+        // const student = studentName["content"]["name"]
 
         var cardContent = `
         <div class="row px-4 mx-4">
@@ -511,7 +519,7 @@ class content {
         <hr class="px-4 mx-4">
         <div class="row px-4 mx-4">
             <div class="col-lg-3 col-md-3 col-sm-12">
-                <h6 class="mb-0">Estudiante</h6>
+                <h6 class="mb-0">Cliente</h6>
             </div>
             <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
                 ${student}

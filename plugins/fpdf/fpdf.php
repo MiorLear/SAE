@@ -289,7 +289,7 @@ function Close()
 	$this->_enddoc();
 }
 
-function AddPage($orientation='', $size='', $rotation=0)
+function AddPage($firstPage = false, $orientation='', $size='', $rotation=0)
 {
 	// Start a new page
 	if($this->state==3)
@@ -330,9 +330,17 @@ function AddPage($orientation='', $size='', $rotation=0)
 		$this->_out($fc);
 	$this->TextColor = $tc;
 	$this->ColorFlag = $cf;
-	// Page header
 	$this->InHeader = true;
-	$this->Header();
+	if($firstPage){
+		// Page header
+		$this->Header();
+	}else{
+        $this->SetY(00);
+        $this->SetX(00);
+        $this->SetFont('Arial', '', 8);
+        $this->SetTextColor(30, 10, 32);
+        $this->Ln(30);
+	}
 	$this->InHeader = false;
 	// Restore line width
 	if($this->LineWidth!=$lw)
@@ -588,7 +596,7 @@ function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link
 			$this->ws = 0;
 			$this->_out('0 Tw');
 		}
-		$this->AddPage($this->CurOrientation,$this->CurPageSize,$this->CurRotation);
+		$this->AddPage(false, $this->CurOrientation,$this->CurPageSize,$this->CurRotation);
 		$this->x = $x;
 		if($ws>0)
 		{
@@ -913,7 +921,7 @@ function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='')
 		{
 			// Automatic page break
 			$x2 = $this->x;
-			$this->AddPage($this->CurOrientation,$this->CurPageSize,$this->CurRotation);
+			$this->AddPage(false, $this->CurOrientation,$this->CurPageSize,$this->CurRotation);
 			$this->x = $x2;
 		}
 		$y = $this->y;
@@ -992,7 +1000,7 @@ function Output($dest='', $name='', $isUTF8=false)
 	if($dest=='')
 		$dest = 'I';
 	if($name=='')
-		$name = "Reporte de Poblacion de Familiar.pdf";
+		$name = "Default.pdf";
 	switch(strtoupper($dest))
 	{
 		case 'I':
@@ -1921,26 +1929,25 @@ class PDF extends FPDF
     {
         $this->Image('../../assets/reports/img/logo.png', -1, -1, 85);
         $this->Image('../../assets/reports/img/shinheky.png', 90, 25, 110);
-
         $this->SetY(60);
-        $this->SetX(80);
-        $this->SetFont('Arial', 'B', 14);
+        $this->SetX(50);
+
+        $this->SetFont('helvetica', 'bi', 14);
         $this->SetTextColor(0, 0, 0);
-        $this->Cell(50, 8, $this->title, 0, 1);
+        $this->Cell(50, 8, (strlen((trim($this->title))) > 58 ? substr(trim($this->title), 0, 58) . '...' : trim($this->title)), 0, 1);
         $this->SetY(45);
         $this->SetX(147);
-        $this->SetFont('Arial', '', 8);
-        $this->SetTextColor(30, 10, 32);
+
         $this->Ln(30);
     }
 
-    // Footer function to customize the report footer
     function Footer()
     {
         $this->SetFont('helvetica', 'B', 8);
         $this->SetY(-15);
         $this->Cell(95, 5, utf8_decode('Página ') . $this->PageNo() . ' / {nb}', 0, 0, 'L');
-        $this->Cell(95, 5, date('d/m/Y | g:i:a'), 0, 1, 'R');
+        date_default_timezone_set('America/El_Salvador');
+		$this->Cell(95, 5, date('d/m/Y | h:i:s'), 0, 1, 'R');
         $this->Line(10, 287, 200, 287);
         $this->Cell(0, 5, utf8_decode("SAE © 2024"), 0, 0, "C");
     }

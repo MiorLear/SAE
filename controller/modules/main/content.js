@@ -80,6 +80,12 @@ class content extends dataTables {
             permissions: () => {
                 return "Permisos";
             },
+            showAddToFamilie: () => {
+                return "¿Posee Familiares?";
+            },
+            showEditToFamilie: () => {
+                return "¿Posee Familiares?";
+            },
             notFilled: () => {
                 switch (params["table"]) {
                     case "students":
@@ -282,6 +288,23 @@ class content extends dataTables {
             });
         }
 
+        if (table === "students") {
+            $(".addToFamilieGroup").css("display", "none");
+            $(document).on("change", "#showAddToFamilie", (e) => {
+                if (e.currentTarget.checked)
+                    $(".addToFamilieGroup").css("display", "flex");
+                if (!e.currentTarget.checked)
+                    $(".addToFamilieGroup").css("display", "none");
+            });
+            $(".editToFamilieGroup").css("display", "none");
+            $(document).on("change", "#showEditToFamilie", (e) => {
+                if (e.currentTarget.checked)
+                    $(".editToFamilieGroup").css("display", "flex");
+                if (!e.currentTarget.checked)
+                    $(".editToFamilieGroup").css("display", "none");
+            });
+        }
+
         if (table === "events") {
             $(document).on("click", "a.showComplementsModal", (e) => {
                 e.preventDefault();
@@ -406,6 +429,7 @@ class content extends dataTables {
                     if (
                         $(formElement).val() == "" &&
                         $(formElement).attr("id") !== "fileupload" &&
+                        $(formElement).attr("id") !== "addToFamilie" &&
                         $(formElement).attr("id") !== "pass" &&
                         $(formElement).attr("id") !== "retype"
                     )
@@ -414,6 +438,12 @@ class content extends dataTables {
                         $(formElement).attr("id") === "fileupload" &&
                         !e.currentTarget["addGenerateImageCheck"].checked &&
                         $(formElement).val() === ""
+                    )
+                        notFilledInputs.push(formElement);
+                    else if (
+                        $(formElement).attr("id") === "addToFamilie" &&
+                        e.currentTarget["showAddToFamilie"].checked &&
+                        $(formElement).val() == ""
                     )
                         notFilledInputs.push(formElement);
                     else if (
@@ -482,7 +512,7 @@ class content extends dataTables {
                         invalidMail.push(formElement);
                     else if (
                         $(formElement).attr("type") === "number" &&
-                        $(formElement).val() < 1
+                        $(formElement).val() <= 0
                     )
                         minorThanZeroInputs.push(formElement);
                     else validInputs[$(formElement).attr("id")] = $(formElement).val();
@@ -683,6 +713,7 @@ class content extends dataTables {
                     if (
                         $(formElement).val() == "" &&
                         $(formElement).attr("id") !== "fileupload" &&
+                        $(formElement).attr("id") !== "editToFamilie" &&
                         $(formElement).attr("id") !== "pass" &&
                         $(formElement).attr("id") !== "retype"
                     )
@@ -692,6 +723,12 @@ class content extends dataTables {
                         !e.currentTarget["editGenerateImageCheck"].checked &&
                         $(formElement).val() === "" &&
                         $("#changeImage").val() == "Change"
+                    )
+                        notFilledInputs.push(formElement);
+                    else if (
+                        $(formElement).attr("id") === "editToFamilie" &&
+                        e.currentTarget["showEditToFamilie"].checked &&
+                        $(formElement).val() == ""
                     )
                         notFilledInputs.push(formElement);
                     else if (
@@ -765,7 +802,7 @@ class content extends dataTables {
                         invalidMail.push(formElement);
                     else if (
                         $(formElement).attr("type") === "number" &&
-                        $(formElement).val() < 1
+                        $(formElement).val() <= 0
                     )
                         minorThanZeroInputs.push(formElement);
                     else validInputs[$(formElement).attr("id")] = $(formElement).val();
@@ -2498,6 +2535,7 @@ class content extends dataTables {
                 var grade = await this.callName(formData.get("grade"), "grades");
                 var section = await this.callName(formData.get("section"), "sections");
                 formData.set("grade", grade);
+                formData.set("showAddToFamilie", $("#showAddToFamilie").checked ? 'Si' : 'No');
                 formData.set("section", section);
                 break;
             case "levels": //csv
@@ -2585,6 +2623,7 @@ class content extends dataTables {
                 var section = await this.callName(formData.get("section"), "sections");
                 formData.set("grade", grade);
                 formData.set("section", section);
+                formData.set("showEditToFamilie", $("#showEditToFamilie").checked ? 'Si' : 'No');
                 break;
             case "levels": //csv
                 var grade = formData.get("grade");
@@ -2797,6 +2836,11 @@ class content extends dataTables {
             $(document).off("click", "a.showComplementsModal");
             $(document).off("click", "button.addComplement");
             $(document).off("click", "button.editComplement");
+        }
+
+        if (table === "students") {
+            $(document).off("change", "input#showAddToFamilie");
+            $(document).off("change", "input#showEditToFamilie");
         }
 
         $(".bd-addModal-lg").off("hidden.bs.modal");

@@ -31,19 +31,74 @@ class content {
         });
     }
 
+    async controlLog(actionDone, eventId = this.id) {
+
+        let formData = new FormData();
+        formData.append("action", "getGeneralInfo");
+        formData.append("id", eventId);
+
+        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        const event = response['content'];
+
+        var finalDate = new Date().toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+        let log = {};
+
+        log["author"] = this.user["name"];
+        log["date"] = finalDate;
+        log["ID"] = eventId;
+        log["title"] = {
+            "action": actionDone,
+            "table": "Evento"
+        }
+        log["table"] = "events";
+        log["Evento"] = event["name"];
+
+        formData.set("action", "insertLog");
+        formData.append("content", JSON.stringify(log));
+
+        let logResponse = await this.ajaxRequest(
+            `../model/classes/controlLog.php`,
+            formData
+        ).catch((e) => ({
+            error: e["error"] !== "Request failed" ? e : { error: "Request failed" },
+        }));
+
+        if (logResponse["result"] !== "success") {
+            console.error(logResponse);
+        }
+
+        return logResponse;
+    }
+
     async checkCard(cardId, id = this.id) {
         let formData = new FormData();
         formData.append("action", "redeemCard");
         formData.append("cardId", cardId);
         formData.append("id", id);
 
+        var log = await this.controlLog(`Tarjeta #${cardId} Canjeada`);
+        if (log["result"] !== "success") {
+            console.error(log);
+            return;
+        }
 
         let cardRedeem = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+            .catch(e => ({'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
         if (cardRedeem['result'] !== 'success') {
             console.error(cardRedeem);
-            return;
+            return $("#checkCardInput").val('');
         }
 
         Swal.fire(
@@ -52,8 +107,10 @@ class content {
                 text: 'Tarjeta Canjeada Correctamente.',
                 icon: "success",
                 showConfirmButton: false,
-                timer: 3000
+                timer: 1000
             });
+
+        $("#checkCardInput").val('');
 
     }
 

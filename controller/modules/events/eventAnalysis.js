@@ -3,8 +3,6 @@ class content {
         this.user = params["user"];
         this.id = this.getID();
         this.checkEventExist();
-        this.settupEventListeners();
-        console.log("analysis isn't finished");
     }
     getID() {
         var url = window.location.search;
@@ -165,10 +163,48 @@ class content {
         }
 
         sideBarStatus[event["status"]].load();
+        this.loadGraphsInfo();
 
     }
-    async settupEventListeners(eventId = this.id) {
+    async loadGraphsInfo(eventId = this.id) {
+        let formData = new FormData();
+        formData.append("action", "getGraphInfoIntoEvent");
+        formData.append("id", eventId);
+    
+        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+    
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+    
+        const graphs = response["content"];
+    
+        if (graphs["eventsTotalRevenue"]) {
+            $(".anualRevenues").text("$" + graphs["eventsTotalRevenue"]);
+        } else {
+            $(".anualRevenues").text("No hay información disponible para este reporte.");
+        }
+
+        formData.set("action", "getGeneralInfo");
+
+        let eventresponse = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (eventresponse['result'] !== 'success') {
+            console.error(eventresponse);
+            return;
+        }
+
+        const event = eventresponse['content'];
         
+        $(".paymentsReport").attr("href", `../model/logs/paymentsReportIntoEvent.php?eventID=${eventId}&name=${event["name"]}`);
+        $(".paymentsReport").attr("target", "_blank");
+        $(".paymentsReport").attr("download", "true");
+        $(".pendingFamilies").attr("href", `../model/logs/pendingFamiliesIntoEvent.php?eventID=${eventId}&name=${event["name"]}`);
+        $(".pendingFamilies").attr("target", "_blank");
+        $(".pendingFamilies").attr("download", "true");
     }
     async ajaxRequest(url, formData) {
         return new Promise((resolve, reject) => {

@@ -106,6 +106,14 @@ class content {
         });
     }
     async checkStudent(carnet) {
+
+        if (isNaN(carnet))
+            return console.error({
+                'error': "Carnet Inválido.",
+                'errorType': 'User Error',
+                'suggestion': 'El carnet ingresado no es válido.'
+            });
+
         let formData = new FormData();
         formData.append("action", "getStudentIdFromCarnet");
         formData.append("studentCarnet", carnet);
@@ -159,12 +167,13 @@ class content {
             let cardPrice = parseFloat(event["price"]);
 
             var complements = ""
-            for (let complementIndex = 0; complementIndex < Object.entries(card["complements"]).length; complementIndex++) {
-                const element = Object.entries(card["complements"])[complementIndex][1];
-                const complement = await this.getComplement(element["id"], event["id"])
-                complements += `${complement["title"]} (${element["exchanged"] ? 'Canjeado el ' + element["exchangedDate"] : 'Pendiente de Canjear'}) <br>`;
-                cardPrice += parseFloat(complement["price"]);
-            }
+            if (card["complements"] !== '{}')
+                for (let complementIndex = 0; complementIndex < Object.entries(card["complements"]).length; complementIndex++) {
+                    const element = Object.entries(card["complements"])[complementIndex][1];
+                    const complement = await this.getComplement(element["id"], event["id"])
+                    complements += `${complement["title"]} (${element["exchanged"] ? 'Canjeado el ' + element["exchangedDate"] : 'Pendiente de Canjear'}) <br>`;
+                    cardPrice += parseFloat(complement["price"]);
+                }
 
             cardContent += `
             <div class="row px-4 mx-4">
@@ -173,6 +182,15 @@ class content {
                 </div>
                 <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
                     ${card["card_id"]}
+                </div>
+            </div>
+            <hr class="px-4 mx-4">
+            <div class="row px-4 mx-4">
+                <div class="col-lg-3 col-md-3 col-sm-12">
+                    <h6 class="mb-0">Nombre del Evento</h6>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                    ${event["name"]}
                 </div>
             </div>
             <hr class="px-4 mx-4">

@@ -200,6 +200,12 @@ class content {
                 return;
             }
 
+            var log = await this.controlLog('Modelo de Tarjeta Modificado');
+            if (log["result"] !== "success") {
+                console.error(log);
+                return;
+            }
+
             Swal.fire(
                 {
                     title: "Éxito!",
@@ -230,6 +236,12 @@ class content {
                 return;
             }
 
+            var log = await this.controlLog('Modelo de Tarjeta Modificado');
+            if (log["result"] !== "success") {
+                console.error(log);
+                return;
+            }
+
             Swal.fire(
                 {
                     title: "Éxito!",
@@ -256,6 +268,12 @@ class content {
 
             if (response['result'] !== 'success') {
                 console.error(response);
+                return;
+            }
+
+            var log = await this.controlLog('Modelo de Tarjeta Creado');
+            if (log["result"] !== "success") {
+                console.error(log);
                 return;
             }
 
@@ -342,6 +360,26 @@ class content {
         $(document).on('submit', 'form.initializeCards', async (e) => {
 
             e.preventDefault();
+
+            let notFilledInputs = [];
+
+            $(e.currentTarget).find('input').get().reverse().forEach(function (formElement) {
+                $(`.form-${$(formElement).attr('id')}`).removeClass('has-warning');
+                $(`.form-control-${$(formElement).attr('id')}-feedback`).css("display", "none");
+
+                if (!$(formElement).attr("id")) return;
+
+                if ($(formElement).val() == "")
+                    return notFilledInputs.push(formElement);
+            });
+
+            notFilledInputs.forEach(input => {
+                return $(input).focus();
+            });
+
+            if (notFilledInputs.length)
+                return;
+
             let formData = new FormData();
             formData.append("id", this.id);
             formData.append("action", "getCardModel");
@@ -356,7 +394,6 @@ class content {
 
             const model = JSON.parse(cardModel['content']['model']);
 
-            let notFilledInputs = [];
             let repeatedInputs = [];
             let notMinLengthInputs = [];
             let cards = {};
@@ -383,7 +420,7 @@ class content {
 
                     var card = Object.assign({}, model);
 
-                    card.student_id = $(formElement).attr("id").substring(0, $(formElement).attr("id").indexOf('-'));
+                    card.family_id = $(formElement).attr("id").substring(0, $(formElement).attr("id").indexOf('-'));
                     card.card_id = $(formElement).val();
                     card.type = "assignedCard";
 
@@ -433,6 +470,55 @@ class content {
             }
         });
     }
+    async controlLog(actionDone, eventId = this.id) {
+
+        let formData = new FormData();
+        formData.append("action", "getGeneralInfo");
+        formData.append("id", eventId);
+
+        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        const event = response['content'];
+
+        var finalDate = new Date().toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+        let log = {};
+
+        log["author"] = this.user["name"];
+        log["date"] = finalDate;
+        log["ID"] = eventId;
+        log["title"] = {
+            "action": actionDone,
+            "table": "Evento"
+        }
+        log["table"] = "events";
+        log["Evento"] = event["name"];
+
+        formData.set("action", "insertLog");
+        formData.append("content", JSON.stringify(log));
+
+        let logResponse = await this.ajaxRequest(
+            `../model/classes/controlLog.php`,
+            formData
+        ).catch((e) => ({
+            error: e["error"] !== "Request failed" ? e : { error: "Request failed" },
+        }));
+
+        if (logResponse["result"] !== "success") {
+            console.error(logResponse);
+        }
+
+        return logResponse;
+    }
     async addExtraConfig(validInputs, id = this.id) {
         let formData = new FormData();
         formData.append("id", this.id);
@@ -445,6 +531,12 @@ class content {
 
         if (response['result'] !== 'success') {
             console.error(response);
+            return;
+        }
+
+        var log = await this.controlLog('Configuración Adicional Realizada');
+        if (log["result"] !== "success") {
+            console.error(log);
             return;
         }
 
@@ -466,7 +558,11 @@ class content {
         formData.append("id", this.id);
         formData.append("json", json);
 
-        console.log(json);
+        var log = await this.controlLog('Tarjetas Asignadas al Evento');
+        if (log["result"] !== "success") {
+            console.error(log);
+            return;
+        }
 
         let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -475,7 +571,7 @@ class content {
             console.error(response);
             return;
         }
-        
+
         this.checkStatus();
 
         Swal.fire(
@@ -486,8 +582,8 @@ class content {
                 showConfirmButton: false,
                 timer: 3000
             }
-            
-        ).then(() =>{
+
+        ).then(() => {
             window.location.href = './main.html?content=eventPanel&event=' + id;
         });
 
@@ -551,6 +647,12 @@ class content {
         let formData = new FormData();
         formData.append("action", "getName");
         formData.append("id", id);
+
+        var log = await this.controlLog('Inicializado');
+        if (log["result"] !== "success") {
+            console.error(log);
+            return;
+        }
 
         let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
@@ -851,7 +953,7 @@ class content {
                 const element = JSON.parse(eventComplements['complements'])[id];
 
                 eventComplementsContent += `
-                <a class="addComplementToModel" id="${element["id"]}">
+                <a class="addComplementToModel pb-2" id="${element["id"]}">
                     <div class="row">
                         <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                             <span

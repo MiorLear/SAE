@@ -59,7 +59,7 @@ class content {
                 var formElement = this;
                 var formElementVal = $(formElement).val();
 
-                if(!$(formElement).attr("id")) return;
+                if (!$(formElement).attr("id")) return;
 
                 $(`.form-control-${$(formElement).attr("id")}-feedback`).css("display", "none");
                 $(`.form-${$(formElement).attr("id")}`).removeClass('has-warning');
@@ -169,25 +169,36 @@ class content {
         }
 
         const card = JSON.parse(cardInfo['content']);
+        var student;
 
         if (!card)
             return console.error(
                 {
                     'error': "Tarjeta Inexistente.",
                     'errorType': 'User Error',
-                    'suggestion': 'La tarjeta Ingresada no existe'
+                    'suggestion': 'La tarjeta Ingresada no existe en el evento seleccionado.'
                 });
 
-        formData.set("action", "callName");
-        formData.set("id", card["student_id"]);
+        if (!isNan(card["family_id"])) {
+            formData.set("action", "callName");
+            formData.set("id", card["family_id"]);
 
-        let studentName = await this.ajaxRequest(`../model/classes/students.php`, formData)
-            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+            let studentName = await this.ajaxRequest(`../model/classes/students.php`, formData)
+                .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
 
-        if (studentName['result'] !== 'success') {
-            console.error(studentName);
-            return;
+            if (studentName['result'] !== 'success') {
+                console.error(studentName);
+                return;
+            }
+            var student = studentName["content"]["name"];
+            console.log(student);
+        } else {
+            var student = card["family_id"];
         }
+
+
+        formData.set("action", "getCardToPay");
+        formData.set("id", eventId);
 
         formData.set("action", "getIdNameNPrice");
         formData.set("id", eventId);
@@ -205,14 +216,13 @@ class content {
         let cardPrice = parseFloat(event["price"]);
 
         var complements = ""
-        for (let index = 0; index < Object.entries(card["complements"]).length; index++) {
-            const element = Object.entries(card["complements"])[index][1];
-            const complement = await this.getComplement(element["id"], eventId)
-            complements += `${complement["title"]} (${element["exchanged"] ? 'Canjeado el ' + element["exchangedDate"] : 'Pendiente de Canjear'}) <br>`;
-            cardPrice += parseFloat(complement["price"]);
-        }
-
-        const student = studentName["content"]["name"]
+        if (card["complements"] !== '{}')
+            for (let index = 0; index < Object.entries(card["complements"]).length; index++) {
+                const element = Object.entries(card["complements"])[index][1];
+                const complement = await this.getComplement(element["id"], eventId)
+                complements += `${complement["title"]} (${element["exchanged"] ? 'Canjeado el ' + element["exchangedDate"] : 'Pendiente de Canjear'}) <br>`;
+                cardPrice += parseFloat(complement["price"]);
+            }
 
         var cardContent = `
         <div class="row px-4 mx-4">
@@ -221,6 +231,15 @@ class content {
             </div>
             <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
                 ${card["card_id"]}
+            </div>
+        </div>
+        <hr class="px-4 mx-4">
+        <div class="row px-4 mx-4">
+            <div class="col-lg-3 col-md-3 col-sm-12">
+                <h6 class="mb-0">Nombre del Evento</h6>
+            </div>
+            <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
+                ${event["name"]}
             </div>
         </div>
         <hr class="px-4 mx-4">
@@ -235,7 +254,7 @@ class content {
         <hr class="px-4 mx-4">
         <div class="row px-4 mx-4">
             <div class="col-lg-3 col-md-3 col-sm-12">
-                <h6 class="mb-0">Estudiante</h6>
+                <h6 class="mb-0">Cliente</h6>
             </div>
             <div class="col-lg-9 col-md-9 col-sm-12 text-secondary">
                 ${student}

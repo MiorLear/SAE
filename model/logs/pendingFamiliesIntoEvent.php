@@ -21,8 +21,9 @@ class familyPopulationReport
     {
         $conn = $this->conn->getConnection();
 
-        $sql = "SELECT s.name[2] AS student_name, CONCAT(events.name, ' (', EXTRACT(year FROM TO_DATE(events.settings->'settings'->>'date', 'DD/MM/YYYY')), ')') AS event_name, COUNT(*) AS student_count, totalPrices.totalPrice AS card_price, COUNT(*) * totalPrices.totalPrice AS total_value FROM events JOIN jsonb_each(data->'cards') AS card ON true LEFT JOIN students s ON card.value->>'family_id' = s.id::text LEFT JOIN (SELECT SUM(CAST(ROUND(CAST(REPLACE(TRIM(menu.value->>'price'), '\"', '') AS NUMERIC)) AS INTEGER)) + CAST(ROUND(CAST(REPLACE(TRIM(settings->'settings'->>'price'), '\"', '') AS NUMERIC)) AS INTEGER) AS totalPrice, events.settings FROM events, jsonb_each(settings->'complements') AS menu, jsonb_each(settings->'model'->'complements') AS complement     WHERE complement.key = menu.value->>'id' GROUP BY events.settings) AS totalPrices ON totalPrices.settings = events.settings WHERE card.value->>'payed' = 'false' AND card.value->>'type' = 'assignedCard' AND events.status != 'Deshabilitado' GROUP BY s.name[2], event_name, totalPrices.totalPrice ORDER BY event_name, student_name;";
+        $sql = "SELECT s.name[2] AS student_name, CONCAT(events.name, ' (', EXTRACT(year FROM TO_DATE(events.settings->'settings'->>'date', 'DD/MM/YYYY')), ')') AS event_name, COUNT(*) AS student_count, totalPrices.totalPrice AS card_price, COUNT(*) * totalPrices.totalPrice AS total_value FROM events JOIN jsonb_each(data->'cards') AS card ON true LEFT JOIN students s ON card.value->>'family_id' = s.id::text LEFT JOIN (SELECT SUM(CAST(ROUND(CAST(REPLACE(TRIM(menu.value->>'price'), '\"', '') AS NUMERIC)) AS INTEGER)) + CAST(ROUND(CAST(REPLACE(TRIM(settings->'settings'->>'price'), '\"', '') AS NUMERIC)) AS INTEGER) AS totalPrice, events.settings FROM events, jsonb_each(settings->'complements') AS menu, jsonb_each(settings->'model'->'complements') AS complement     WHERE complement.key = menu.value->>'id' GROUP BY events.settings) AS totalPrices ON totalPrices.settings = events.settings WHERE card.value->>'payed' = 'false' AND card.value->>'type' = 'assignedCard' AND events.status != 'Deshabilitado' AND events.id = :id GROUP BY s.name[2], event_name, totalPrices.totalPrice ORDER BY event_name, student_name;";
         $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $_GET["eventID"], PDO::PARAM_STR);
         $stmt->execute();
         $data = $stmt->fetchAll();
 
@@ -57,16 +58,6 @@ class familyPopulationReport
 
         $event = null;
         foreach ($data as $val) {
-            if ($val["event_name"] != $event) {
-                $event = $val['event_name'];
-                $this->pdf->SetFont('Arial', 'U', 10);
-                $this->pdf->SetX(15);
-                $this->pdf->SetFillColor(255,233,128);
-                $this->pdf->SetDrawColor(65, 61, 61);
-                $this->pdf->Cell(176, 6, utf8_decode($val['event_name']), 'B', 0, 'C', 1);
-                $this->pdf->Ln();
-            }
-            
             $this->pdf->SetFont('Arial', '', 9);
             $this->pdf->SetX(15);
             if ($borderColor) {
@@ -93,7 +84,7 @@ class familyPopulationReport
             $this->pdf->Ln(0.5);
         }
 
-        $this->pdf->Output('', "Reporte de Familias Pendientes de Pago ".date('d/m/Y | h:i:s').".pdf");
+        $this->pdf->Output('', utf8_decode("Reporte de Familias Pendientes de Pago en ". $_GET["name"] .date('d/m/Y | h:i:s').".pdf"));
 
     }
 }
@@ -101,7 +92,7 @@ class familyPopulationReport
 // Exception handling
 try {
     session_start();
-    $em = new familyPopulationReport("Familias Pendientes de Pago");
+    $em = new familyPopulationReport(utf8_decode("Familias Pendientes de Pago en ". $_GET["name"]));
 } catch (\PDOException $th) {
     exit(json_encode([
         'error' => 'Error Inesperado',

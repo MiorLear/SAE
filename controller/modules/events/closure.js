@@ -191,6 +191,56 @@ class content {
         sideBarStatus[event["status"]].load();
 
     }
+    async controlLog(actionDone, eventId = this.id) {
+
+        let formData = new FormData();
+        formData.append("action", "getGeneralInfo");
+        formData.append("id", eventId);
+
+        let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
+            .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
+
+        if (response['result'] !== 'success') {
+            console.error(response);
+            return;
+        }
+
+        const event = response['content'];
+
+        var finalDate = new Date().toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+        let log = {};
+
+        log["author"] = this.user["name"];
+        log["date"] = finalDate;
+        log["ID"] = eventId;
+        log["title"] = {
+            "action": actionDone,
+            "table": "Evento"
+        }
+        log["table"] = "events";
+        log["Evento"] = event["name"];
+
+        formData.set("action", "insertLog");
+        formData.append("content", JSON.stringify(log));
+
+        let logResponse = await this.ajaxRequest(
+            `../model/classes/controlLog.php`,
+            formData
+        ).catch((e) => ({
+            error: e["error"] !== "Request failed" ? e : { error: "Request failed" },
+        }));
+
+        if (logResponse["result"] !== "success") {
+            console.error(logResponse);
+        }
+
+        return logResponse;
+    }
+
     async settupEventListeners(eventId = this.id) {
         $(document).on("click", ".endEvent", async (e) => {
             this.endEvent();
@@ -201,6 +251,12 @@ class content {
         let formData = new FormData();
         formData.append("action", "endEvent");
         formData.append("id", id);
+
+        var log = await this.controlLog(`Evento Finalizado`);
+        if (log["result"] !== "success") {
+            console.error(log);
+            return;
+        }
 
         let response = await this.ajaxRequest(`../model/modules/eventManager.php`, formData)
             .catch(e => ({ 'error': e['error'] !== 'Request failed' ? e : { 'error': 'Request failed' } }));
